@@ -14,9 +14,11 @@ npm install
 
 ## Config
 
-Rename `.env.example` to `.env` and fill in the following parameters correctly
+Find `.env`  file  and fill in the following parameters correctly
 
 - See [Get Started with Agora](https://docs.agora.io/en/video-calling/reference/manage-agora-account?platform=web#get-started-with-agora) to learn how to get an App ID and App Certificate.
+- Activate RTM permissions in the console
+- Contact technical support to activate RTT permissions
 
 ```bash
 VITE_AGORA_APP_ID=<YOUR_APP_ID>

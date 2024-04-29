@@ -7,6 +7,7 @@ import AgoraRTC, {
 import { AGEventEmitter } from "../events"
 import { RtcEvents, IUserTracks } from "./types"
 import { parser } from "../parser"
+import { apiGetAgoraToken } from "@/common"
 
 const appId = import.meta.env.VITE_AGORA_APP_ID
 
@@ -26,7 +27,8 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
 
   async join({ channel, userId }: { channel: string; userId: number }) {
     if (!this._joined) {
-      await this.client?.join(appId, channel, null, userId)
+      const token = await apiGetAgoraToken({ channel, uid: userId })
+      await this.client?.join(appId, channel, token, userId)
       this._joined = true
     }
   }

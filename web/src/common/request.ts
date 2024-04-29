@@ -3,9 +3,11 @@ import { IRequestLanguages } from "@/types"
 const MODE = import.meta.env.MODE
 const gatewayAddress =
   MODE == "test" ? "https://service-staging.agora.io/speech-to-text" : "https://api.agora.io"
+const BASE_URL = "https://service.agora.io/toolbox"
 
 // ---------------------------------------
 const appId = import.meta.env.VITE_AGORA_APP_ID
+const certificate = import.meta.env.VITE_AGORA_APP_CERTIFICATE
 const key = import.meta.env.VITE_AGORA_APP_KEY
 const secret = import.meta.env.VITE_AGORA_APP_SECRET
 const authorization = `Basic ` + btoa(`${key}:${secret}`)
@@ -101,4 +103,31 @@ export const apiAiAnalysis = async (options: { system: string; userContent: stri
     body: JSON.stringify(options),
   })
   return await res.json()
+}
+
+export async function apiGetAgoraToken(config: { uid: string | number; channel: string }) {
+  if (!certificate) {
+    return null
+  }
+  const { uid, channel } = config
+  const url = `${BASE_URL}/v2/token/generate`
+  const data = {
+    appId,
+    appCertificate: certificate,
+    channelName: channel,
+    expire: 7200,
+    src: "web",
+    types: [1, 2],
+    uid: uid + "",
+  }
+  let resp = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+  resp = (await resp.json()) || {}
+  // @ts-ignore
+  return resp?.data?.token || ""
 }

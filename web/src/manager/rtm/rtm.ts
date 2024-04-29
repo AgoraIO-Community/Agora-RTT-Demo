@@ -7,7 +7,7 @@ import AgoraRTM, {
   StateDetail,
   MetadataItem,
 } from "agora-rtm"
-import { mapToArray, isString } from "@/common"
+import { mapToArray, isString, apiGetAgoraToken } from "@/common"
 import { AGEventEmitter } from "../events"
 import {
   RtmEvents,
@@ -41,35 +41,27 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
 
   constructor() {
     super()
-    this._init()
   }
 
   get isHost() {
     return this.hostId && this.hostId == this.userId
   }
 
-  // --------------------- private methods ---------------------
-
-  private _init() {
-    if (this.rtmLog) {
-      this.rtmConfig.logLevel = "debug"
-      this.rtmConfig.logUpload = true
-    }
-  }
-
   async join({ channel, userId }: { channel: string; userId: string }) {
     if (this.joined) {
       return
     }
-    if (!this.client) {
-      this.client = new RTM(appId, userId, this.rtmConfig)
-    }
     this.userId = userId
     this.channel = channel
+    if (!this.client) {
+      await this._initConfig()
+      this.client = new RTM(appId, userId, this.rtmConfig)
+    }
     this._listenRtmEvents()
     await this.client.login()
     const streamChannel = this.client.createStreamChannel(channel)
     await streamChannel.join({
+      token: this.rtmConfig.token,
       withPresence: true,
       withMetadata: true,
       // withLock: boolean;
@@ -141,6 +133,14 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
   }
 
   // --------------------- private methods ---------------------
+
+  private async _initConfig() {
+    if (this.rtmLog) {
+      this.rtmConfig.logLevel = "debug"
+      this.rtmConfig.logUpload = true
+    }
+    this.rtmConfig.token = await apiGetAgoraToken({ channel: this.channel, uid: this.userId })
+  }
 
   private async _removeChannelMetadata(metadata: Record<string, any>) {
     const data: MetadataItem[] = []
