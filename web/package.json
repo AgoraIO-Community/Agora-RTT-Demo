@@ -1,8 +1,6 @@
 {
   "name": "stt-demo",
   "version": "1.0.0",
-  "repository": "https://github.com/QinZhen001/stt-demo.git",
-  "author": "qinzhen <qz519189636@qq.com>",
   "license": "MIT",
   "type": "module",
   "scripts": {
