@@ -1,0 +1,8 @@
+node_modules
+dist
+es
+build
+assets
+out
+lib
+plugin

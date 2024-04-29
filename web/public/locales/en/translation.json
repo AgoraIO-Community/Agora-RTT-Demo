@@ -1,0 +1,55 @@
+{
+  "liveLanguage": "Live Language",
+  "translationLanguage": "Translation Language",
+  "storage": "Storage",
+  "clearAll": "Clear All",
+  "analyze": "Analyze",
+  "analysisResult": "Analysis Result",
+  "prompt": "Prompt",
+  "conversationText": "Conversation Text",
+  "loadText": "Load Text",
+  "transcribing": "Transcribing",
+  "closeConversation": "Close Conversation",
+  "login": {
+    "join": "join channel",
+    "title": "Real-Time Transcription"
+  },
+  "footer": {
+    "aIAssistant": "AI Assistant",
+    "langaugesSetting": "Langauges Setting",
+    "conversationHistory": "Conversation History",
+    "participantsList": "Participants List",
+    "muteAudio": "Mute Audio",
+    "unMuteAudio": "UnMute Audio",
+    "muteVideo": "Mute Video",
+    "unMuteVideo": "UnMute Video",
+    "startCC": "Start CC",
+    "stopCC": "Stop CC",
+    "tipEnableSTTFirst": "Please enable speech transcription in language settings first",
+    "tipHostEnableCCFirst": "Please enable the host to activate speech transcription in the language settings first",
+    "tipHostEnableCC": "Only the host can operate"
+  },
+  "setting": {
+    "sttStarted": "Speech to text has started",
+    "sttStopped": "Speech to text has stopped",
+    "sttStart": "Start speech-to-text",
+    "sttStop": "Stop speech-to-text",
+    "limitDuration": "The default speech-to-text time limit is 10 minutes",
+    "languagesSelect": "Please select on-site language and translation language",
+    "tip": "You can select up to two languages, and each live language can correspond to up to five translation languages",
+    "liveLanguage": "Live language",
+    "translationLanguageMax": "Translation language should less than or equal to 5"
+  },
+  "conversation": {
+    "sttStarted": "The host has turned on real-time transcription",
+    "sttStopped": "Language to text service is not enabled",
+    "onTrial": "On trial",
+    "extendExperience": "Extend",
+    "extendExperienceText": "Extended experience can be extended by 10 minutes",
+    "extendExperienceFreeText": "The free version of the language to text service trial lasts for 10 minutes and has been used up."
+  },
+  "ai": {
+    "selectPromptSample": "Select Prompt Sample",
+    "selectConversation": "Select Conversation Text"
+  }
+}

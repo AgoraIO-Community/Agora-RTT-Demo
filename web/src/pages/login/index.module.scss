@@ -1,0 +1,98 @@
+.loginPage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: url("../../assets/login_background.jpg");
+  background-size: cover;
+  background-position: center;
+
+  .content {
+    position: absolute;
+    width: 368px;
+    top: 160px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    padding: 24px 24px 40px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    border-radius: 16px;
+    border-top: 1px solid #f2f4f7;
+    background: #fff;
+    box-shadow: 0px 32px 64px -12px rgba(8, 15, 52, 0.12);
+    box-sizing: border-box;
+
+    .language {
+      text-align: right;
+    }
+
+    .title {
+      margin-top: 26px;
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .logo {
+        display: flex;
+        width: 64px;
+        height: 64px;
+        justify-content: center;
+        align-items: center;
+        border-radius: 12px;
+        background: linear-gradient(136deg, #42c8fe 6.25%, #463eff 50%, #6e2aff 100%), #d9d9d9;
+
+        img {
+          width: 40x;
+          height: 44px;
+          flex-shrink: 0;
+        }
+      }
+
+      .text {
+        margin-top: 12px;
+        color: #344054;
+        text-align: center;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+      }
+    }
+
+    .item + .item {
+      margin-top: 24px;
+    }
+
+    .btn {
+      margin-top: 24px;
+      display: flex;
+      padding: 8px 12px;
+      justify-content: center;
+      align-items: center;
+      align-self: stretch;
+      border-radius: 8px;
+      background: var(--primary-500-base, #3d53f5);
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+      color: var(---white, #fff);
+      font-family: "PingFang SC";
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 24px;
+      text-align: center;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+
+    .version {
+      margin-top: 32px;
+      color: #6d7278;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px;
+      text-align: center;
+    }
+  }
+}

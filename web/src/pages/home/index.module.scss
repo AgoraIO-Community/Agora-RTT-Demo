@@ -1,0 +1,26 @@
+.homePage {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  .content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+
+    .left {
+      flex: 0 0 auto;
+    }
+
+    .center {
+      flex: 1 1 auto;
+    }
+
+    .right {
+      flex: 0 0 auto;
+    }
+  }
+}

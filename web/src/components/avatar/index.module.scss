@@ -1,0 +1,55 @@
+.avatar {
+  position: relative;
+  display: flex;
+  padding: 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--Grey-500, #98a2b3);
+  box-sizing: border-box;
+  border-radius: 50%;
+
+  .text {
+    color: var(---white, #fff);
+    text-align: center;
+    font-weight: 500;
+    line-height: 150%;
+    letter-spacing: 0.449px;
+  }
+
+  .host {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -12px;
+    display: flex;
+    width: 24px;
+    height: 24px;
+    padding: 2px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 50%;
+    border: 1px solid var(---white, #fff);
+    background: var(--warning-500-base, #ffab08);
+  }
+
+  &:global(.default) {
+    width: 32px;
+    height: 32px;
+
+    .text {
+      font-size: 14px;
+    }
+  }
+
+  &:global(.large) {
+    display: flex;
+    width: 120px;
+    height: 120px;
+
+    .text {
+      font-size: 48px;
+    }
+  }
+}

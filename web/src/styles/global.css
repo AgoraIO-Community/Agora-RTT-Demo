@@ -1,0 +1,21 @@
+body {
+  font-family: "PingFang SC";
+  overflow: hidden;
+}
+
+#root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+svg {
+  cursor: pointer;
+}
+
+.disabled {
+  svg {
+    cursor: not-allowed;
+  }
+}

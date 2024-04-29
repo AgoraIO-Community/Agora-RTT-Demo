@@ -1,0 +1,55 @@
+{
+  "liveLanguage": "现场语言",
+  "translationLanguage": "翻译语言",
+  "storage": "存储",
+  "clearAll": "清除全部内容",
+  "analyze": "分析",
+  "analysisResult": "分析结果",
+  "prompt": "提示",
+  "conversationText": "对话文本",
+  "transcribing": "转写中",
+  "loadText": "加载文本",
+  "closeConversation": "结束对话",
+  "login": {
+    "join": "加入频道",
+    "title": "实时语音转文字"
+  },
+  "footer": {
+    "aIAssistant": "AI助手",
+    "langaugesSetting": "语言设置",
+    "conversationHistory": "对话记录",
+    "participantsList": "成员列表",
+    "muteAudio": "开启静音",
+    "unMuteAudio": "解除静音",
+    "muteVideo": "关闭视频",
+    "unMuteVideo": "开启视频",
+    "startCC": "开启字幕",
+    "stopCC": "关闭字幕",
+    "tipEnableSTTFirst": "请先在语言设置中启动语音转写",
+    "tipHostEnableCCFirst": "请主持人先在语言设置中启动语音转写",
+    "tipHostEnableCC": "只有主持人才能操作"
+  },
+  "setting": {
+    "sttStarted": "语音转文字已开始",
+    "sttStopped": "语音转文字已停止",
+    "sttStart": "开始语音转文字",
+    "sttStop": "停止语音转文字",
+    "limitDuration": "语音转文字默认限制时长10分钟",
+    "languagesSelect": "请选择现场语言和翻译语言",
+    "tip": "您最多可以选择两种语言，每个现场语言可最多对应五种翻译语言",
+    "liveLanguage": "现场语言",
+    "translationLanguageMax": "翻译语言最多可以选择5种"
+  },
+  "conversation": {
+    "sttStarted": "主持人已开启实时转写",
+    "sttStopped": "语言转文字服务未开启",
+    "onTrial": "试用中",
+    "extendExperience": "延长体验",
+    "extendExperienceText": "延长体验可延长使用10分钟",
+    "extendExperienceFreeText": "免费版语音转文字体验时长 10 分钟，当前已用完"
+  },
+  "ai": {
+    "selectPromptSample": "选择提示模板",
+    "selectConversation": "选择对话范例"
+  }
+}

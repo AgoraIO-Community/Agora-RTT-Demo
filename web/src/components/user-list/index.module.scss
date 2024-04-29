@@ -1,0 +1,45 @@
+.userList {
+  display: flex;
+  width: 200px;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  border-right: 1px solid #eaecf0;
+  background: #fff;
+  box-sizing: border-box;
+
+  .title {
+    display: flex;
+    padding: 12px;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+    border-bottom: 1px solid #eaecf0;
+    background: #fff;
+
+    .text {
+      color: #344054;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 150%;
+      letter-spacing: 0.449px;
+    }
+  }
+
+  .content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    .list {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      overflow-y: auto;
+    }
+  }
+}
