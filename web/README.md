@@ -12,13 +12,32 @@ npm install
 
 
 
+## Prepare
+
+* node version 18+ , 20+
+
+
+
 ## Config
 
-Find `.env`  file  and fill in the following parameters correctly
+See [Get Started with Agora](https://docs.agora.io/en/video-calling/reference/manage-agora-account?platform=web#get-started-with-agora) to learn how to get an App ID and App Certificate. (Certificate must be turned on)
 
-- See [Get Started with Agora](https://docs.agora.io/en/video-calling/reference/manage-agora-account?platform=web#get-started-with-agora) to learn how to get an App ID and App Certificate.
-- Activate RTM permissions in the console
-- Contact technical support to activate RTT permissions
+
+
+Activate RTM permissions in the console
+
+<img src="https://fullapp.oss-cn-beijing.aliyuncs.com/pic/rtm/39331715086073_.pic.jpg" style="zoom: 33%;" />
+
+
+
+Contact technical support to activate RTT permissions
+
+- You can get help from intelligent customer service or contact sales staff [Agora support](https://agora-ticket.agora.io/) 
+- Send an email to  [support@agora.io](mailto:support@agora.io)  for consultation
+
+
+
+Find `.env`  file  and fill in the following parameters correctly
 
 ```bash
 VITE_AGORA_APP_ID=<YOUR_APP_ID>
@@ -26,6 +45,8 @@ VITE_AGORA_APP_CERTIFICATE=<YOUR_APP_CERTIFICATE>
 VITE_AGORA_APP_KEY=<YOUR_APP_KEY>
 VITE_AGORA_APP_SECRET=<YOUR_APP_SECRET>
 ```
+
+
 
 
 
