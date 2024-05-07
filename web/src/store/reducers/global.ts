@@ -161,11 +161,14 @@ export const globalSlice = createSlice({
         state.sttTranslateTextMap[language] = []
       }
       const curLanguageTextList = state.sttTranslateTextMap[language]
-      const index = findLastIndex(state.sttTranscribeTextList, (item) => {
+      let index = findLastIndex(state.sttTranscribeTextList, (item) => {
         return item.userName === userName && item.time <= time
       })
+      const preIndex = finalManager.getIndex(language, userName)
+      index = index >= preIndex ? index : preIndex
       if (index >= 0) {
         curLanguageTextList[index] = text
+        finalManager.setIndex(language, userName, index)
       }
     },
     resetSttText: (state) => {
