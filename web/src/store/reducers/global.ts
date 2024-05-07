@@ -156,12 +156,14 @@ export const globalSlice = createSlice({
     },
     addSttTranslateText: (state, action: PayloadAction<{ language: string; text: IUiText }>) => {
       const { language, text } = action.payload
-      const { isFinal, userName } = text
+      const { isFinal, userName, time } = text
       if (!state.sttTranslateTextMap[language]) {
         state.sttTranslateTextMap[language] = []
       }
       const curLanguageTextList = state.sttTranslateTextMap[language]
-      const index = findLastIndex(state.sttTranscribeTextList, (item) => item.userName === userName)
+      const index = findLastIndex(state.sttTranscribeTextList, (item) => {
+        return item.userName === userName && item.time <= time
+      })
       if (index >= 0) {
         curLanguageTextList[index] = text
       }

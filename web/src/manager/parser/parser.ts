@@ -18,8 +18,7 @@ export class Parser extends AGEventEmitter<ParserEvents> {
     let isFinal = false
     const textItem: ITextItem = {} as ITextItem
     textItem.uid = uid
-    textItem.time = time + durationMs
-
+    textItem.time = textTs
     switch (dataType) {
       case "transcribe":
         words.forEach((word: any) => {
@@ -32,7 +31,7 @@ export class Parser extends AGEventEmitter<ParserEvents> {
         textItem.language = culture
         textItem.text = textStr
         textItem.isFinal = isFinal
-        console.log("[test] textstream transcribe textStr", textStr, uid, isFinal)
+        console.log("[test] textstream transcribe textStr", textstream)
         this.emit("textAdd", textItem)
         break
       case "translate":
@@ -47,7 +46,7 @@ export class Parser extends AGEventEmitter<ParserEvents> {
           textItem.language = transItem.lang
           textItem.isFinal = isFinal
           textItem.text = textStr
-          console.log("[test] textstream translate textStr", textStr, uid, isFinal)
+          console.log("[test] textstream translate textStr", textstream)
           this.emit("textAdd", textItem)
         })
         break
