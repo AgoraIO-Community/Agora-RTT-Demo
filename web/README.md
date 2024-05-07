@@ -2,16 +2,6 @@
 
 
 
-## Install
-
-In the project root path run the following command to install dependencies.
-
-```bash
-npm install 
-```
-
-
-
 ## Prepare
 
 * node version 18+ , 20+
@@ -46,6 +36,16 @@ VITE_AGORA_APP_ID=<YOUR_APP_ID>
 VITE_AGORA_APP_CERTIFICATE=<YOUR_APP_CERTIFICATE>
 VITE_AGORA_APP_KEY=<YOUR_APP_KEY>
 VITE_AGORA_APP_SECRET=<YOUR_APP_SECRET>
+```
+
+
+
+## Install
+
+In the project root path run the following command to install dependencies.
+
+```bash
+npm install 
 ```
 
 
