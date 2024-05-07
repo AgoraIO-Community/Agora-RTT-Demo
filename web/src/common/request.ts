@@ -49,13 +49,27 @@ export const apiSTTStartTranscription = async (options: {
 }): Promise<{ taskId: string }> => {
   const { channel, languages, token } = options
   const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/tasks?builderToken=${token}`
+  const subBotUid = "1000"
+  const pubBotUid = "2000"
+  const [subBotToken, pubBotToken] = await Promise.all([
+    apiGetAgoraToken({
+      uid: subBotUid,
+      channel,
+    }),
+    apiGetAgoraToken({
+      uid: pubBotUid,
+      channel,
+    }),
+  ])
   const body: any = {
     languages: languages.map((item) => item.source),
     maxIdleTime: 60,
     rtcConfig: {
       channelName: channel,
-      subBotUid: "1000",
-      pubBotUid: "2000",
+      subBotUid,
+      subBotToken,
+      pubBotUid,
+      pubBotToken,
     },
   }
   if (languages.find((item) => item.target.length)) {
@@ -64,7 +78,6 @@ export const apiSTTStartTranscription = async (options: {
       languages: languages.filter((item) => item.target.length),
     }
   }
-
   const res = await fetch(url, {
     method: "POST",
     headers: {

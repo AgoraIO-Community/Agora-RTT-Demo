@@ -1,7 +1,7 @@
-import { BaseRtmMessage, RtmMessageData, RtmMessageType } from "./types"
+import { BaseRtmMessage, RtmPresenceMessageData, RtmMessageType } from "./types"
 
 export class Message {
-  public static gen(msg: BaseRtmMessage): RtmMessageData[keyof RtmMessageData] {
+  public static gen(msg: BaseRtmMessage): RtmPresenceMessageData[keyof RtmPresenceMessageData] {
     const { type } = msg
 
     switch (type) {
