@@ -26,7 +26,9 @@ See [Get Started with Agora](https://docs.agora.io/en/video-calling/reference/ma
 
 Activate RTM permissions in the console
 
-<img src="https://fullapp.oss-cn-beijing.aliyuncs.com/pic/rtm/39331715086073_.pic.jpg" style="zoom: 33%;" />
+<img src=https://fullapp.oss-cn-beijing.aliyuncs.com/pic/rtm/39331715086073_.pic.jpg width=60% height=50% />
+
+
 
 
 
