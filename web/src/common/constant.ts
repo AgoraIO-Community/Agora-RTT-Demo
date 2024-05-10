@@ -23,7 +23,7 @@ if (MODE == "test") {
     { language: "Bengali(IN)", stt: "bn-IN" },
     { language: "Hebrew", stt: "he-IL	" },
     { language: "Dutch", stt: "nl-NL" },
-    { language: "Filipino", stt: "hfil-PH" },
+    { language: "Filipino", stt: "fil-PH" },
     { language: "Thai", stt: "th-TH" },
     { language: "Vietnamese", stt: "vi-VN" },
     { language: "Turkish", stt: "tr-TR" },
