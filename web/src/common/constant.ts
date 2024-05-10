@@ -11,29 +11,41 @@ if (MODE == "test") {
     { language: "Japanese (Japan)", stt: "ja-JP" },
     { language: "Spanish (Spain)", stt: "es-ES" },
     { language: "Turkish (Turkey)", stt: "tr-TR" },
-  ]
+  ].sort((a, b) => {
+    return a.language.localeCompare(b.language)
+  })
 } else {
   LANGUAGE_LIST = [
-    { language: "Chinese (Cantonese, Traditional)", stt: "zh-HK" },
-    { language: "Chinese (Mandarin, Simplified)", stt: "zh-CN" },
-    { language: "Chinese (Taiwanese Putonghua) ", stt: "zh-TW" },
-    { language: "English (US)", stt: "en-US" },
-    { language: "French (French)", stt: "fr-FR" },
-    { language: "German (Germany)", stt: "de-DE" },
-    { language: "hai (Thailand)", stt: "th-TH" },
-    { language: "Hindi (India)", stt: "hi-IN" },
-    { language: "Indonesian (Indonesia)", stt: "id-ID" },
-    { language: "Italian (Italy)", stt: "it-IT" },
-    { language: "Japanese (Japan)", stt: "ja-JP" },
-    { language: "Korean (South Korea)", stt: "ko-KR" },
-    { language: "Malay (Malaysia)", stt: "ms-MY" },
-    { language: "Persian (Iran)", stt: "fa-IR" },
-    { language: "Portuguese(Portugal)", stt: "pt-PT" },
-    { language: "Russian (Russia)", stt: "ru-RU" },
-    { language: "Spanish (Spain)", stt: "es-ES" },
-    { language: "Turkish (Turkey)", stt: "tr-TR" },
-    { language: "Vietnamese (Vietnam)", stt: "vi-VN" },
-  ]
+    { language: "Kannada", stt: "kn-IN" },
+    { language: "Gujarati", stt: "gu-IN" },
+    { language: "Telugu", stt: "te-IN" },
+    { language: "Tamil", stt: "ta-IN" },
+    { language: "Bengali(IN)", stt: "bn-IN" },
+    { language: "Hebrew", stt: "he-IL	" },
+    { language: "Dutch", stt: "nl-NL" },
+    { language: "Filipino", stt: "hfil-PH" },
+    { language: "Thai", stt: "th-TH" },
+    { language: "Vietnamese", stt: "vi-VN" },
+    { language: "Turkish", stt: "tr-TR" },
+    { language: "Russian", stt: "ru-RU" },
+    { language: "Malay", stt: "ms-MY" },
+    { language: "Persian", stt: "fa-IR" },
+    { language: "Chinese(HK)", stt: "zh-HK" },
+    { language: "Indonesian", stt: "id-ID" },
+    { language: "Chinese(TW)", stt: "zh-TW" },
+    { language: "English(US) 	", stt: "en-US" },
+    { language: "Hindi", stt: "hi-IN" },
+    { language: "Korean", stt: "ko-KR" },
+    { language: "Japanese", stt: "ja-JP" },
+    { language: "German", stt: "de-DE" },
+    { language: "Spanish", stt: "es-ES" },
+    { language: "French", stt: "fr-FR" },
+    { language: "Italian", stt: "it-IT" },
+    { language: "Chinese", stt: "zh-CN" },
+    { language: "Portuguese", stt: "pt-PT" },
+  ].sort((a, b) => {
+    return a.language.localeCompare(b.language)
+  })
 }
 
 export const TOAST_DURATION = 5

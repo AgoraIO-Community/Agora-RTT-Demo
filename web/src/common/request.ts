@@ -51,27 +51,36 @@ export const apiSTTStartTranscription = async (options: {
   const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/tasks?builderToken=${token}`
   const subBotUid = "1000"
   const pubBotUid = "2000"
-  const [subBotToken, pubBotToken] = await Promise.all([
-    apiGetAgoraToken({
-      uid: subBotUid,
-      channel,
-    }),
-    apiGetAgoraToken({
-      uid: pubBotUid,
-      channel,
-    }),
-  ])
+  let subBotToken = null
+  let pubBotToken = null
+  if (certificate) {
+    const data = await Promise.all([
+      apiGetAgoraToken({
+        uid: subBotUid,
+        channel,
+      }),
+      apiGetAgoraToken({
+        uid: pubBotUid,
+        channel,
+      }),
+    ])
+    subBotToken = data[0]
+    pubBotToken = data[1]
+  }
   const body: any = {
     languages: languages.map((item) => item.source),
     maxIdleTime: 60,
     rtcConfig: {
       channelName: channel,
       subBotUid,
-      subBotToken,
       pubBotUid,
-      pubBotToken,
     },
   }
+  if (subBotToken && pubBotToken) {
+    body.rtcConfig.subBotToken = subBotToken
+    body.rtcConfig.pubBotToken = pubBotToken
+  }
+
   if (languages.find((item) => item.target.length)) {
     body.translateConfig = {
       forceTranslateInterval: 2,

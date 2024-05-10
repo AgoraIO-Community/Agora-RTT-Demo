@@ -38,7 +38,6 @@ export class Parser extends AGEventEmitter<ParserEvents> {
         if (!trans?.length) {
           return
         }
-        // console.log("[test] textstream translate", textstream)
         trans.forEach((transItem: any) => {
           textStr = transItem.texts.join("")
           isFinal = !!transItem.isFinal
