@@ -34,7 +34,11 @@ const LoginPage = () => {
   }
 
   const onChangeUserName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserName(e.target.value)
+    let value = e.target.value
+    if (REGEX_SPECIAL_CHAR.test(value)) {
+      value = value.replace(REGEX_SPECIAL_CHAR, "")
+    }
+    setUserName(value)
   }
 
   const onLanguageChange = useCallback(

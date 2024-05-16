@@ -6,7 +6,7 @@ function _pad(num: number) {
   return num.toString().padStart(2, "0")
 }
 
-export const REGEX_SPECIAL_CHAR = /[^a-zA-Z0-9\s_]/g
+export const REGEX_SPECIAL_CHAR = /[^a-zA-Z0-9_]/g
 
 export const getDefaultLanguage = (): string => {
   if (navigator.language) {
