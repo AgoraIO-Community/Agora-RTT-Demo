@@ -17,6 +17,7 @@ export interface RtcEvents {
   localUserChanged: (tracks: IUserTracks) => void
   networkQuality: (quality: NetworkQuality) => void
   textAdd: (text: ITextItem) => void
+  textstreamReceived: (textstream: any) => void
 }
 
 export interface IUserTracks {

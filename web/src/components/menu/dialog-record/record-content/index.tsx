@@ -1,7 +1,7 @@
 import Avatar from "../../../avatar"
 import { RootState } from "@/store"
 import { formatTime2 } from "@/common"
-import { IChatItem } from "@/types"
+import { IChatItem, ITranslationItem } from "@/types"
 import { useSelector } from "react-redux"
 import { useMemo } from "react"
 
@@ -14,6 +14,7 @@ const RecordContent = () => {
   )
   const sttTranslateTextMap = useSelector((state: RootState) => state.global.sttTranslateTextMap)
   const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
+  const subtitles = useSelector((state: RootState) => state.global.sttSubtitles)
 
   const curTranslateLanguage = useMemo(() => {
     const target = captionLanguages.find((item) => item !== "live")
@@ -22,33 +23,57 @@ const RecordContent = () => {
 
   const chatList: IChatItem[] = useMemo(() => {
     const reslist: IChatItem[] = []
-    let targetList = []
-    if (dialogLanguageType == "live") {
-      targetList = sttTranscribeTextList
-    } else {
-      targetList = sttTranslateTextMap[curTranslateLanguage] || []
-    }
-
-    targetList.forEach((item) => {
-      if (item.isFinal) {
-        reslist.push({
-          userName: item.userName,
-          content: item.text,
-          time: item.time,
-        })
+    subtitles.forEach((el) => {
+      const chatItem: IChatItem = {
+        userName: el.username,
+        content: el.text,
+        translations: [],
+        startTextTs: el.startTextTs,
+        textTs: el.textTs,
+        time: el.startTextTs,
       }
+      el.translations?.forEach((tran) => {
+        const tranItem = { lang: tran.lang, text: tran.text }
+        chatItem.translations?.push(tranItem)
+      })
+      reslist.push(chatItem)
     })
-
+    console.log("[test] [record] list: ", reslist)
     return reslist.sort((a: IChatItem, b: IChatItem) => Number(a.time) - Number(b.time))
+    // return
+    // let targetList = []
+    // if (dialogLanguageType == "live") {
+    //   targetList = sttTranscribeTextList
+    // } else {
+    //   targetList = sttTranslateTextMap[curTranslateLanguage] || []
+    // }
+
+    // // const transMapItem = sttTranslateTextMap[curTranslateLanguage]
+    // // let translatioItem: ITranslationItem
+    // // translatioItem.language = curTranslateLanguage
+    // // translatioItem.
+    // // translatioItem[curTranslateLanguage] = curTranslateLanguage
+    // targetList.forEach((item) => {
+    //   if (item.isFinal) {
+    //     reslist.push({
+    //       userName: item.userName,
+    //       content: item.text,
+    //       translations: [], //[curTranslateLanguage: sttTranslateTextMap[curTranslateLanguage]],
+    //       time: item.time,
+    //     })
+    //   }
+    // })
+
+    // return reslist.sort((a: IChatItem, b: IChatItem) => Number(a.time) - Number(b.time))
   }, [dialogLanguageType, sttTranscribeTextList, sttTranslateTextMap, curTranslateLanguage])
 
   return (
     <section className={styles.record}>
       {chatList.map((item, index) => (
         <div key={index} className={styles.item}>
-          <div className={styles.left}>
+          {/* <div className={styles.left}>
             <Avatar userName={item.userName}></Avatar>
-          </div>
+          </div> */}
           <div className={styles.right}>
             <div className={styles.up}>
               <div className={styles.userName}>{item.userName}</div>
@@ -56,6 +81,13 @@ const RecordContent = () => {
             </div>
             <div className={styles.bottom}>
               <div className={styles.content}>{item.content}</div>
+              {item.translations?.map((tran, index) => (
+                <div className={styles.content}>
+                  {captionLanguages.includes(tran?.lang ?? "")
+                    ? "[" + tran?.lang + "] " + tran?.text
+                    : null}
+                </div>
+              ))}
             </div>
           </div>
         </div>

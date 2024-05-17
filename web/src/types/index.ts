@@ -25,9 +25,26 @@ export interface IRequestLanguages {
   target: string[]
 }
 
+// export interface ITranslationItem {
+//   language: string
+//   comtent: string
+// }
 export interface IChatItem {
   userName: string
   content: string
+  translations: [{ lang: string; text: string }?]
+  startTextTs: string | number
+  textTs: string | number
+  time: string | number
+}
+
+// Subtitle
+export interface ISubtitle {
+  userName: string
+  content: string
+  translations: [ITranslationItem?]
+  startTextTs: string | number
+  textTs: string | number
   time: string | number
 }
 
@@ -47,12 +64,17 @@ export interface IUiText {
   text: string
   time: number
   isFinal?: boolean
+  //
+  translation: [string: string]
+  startTextTs: number
+  textTs: number
 }
 
 export interface IUICaptionData {
   content: string
   translate?: string
   userName: string
+  translations?: [{ lang: string; text: string }?]
 }
 
 export interface IMessage {

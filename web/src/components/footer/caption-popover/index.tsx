@@ -62,7 +62,7 @@ const CaptionPopover = (props: ICaptionPopoverProps) => {
       languages.push(item.stt)
     }
     const translateArr = languages.filter((item) => item !== "live")
-    if (translateArr.length >= 2) {
+    if (translateArr.length >= 3) {
       const index = languages.findIndex((item) => item !== "live")
       languages.splice(index, 1)
     }

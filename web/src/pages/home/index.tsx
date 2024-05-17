@@ -8,6 +8,7 @@ import {
   IRtcUser,
   SttManager,
   ITextItem,
+  ITranslationItem
 } from "@/manager"
 import Header from "../../components/header"
 import Footer from "../../components/footer"
@@ -31,11 +32,13 @@ import {
   resetSttText,
   addMessage,
   setSttCountDown,
+  updateSubtitles,
 } from "@/store/reducers/global"
 import { useSelector, useDispatch } from "react-redux"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useLocation, useBeforeUnload } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+// import { ITextItem, ITranslationItem } from "../../manager/parser/types"
 
 import styles from "./index.module.scss"
 
@@ -72,6 +75,7 @@ const HomePage = () => {
   const [centerUserId, setCenterUserId] = useState(userInfo.userId)
   const [showExtendMessage, setShowExtendMessage] = useState(false)
   const { hostId, isHost } = useHost()
+  let subtitles = useSelector((state: RootState) => state.global.sttSubtitles)
 
   useEffect(() => {
     let timer: any
@@ -171,6 +175,7 @@ const HomePage = () => {
     window.rtcManager.on("localUserChanged", onLocalUserChanged)
     window.rtcManager.on("remoteUserChanged", onRemoteUserChanged)
     window.rtcManager.on("textAdd", onTextAdd)
+    window.rtcManager.on("textstreamReceived", onTextStreamReceived)
 
     return () => {
       window.rtmManager.off("userListChanged", onRtmUserListChanged)
@@ -180,6 +185,8 @@ const HomePage = () => {
       window.rtcManager.off("localUserChanged", onLocalUserChanged)
       window.rtcManager.off("remoteUserChanged", onRemoteUserChanged)
       window.rtcManager.off("textAdd", onTextAdd)
+      window.rtcManager.off("textstreamReceived", onTextStreamReceived)
+
     }
   }, [simpleUserMap])
 
@@ -287,6 +294,8 @@ const HomePage = () => {
   }
 
   const onTextAdd = (item: ITextItem) => {
+    console.log("[test] on test added.")
+    return
     const { dataType, uid, language, time, text, isFinal } = item
     const targetUser = simpleUserMap.get(Number(uid))
     const res: IUiText = {
@@ -302,6 +311,16 @@ const HomePage = () => {
       console.log("[test] translate onTextAdd", res)
       dispatch(addSttTranslateText({ language, text: res }))
     }
+    const transMap = useSelector((state: RootState) => state.global.sttTranslateTextMap)
+    console.log(transMap)
+  }
+
+  const onTextStreamReceived = (textstream: any) => {
+    console.log("[test] HomePage onTextStreamReceived: ", textstream)
+    // modify subtitle list
+    const targetUser = simpleUserMap.get(Number(textstream.uid))
+    dispatch(updateSubtitles({ textstream, username: targetUser?.userName || "" }))
+    // console.log("[test] Home subtitles: ", subtitles)
   }
 
   const onLanguagesChanged = (languages: STTLanguages) => {

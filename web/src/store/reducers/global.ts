@@ -33,6 +33,8 @@ export interface InitialState {
   sttTranscribeTextList: IUiText[]
   sttTranslateTextMap: Record<string, IUiText[]> // string is the language code
   captionLanguages: string[]
+  // 20240515
+  sttSubtitles: ITextItem[]
   // ------- UI state -------
   memberListShow: boolean
   dialogRecordShow: boolean
@@ -61,6 +63,7 @@ const getInitialState = (): InitialState => {
     captionShow: false,
     aiShow: false,
     captionLanguages: ["live"],
+    sttSubtitles: [],
     sttLanguages: {
       transcribe1: undefined,
       translate1: [],
@@ -174,6 +177,102 @@ export const globalSlice = createSlice({
         curLanguageTextList[index] = text
       }
     },
+    updateSubtitles: (state, action: PayloadAction<{ textstream: object; username: string }>) => {
+      const { payload } = action
+      const { textstream, username } = payload
+      console.log("[test] updateSubtitles payload: ", textstream)
+      let tempList: ITextItem[] = []
+      const { dataType, words, uid, culture, time, durationMs, textTs, trans } = textstream
+      switch (dataType) {
+        case "transcribe": {
+          console.log("[test] textstream transcribe textStr", textstream)
+          let textStr: string = ""
+          let isFinal = false
+          words.forEach((word: any) => {
+            textStr += word.text
+            if (word.isFinal) {
+              isFinal = true
+            }
+          })
+          const st = state.sttSubtitles.findLast((el) => {
+            const flag = el.uid == textstream.uid && !el.isFinal
+            return flag
+          })
+          console.log("[test] updateSubtitles: ", state.sttSubtitles)
+          if (undefined == st) {
+            const subtitle: ITextItem = {} as ITextItem
+            // subtitle.isTranslate = false
+            subtitle.dataType = "transcribe"
+            subtitle.uid = textstream.uid
+            subtitle.username = username
+            subtitle.language = textstream.culture
+            subtitle.text = textStr
+            subtitle.isFinal = isFinal
+            subtitle.time = textstream.time + textstream.durationMs
+            subtitle.startTextTs = textstream.textTs
+            subtitle.textTs = textstream.textTs
+            tempList = state.sttSubtitles
+            console.log("[test] transcribe received[new]:", subtitle)
+            const nextIndex = tempList.length
+            console.log("[test] updateSubtitles: tempList.length", nextIndex)
+            tempList[nextIndex] = subtitle
+            console.log("[test] transcribe received[new] tempList:", tempList)
+            console.log("[test] transcribe received[new] tempList[0]:", tempList[0])
+            // tempList.push(subtitle)
+            // state.sttSubtitles = tempList
+            // state.sttSubtitles.push(subtitle)
+          } else {
+            st.text = textStr
+            st.isFinal = isFinal
+            st.time = textstream.time + textstream.durationMs
+            st.textTs = textstream.textTs
+            // subtitles.push(st)
+            console.log("[test] transcribe received[update]:", st)
+          }
+          break
+        }
+        case "translate": {
+          // console.log("[test] subtitles: ", subtitles)
+          console.log("[test] textstream translate textStr", textstream)
+          const st = state.sttSubtitles.findLast((el) => {
+            const flag =
+              el.uid == textstream.uid &&
+              (textstream.textTs >= el.startTextTs || textstream.textTs <= el.textTs)
+            return flag
+          })
+          if (undefined == st) {
+            // console.log("[test] Can not find subtitle")
+            // callback(false, undefined)
+            return
+          }
+          // console.log("[test] select subtitle: ", st)
+          textstream.trans.forEach(
+            (transItem: { lang: string; texts: any[]; isFinal: boolean }) => {
+              // console.log("[test] transItem", transItem)
+              if (undefined == st.translations) {
+                // console.log("[test] init translations")
+                st.translations = []
+              }
+              const t = st.translations.findLast((el: ITranslationItem) => {
+                return el.lang == transItem.lang
+              })
+              if (undefined == t) {
+                console.log("[test] init translation: ", st.translations)
+                st.translations.push({ lang: transItem.lang, text: transItem.texts.join("") })
+              } else {
+                console.log("[test] update translation: ", st.translations)
+                t.text = transItem.texts.join("")
+              }
+            },
+          )
+        }
+      }
+      console.log("[test] updateSubtitles state.subtitles: ", state.sttSubtitles)
+      console.log(
+        "[test] updateSubtitles state.sttTranscribeTextList: ",
+        state.sttTranscribeTextList,
+      )
+    },
     resetSttText: (state) => {
       state.sttTranscribeTextList = []
       state.sttTranslateTextMap = {}
@@ -218,6 +317,7 @@ export const {
   setSttLanguages,
   addSttTranscribeText,
   addSttTranslateText,
+  updateSubtitles,
   resetSttText,
   removeMessage,
   addMessage,

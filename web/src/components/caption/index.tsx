@@ -22,50 +22,68 @@ const Caption = (props: ICaptionProps) => {
   const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
   const captionRef = useRef<HTMLDivElement>(null)
 
+  const subtitles = useSelector((state: RootState) => state.global.sttSubtitles)
+
   const captionList: IUICaptionData[] = useMemo(() => {
     const list: IUICaptionData[] = []
-    if (captionLanguages.includes("live")) {
-      const hasTranslate = captionLanguages.length > 1
-      if (!hasTranslate) {
-        sttTranscribeTextList.forEach((item: IUiText, index) => {
-          list.push({
-            content: item.text,
-            translate: "",
-            userName: item.userName,
-          })
-        })
-      } else {
-        const language = captionLanguages.filter((item) => item !== "live")[0]
-        const translateArr: IUiText[] = sttTranslateTextMap[language] || []
-        for (let i = 0; i < sttTranscribeTextList.length; i++) {
-          const transcribeItem = sttTranscribeTextList[i]
-          const translateItem = translateArr[i]
-          if (transcribeItem) {
-            list.push({
-              content: transcribeItem?.text ?? "",
-              translate: translateItem?.text ?? "",
-              userName: transcribeItem?.userName ?? "",
-            })
-          }
-        }
+    console.log("[test] [caption] captionLanguages: ", captionLanguages)
+    subtitles.forEach((el) => {
+      const captionData: IUICaptionData = {
+        userName: el.username,
+        content: el.text,
+        translations: [],
       }
-    } else {
-      captionLanguages.forEach((language: string, index) => {
-        const translateArr: IUiText[] = sttTranslateTextMap[language] || []
-        for (let i = 0; i < translateArr.length; i++) {
-          const item = translateArr[i]
-          if (item) {
-            list.push({
-              content: "",
-              translate: item?.text ?? "",
-              userName: item?.userName ?? "",
-            })
-          }
-        }
+      el.translations?.forEach((tran) => {
+        const tranItem = { lang: tran.lang, text: tran.text }
+        captionData.translations?.push(tranItem)
       })
-    }
+      list.push(captionData)
+    })
+    console.log("[test] [caption] list: ", list)
     return list
-  }, [captionLanguages, sttTranslateTextMap, sttTranscribeTextList])
+    // //
+    // if (captionLanguages.includes("live")) {
+    //   const hasTranslate = captionLanguages.length > 1
+    //   if (!hasTranslate) {
+    //     sttTranscribeTextList.forEach((item: IUiText, index) => {
+    //       list.push({
+    //         content: item.text,
+    //         translate: "",
+    //         userName: item.userName,
+    //       })
+    //     })
+    //   } else {
+    //     const language = captionLanguages.filter((item) => item !== "live")[0]
+    //     const translateArr: IUiText[] = sttTranslateTextMap[language] || []
+    //     for (let i = 0; i < sttTranscribeTextList.length; i++) {
+    //       const transcribeItem = sttTranscribeTextList[i]
+    //       const translateItem = translateArr[i]
+    //       if (transcribeItem) {
+    //         list.push({
+    //           content: transcribeItem?.text ?? "",
+    //           translate: translateItem?.text ?? "",
+    //           userName: transcribeItem?.userName ?? "",
+    //         })
+    //       }
+    //     }
+    //   }
+    // } else {
+    //   captionLanguages.forEach((language: string, index) => {
+    //     const translateArr: IUiText[] = sttTranslateTextMap[language] || []
+    //     for (let i = 0; i < translateArr.length; i++) {
+    //       const item = translateArr[i]
+    //       if (item) {
+    //         list.push({
+    //           content: "",
+    //           translate: item?.text ?? "",
+    //           userName: item?.userName ?? "",
+    //         })
+    //       }
+    //     }
+    //   })
+    // }
+    // return list
+  }, [captionLanguages, sttTranslateTextMap, sttTranscribeTextList, subtitles])
 
   const animate = () => {
     if (!captionRef.current) {
