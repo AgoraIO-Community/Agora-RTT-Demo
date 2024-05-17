@@ -180,7 +180,7 @@ export const globalSlice = createSlice({
     updateSubtitles: (state, action: PayloadAction<{ textstream: object; username: string }>) => {
       const { payload } = action
       const { textstream, username } = payload
-      console.log("[test] updateSubtitles payload: ", textstream)
+      // console.log("[test] updateSubtitles payload: ", textstream)
       let tempList: ITextItem[] = []
       const { dataType, words, uid, culture, time, durationMs, textTs, trans } = textstream
       switch (dataType) {
@@ -198,9 +198,9 @@ export const globalSlice = createSlice({
             const flag = el.uid == textstream.uid && !el.isFinal
             return flag
           })
-          console.log("[test] updateSubtitles: ", state.sttSubtitles)
+          // console.log("[test] updateSubtitles: ", state.sttSubtitles)
           if (undefined == st) {
-            const subtitle: ITextItem = {} as ITextItem
+            // const subtitle: ITextItem = {} as ITextItem
             // subtitle.isTranslate = false
             subtitle.dataType = "transcribe"
             subtitle.uid = textstream.uid
@@ -212,12 +212,12 @@ export const globalSlice = createSlice({
             subtitle.startTextTs = textstream.textTs
             subtitle.textTs = textstream.textTs
             tempList = state.sttSubtitles
-            console.log("[test] transcribe received[new]:", subtitle)
+            // console.log("[test] transcribe received[new]:", subtitle)
             const nextIndex = tempList.length
-            console.log("[test] updateSubtitles: tempList.length", nextIndex)
+            // console.log("[test] updateSubtitles: tempList.length", nextIndex)
             tempList[nextIndex] = subtitle
-            console.log("[test] transcribe received[new] tempList:", tempList)
-            console.log("[test] transcribe received[new] tempList[0]:", tempList[0])
+            // console.log("[test] transcribe received[new] tempList:", tempList)
+            // console.log("[test] transcribe received[new] tempList[0]:", tempList[0])
             // tempList.push(subtitle)
             // state.sttSubtitles = tempList
             // state.sttSubtitles.push(subtitle)
@@ -227,13 +227,13 @@ export const globalSlice = createSlice({
             st.time = textstream.time + textstream.durationMs
             st.textTs = textstream.textTs
             // subtitles.push(st)
-            console.log("[test] transcribe received[update]:", st)
+            // console.log("[test] transcribe received[update]:", st)
           }
           break
         }
         case "translate": {
           // console.log("[test] subtitles: ", subtitles)
-          console.log("[test] textstream translate textStr", textstream)
+          // console.log("[test] textstream translate textStr", textstream)
           const st = state.sttSubtitles.findLast((el) => {
             const flag =
               el.uid == textstream.uid &&
@@ -257,21 +257,21 @@ export const globalSlice = createSlice({
                 return el.lang == transItem.lang
               })
               if (undefined == t) {
-                console.log("[test] init translation: ", st.translations)
+                // console.log("[test] init translation: ", st.translations)
                 st.translations.push({ lang: transItem.lang, text: transItem.texts.join("") })
               } else {
-                console.log("[test] update translation: ", st.translations)
+                // console.log("[test] update translation: ", st.translations)
                 t.text = transItem.texts.join("")
               }
             },
           )
         }
       }
-      console.log("[test] updateSubtitles state.subtitles: ", state.sttSubtitles)
-      console.log(
-        "[test] updateSubtitles state.sttTranscribeTextList: ",
-        state.sttTranscribeTextList,
-      )
+      // console.log("[test] updateSubtitles state.subtitles: ", state.sttSubtitles)
+      // console.log(
+      //   "[test] updateSubtitles state.sttTranscribeTextList: ",
+      //   state.sttTranscribeTextList,
+      // )
     },
     resetSttText: (state) => {
       state.sttTranscribeTextList = []
