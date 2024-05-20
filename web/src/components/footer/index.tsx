@@ -36,6 +36,8 @@ interface IFooterProps {
   style?: React.CSSProperties
 }
 
+const showAI = !!import.meta.env.VITE_AGORA_GPT_URL
+
 const Footer = (props: IFooterProps) => {
   const { style } = props
   const nav = useNavigate()
@@ -167,10 +169,12 @@ const Footer = (props: IFooterProps) => {
           <span className={`${styles.text}`}>{t("footer.langaugesSetting")}</span>
         </span>
         {/* ai */}
-        <span className={styles.item} onClick={onClickAiShow}>
-          <AiIcon active={aiShow}></AiIcon>
-          <span className={styles.text}>{t("footer.aIAssistant")}</span>
-        </span>
+        {showAI ? (
+          <span className={styles.item} onClick={onClickAiShow}>
+            <AiIcon active={aiShow}></AiIcon>
+            <span className={styles.text}>{t("footer.aIAssistant")}</span>
+          </span>
+        ) : null}
       </section>
       <span className={styles.end} onClick={onClickEnd}>
         {t("closeConversation")}

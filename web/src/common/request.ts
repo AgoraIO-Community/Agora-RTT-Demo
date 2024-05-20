@@ -116,7 +116,10 @@ export const apiSTTStopTranscription = async (options: { taskId: string; token: 
 
 // --------------- gpt ----------------
 export const apiAiAnalysis = async (options: { system: string; userContent: string }) => {
-  const url = "https://stt-demo-offline.agora.io/agora-demo/gpt"
+  const url = import.meta.env.VITE_AGORA_GPT_URL
+  if (!url) {
+    throw new Error("VITE_AGORA_GPT_URL is not defined in env")
+  }
   const res = await fetch(url, {
     method: "POST",
     headers: {
