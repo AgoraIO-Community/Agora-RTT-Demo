@@ -34,6 +34,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
   const sttStatus = useSelector((state: RootState) => state.global.sttStatus)
   const globalOptions = useSelector((state: RootState) => state.global.options)
   const sttLanguages = useSelector((state: RootState) => state.global.sttLanguages)
+  const userInfo = useSelector((state: RootState) => state.global.userInfo)
   const { transcribe1, translate1 = [], transcribe2, translate2 = [] } = sttLanguages
   const { channel } = globalOptions
   const [sourceLanguage1, setSourceLanguage1] = useState(transcribe1)
@@ -91,6 +92,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
         await window.sttManager.startTranscription({
           channel,
           languages,
+          uid: userInfo.userId,
         })
         await Promise.all([
           window.rtmManager.updateLanguages(languages),

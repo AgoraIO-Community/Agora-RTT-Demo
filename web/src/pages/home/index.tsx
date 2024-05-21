@@ -52,7 +52,6 @@ let hostStartSTT = false
 const HomePage = () => {
   const dispatch = useDispatch()
   const nav = useNavigate()
-  const location = useLocation()
   const { t } = useTranslation()
   const isMounted = useMount()
   const { contextHolder } = useMessage()
