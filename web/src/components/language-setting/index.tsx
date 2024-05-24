@@ -134,7 +134,14 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
         <div className={styles.textTop}>{t("setting.languagesSelect")}</div>
         <div className={styles.textBottom}>{t("setting.tip")}</div>
         <div className={styles.section}>
-          <div className={styles.text}>{t("setting.liveLanguage")} 1</div>
+          <Space>
+            <div className={styles.text} style={{ width: 160 }}>
+              {t("setting.liveLanguage")} 1
+            </div>
+            <div className={styles.text}>
+              {t("setting.liveLanguage")} 1 - {t("translationLanguage")}
+            </div>
+          </Space>
           <div className={styles.selectWrapper}>
             <Space>
               <Select
@@ -172,7 +179,14 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
           </div>
         </div>
         <div className={styles.section}>
-          <div className={styles.text}>{t("setting.liveLanguage")} 2</div>
+          <Space>
+            <div className={styles.text} style={{ width: 160 }}>
+              {t("setting.liveLanguage")} 2
+            </div>
+            <div className={styles.text}>
+              {t("setting.liveLanguage")} 2 - {t("translationLanguage")}
+            </div>
+          </Space>
           <div className={styles.selectWrapper}>
             <Space>
               <Select

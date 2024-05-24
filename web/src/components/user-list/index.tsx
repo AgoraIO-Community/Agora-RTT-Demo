@@ -25,7 +25,7 @@ const UserList = (props: IUserListProps) => {
     <div className={styles.userList}>
       <div className={styles.title}>
         <span className={styles.text}>
-          {t("footer.participantsList")} ({data.length})
+          {t("footer.participantsList")} ({data.length + 1})
         </span>
         <CloseOutlined onClick={onClickClose} />
       </div>

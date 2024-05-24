@@ -25,10 +25,37 @@ export interface IRequestLanguages {
   target: string[]
 }
 
+export interface ITranslationItem {
+  lang: string
+  text: string
+}
+
+export interface ITextItem {
+  dataType: "transcribe" | "translate"
+  uid: string | number
+  time: number
+  text: string
+  isFinal: boolean
+  username: string
+  startTextTs: number // start time
+  textTs: number // end time
+  translations?: ITranslationItem[]
+}
+
 export interface IChatItem {
   userName: string
   content: string
+  translations: ITranslationItem[]
+  startTextTs: string | number
+  textTs: string | number
   time: string | number
+}
+
+export interface IUICaptionData {
+  content: string
+  translate?: string
+  userName: string
+  translations?: ITranslationItem[]
 }
 
 export interface STTLanguages {
@@ -41,19 +68,6 @@ export interface STTLanguages {
 export type STTStatus = "start" | "end"
 export type STTDataType = "transcribe" | "translate"
 export type DialogLanguageType = "live" | "translate"
-
-export interface IUiText {
-  userName: string
-  text: string
-  time: number
-  isFinal?: boolean
-}
-
-export interface IUICaptionData {
-  content: string
-  translate?: string
-  userName: string
-}
 
 export interface IMessage {
   key?: number

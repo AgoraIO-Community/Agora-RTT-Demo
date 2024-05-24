@@ -24,10 +24,6 @@ const DialogRecord = () => {
   const dialogLanguageType = useSelector((state: RootState) => state.global.dialogLanguageType)
   const sttLanguages = useSelector((state: RootState) => state.global.sttLanguages)
   const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
-  const sttTranscribeTextList = useSelector(
-    (state: RootState) => state.global.sttTranscribeTextList,
-  )
-  const sttTranslateTextMap = useSelector((state: RootState) => state.global.sttTranslateTextMap)
   const hostId = useSelector((state: RootState) => state.global.hostId)
   const userInfo = useSelector((state: RootState) => state.global.userInfo)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -49,13 +45,13 @@ const DialogRecord = () => {
 
   const onClickStorage = () => {
     let language = ""
-    let content = ""
+    const content = ""
     if (dialogLanguageType == "live") {
       language = sttLanguages.transcribe1 ?? ""
-      content = genContentText(sttTranscribeTextList)
+      // content = genContentText(sttTranscribeTextList)
     } else {
       language = captionLanguages.find((item) => item !== "live") || ""
-      content = genContentText(sttTranslateTextMap[language] || [])
+      // content = genContentText(sttTranslateTextMap[language] || [])
     }
     downloadText(`${channel}_${language}.txt`, content)
     message.success("storage success!")
@@ -91,11 +87,11 @@ const DialogRecord = () => {
         }}
       >
         <RecordContent></RecordContent>
-        {sttTranscribeTextList.length ? (
+        {/* {sttTranscribeTextList.length ? (
           <div className={styles.btnStorage} onClick={onClickStorage}>
             {t("storage")}
           </div>
-        ) : null}
+        ) : null} */}
       </section>
     </div>
   )

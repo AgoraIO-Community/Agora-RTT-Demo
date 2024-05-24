@@ -1,5 +1,5 @@
 import { useMount, useMessage, useHost } from "@/common"
-import { IUserInfo, IUserData, STTStatus, STTLanguages, IUiText } from "@/types"
+import { IUserInfo, IUserData, STTStatus, STTLanguages } from "@/types"
 import {
   RtcManager,
   RtmManager,
@@ -7,7 +7,7 @@ import {
   IUserTracks,
   IRtcUser,
   SttManager,
-  ITextItem,
+  ITextstream,
 } from "@/manager"
 import Header from "../../components/header"
 import Footer from "../../components/footer"
@@ -24,13 +24,11 @@ import {
   setLocalVideoMute,
   setSTTStatus,
   setSttLanguages,
-  addSttTranscribeText,
-  addSttTranslateText,
   reset,
   setCaptionShow,
-  resetSttText,
   addMessage,
   setSttCountDown,
+  updateSubtitles,
 } from "@/store/reducers/global"
 import { useSelector, useDispatch } from "react-redux"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -136,7 +134,6 @@ const HomePage = () => {
         dispatch(setCaptionShow(false))
         dispatch(addMessage({ content: t("setting.sttStopped"), type: "success" }))
       } else {
-        dispatch(resetSttText())
         setShowExtendMessage(false)
         dispatch(addMessage({ content: t("setting.sttStarted"), type: "success" }))
       }
@@ -169,7 +166,7 @@ const HomePage = () => {
     window.rtmManager.on("sttStatusChanged", onSTTStatusChanged)
     window.rtcManager.on("localUserChanged", onLocalUserChanged)
     window.rtcManager.on("remoteUserChanged", onRemoteUserChanged)
-    window.rtcManager.on("textAdd", onTextAdd)
+    window.rtcManager.on("textstreamReceived", onTextStreamReceived)
 
     return () => {
       window.rtmManager.off("userListChanged", onRtmUserListChanged)
@@ -178,7 +175,7 @@ const HomePage = () => {
       window.rtmManager.off("sttStatusChanged", onSTTStatusChanged)
       window.rtcManager.off("localUserChanged", onLocalUserChanged)
       window.rtcManager.off("remoteUserChanged", onRemoteUserChanged)
-      window.rtcManager.off("textAdd", onTextAdd)
+      window.rtcManager.off("textstreamReceived", onTextStreamReceived)
     }
   }, [simpleUserMap])
 
@@ -285,22 +282,11 @@ const HomePage = () => {
     dispatch(setSTTStatus(status))
   }
 
-  const onTextAdd = (item: ITextItem) => {
-    const { dataType, uid, language, time, text, isFinal } = item
-    const targetUser = simpleUserMap.get(Number(uid))
-    const res: IUiText = {
-      userName: targetUser?.userName || "",
-      text,
-      time,
-      isFinal,
-    }
-    if (dataType == "transcribe") {
-      console.log("[test] transcribe onTextAdd", res)
-      dispatch(addSttTranscribeText(res))
-    } else {
-      console.log("[test] translate onTextAdd", res)
-      dispatch(addSttTranslateText({ language, text: res }))
-    }
+  const onTextStreamReceived = (textstream: ITextstream) => {
+    console.log("[test] HomePage onTextStreamReceived: ", textstream)
+    // modify subtitle list
+    const targetUser = simpleUserMap.get(Number(textstream.uid))
+    dispatch(updateSubtitles({ textstream, username: targetUser?.userName || "" }))
   }
 
   const onLanguagesChanged = (languages: STTLanguages) => {

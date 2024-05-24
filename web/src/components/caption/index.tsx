@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from "react"
 import { getElementScrollY, getCaptionScrollPX } from "@/common"
 import CaptionItem from "./caption-item"
-import { IUICaptionData, IUiText } from "@/types"
+import { IUICaptionData } from "@/types"
 import { useSelector } from "react-redux"
 import { RootState } from "@/store"
 
@@ -14,58 +14,31 @@ interface ICaptionProps {
 
 const Caption = (props: ICaptionProps) => {
   const { visible } = props
-
-  const sttTranscribeTextList = useSelector(
-    (state: RootState) => state.global.sttTranscribeTextList,
-  )
-  const sttTranslateTextMap = useSelector((state: RootState) => state.global.sttTranslateTextMap)
   const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
   const captionRef = useRef<HTMLDivElement>(null)
+  const subtitles = useSelector((state: RootState) => state.global.sttSubtitles)
 
   const captionList: IUICaptionData[] = useMemo(() => {
     const list: IUICaptionData[] = []
-    if (captionLanguages.includes("live")) {
-      const hasTranslate = captionLanguages.length > 1
-      if (!hasTranslate) {
-        sttTranscribeTextList.forEach((item: IUiText, index) => {
-          list.push({
-            content: item.text,
-            translate: "",
-            userName: item.userName,
-          })
-        })
-      } else {
-        const language = captionLanguages.filter((item) => item !== "live")[0]
-        const translateArr: IUiText[] = sttTranslateTextMap[language] || []
-        for (let i = 0; i < sttTranscribeTextList.length; i++) {
-          const transcribeItem = sttTranscribeTextList[i]
-          const translateItem = translateArr[i]
-          if (transcribeItem) {
-            list.push({
-              content: transcribeItem?.text ?? "",
-              translate: translateItem?.text ?? "",
-              userName: transcribeItem?.userName ?? "",
-            })
-          }
-        }
+    subtitles.forEach((el) => {
+      const captionData: IUICaptionData = {
+        userName: el.username,
+        translations: [],
+        content: "",
       }
-    } else {
-      captionLanguages.forEach((language: string, index) => {
-        const translateArr: IUiText[] = sttTranslateTextMap[language] || []
-        for (let i = 0; i < translateArr.length; i++) {
-          const item = translateArr[i]
-          if (item) {
-            list.push({
-              content: "",
-              translate: item?.text ?? "",
-              userName: item?.userName ?? "",
-            })
-          }
+      if (captionLanguages.includes("live")) {
+        captionData.content = el.text
+      }
+      el.translations?.forEach((tran) => {
+        const tranItem = { lang: tran.lang, text: tran.text }
+        if (captionLanguages.includes(tran.lang)) {
+          captionData.translations?.push(tranItem)
         }
       })
-    }
+      list.push(captionData)
+    })
     return list
-  }, [captionLanguages, sttTranslateTextMap, sttTranscribeTextList])
+  }, [captionLanguages, subtitles])
 
   const animate = () => {
     if (!captionRef.current) {
