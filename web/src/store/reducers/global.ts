@@ -200,7 +200,7 @@ export const globalSlice = createSlice({
           })
           // console.log("[test] updateSubtitles: ", state.sttSubtitles)
           if (undefined == st) {
-            // const subtitle: ITextItem = {} as ITextItem
+            const subtitle: ITextItem = {} as ITextItem
             // subtitle.isTranslate = false
             subtitle.dataType = "transcribe"
             subtitle.uid = textstream.uid
