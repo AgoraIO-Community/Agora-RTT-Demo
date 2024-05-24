@@ -4,18 +4,17 @@ import { RootState } from "@/store"
 
 import styles from "./index.module.scss"
 
-
 interface ICaptionItemProps {
   data: IUICaptionData
 }
 
 const CaptionItem = (props: ICaptionItemProps) => {
   const { data } = props
-  const { userName, content, translate, translations } = data
+  const { userName, content, translations } = data
   const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
   return (
     <div className={styles.captionItem}>
-      <div className={styles.userName}>{userName}:</div>
+      {content || translations?.length ? <div className={styles.userName}>{userName}:</div> : null}
       {content ? <div className={styles.content}>{content}</div> : null}
       {translations?.map((item, index) => (
         <div className={styles.translate}>

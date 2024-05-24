@@ -5,8 +5,8 @@ import {
   STTStatus,
   STTLanguages,
   DialogLanguageType,
-  IUiText,
   IMessage,
+  ITextItem,
 } from "@/types"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import {
@@ -15,9 +15,8 @@ import {
   setUserInfoToLocal,
   setOptionsToLocal,
 } from "@/common/storage"
+import { ITextstream } from "@/manager"
 import { EXPERIENCE_DURATION } from "@/common/constant"
-import { finalManager } from "@/common"
-import { findLastIndex } from "lodash-es"
 
 export interface InitialState {
   // ------- user state -------
@@ -30,10 +29,7 @@ export interface InitialState {
   sttCountDown: number // ms
   sttLanguages: STTLanguages
   dialogLanguageType: DialogLanguageType
-  sttTranscribeTextList: IUiText[]
-  sttTranslateTextMap: Record<string, IUiText[]> // string is the language code
   captionLanguages: string[]
-  // 20240515
   sttSubtitles: ITextItem[]
   // ------- UI state -------
   memberListShow: boolean
@@ -55,8 +51,6 @@ const getInitialState = (): InitialState => {
     localVideoMute: true,
     localAudioMute: true,
     hostId: 0,
-    sttTranscribeTextList: [],
-    sttTranslateTextMap: {},
     sttCountDown: EXPERIENCE_DURATION,
     memberListShow: false,
     dialogRecordShow: false,
@@ -145,44 +139,13 @@ export const globalSlice = createSlice({
     setCaptionLanguages: (state, action: PayloadAction<string[]>) => {
       state.captionLanguages = action.payload
     },
-    addSttTranscribeText: (state, action: PayloadAction<IUiText>) => {
-      const { payload } = action
-      const { isFinal, userName } = payload
-      const curLanguageTextList = state.sttTranscribeTextList
-      const preIndex = finalManager.getIndex("live", userName)
-      let nextIndex = preIndex
-      if (curLanguageTextList[preIndex]?.isFinal) {
-        nextIndex = curLanguageTextList.length
-      }
-      curLanguageTextList[nextIndex] = payload
-      finalManager.setIndex("live", userName, nextIndex)
-    },
-    addSttTranslateText: (state, action: PayloadAction<{ language: string; text: IUiText }>) => {
-      const { language, text } = action.payload
-      const { isFinal, userName, time } = text
-      if (!state.sttTranslateTextMap[language]) {
-        state.sttTranslateTextMap[language] = []
-      }
-      const curLanguageTextList = state.sttTranslateTextMap[language]
-      let index = findLastIndex(state.sttTranscribeTextList, (item) => {
-        return item?.userName === userName && item.time == time
-      })
-      if (index < 0) {
-        index = findLastIndex(state.sttTranscribeTextList, (item) => {
-          return item?.userName === userName && item.time < time
-        })
-        index = index >= 0 ? index + 1 : -1
-      }
-      if (index >= 0) {
-        curLanguageTextList[index] = text
-      }
-    },
-    updateSubtitles: (state, action: PayloadAction<{ textstream: object; username: string }>) => {
+    updateSubtitles: (
+      state,
+      action: PayloadAction<{ textstream: ITextstream; username: string }>,
+    ) => {
       const { payload } = action
       const { textstream, username } = payload
-      // console.log("[test] updateSubtitles payload: ", textstream)
-      let tempList: ITextItem[] = []
-      const { dataType, words, uid, culture, time, durationMs, textTs, trans } = textstream
+      const { dataType, words } = textstream
       switch (dataType) {
         case "transcribe": {
           console.log("[test] textstream transcribe textStr", textstream)
@@ -195,88 +158,60 @@ export const globalSlice = createSlice({
             }
           })
           const st = state.sttSubtitles.findLast((el) => {
-            const flag = el.uid == textstream.uid && !el.isFinal
-            return flag
+            return el.uid == textstream.uid && !el.isFinal
           })
-          // console.log("[test] updateSubtitles: ", state.sttSubtitles)
-          if (undefined == st) {
-            // const subtitle: ITextItem = {} as ITextItem
-            // subtitle.isTranslate = false
-            subtitle.dataType = "transcribe"
-            subtitle.uid = textstream.uid
-            subtitle.username = username
-            subtitle.language = textstream.culture
-            subtitle.text = textStr
-            subtitle.isFinal = isFinal
-            subtitle.time = textstream.time + textstream.durationMs
-            subtitle.startTextTs = textstream.textTs
-            subtitle.textTs = textstream.textTs
-            tempList = state.sttSubtitles
-            // console.log("[test] transcribe received[new]:", subtitle)
+          if (!st) {
+            const subtitle: ITextItem = {
+              dataType: "transcribe",
+              uid: textstream.uid,
+              username,
+              text: textStr,
+              isFinal,
+              time: textstream.time + textstream.durationMs,
+              startTextTs: textstream.textTs,
+              textTs: textstream.textTs,
+            }
+            const tempList = state.sttSubtitles
             const nextIndex = tempList.length
-            // console.log("[test] updateSubtitles: tempList.length", nextIndex)
             tempList[nextIndex] = subtitle
-            // console.log("[test] transcribe received[new] tempList:", tempList)
-            // console.log("[test] transcribe received[new] tempList[0]:", tempList[0])
-            // tempList.push(subtitle)
-            // state.sttSubtitles = tempList
-            // state.sttSubtitles.push(subtitle)
           } else {
             st.text = textStr
             st.isFinal = isFinal
             st.time = textstream.time + textstream.durationMs
             st.textTs = textstream.textTs
-            // subtitles.push(st)
-            // console.log("[test] transcribe received[update]:", st)
+            // state.sttSubtitles.push(st)
           }
           break
         }
         case "translate": {
-          // console.log("[test] subtitles: ", subtitles)
-          // console.log("[test] textstream translate textStr", textstream)
           const st = state.sttSubtitles.findLast((el) => {
             const flag =
               el.uid == textstream.uid &&
               (textstream.textTs >= el.startTextTs || textstream.textTs <= el.textTs)
             return flag
           })
-          if (undefined == st) {
-            // console.log("[test] Can not find subtitle")
-            // callback(false, undefined)
+          if (!st) {
             return
           }
-          // console.log("[test] select subtitle: ", st)
-          textstream.trans.forEach(
+          textstream.trans?.forEach(
             (transItem: { lang: string; texts: any[]; isFinal: boolean }) => {
               // console.log("[test] transItem", transItem)
               if (undefined == st.translations) {
                 // console.log("[test] init translations")
                 st.translations = []
               }
-              const t = st.translations.findLast((el: ITranslationItem) => {
+              const t = st.translations.findLast((el) => {
                 return el.lang == transItem.lang
               })
               if (undefined == t) {
-                // console.log("[test] init translation: ", st.translations)
                 st.translations.push({ lang: transItem.lang, text: transItem.texts.join("") })
               } else {
-                // console.log("[test] update translation: ", st.translations)
                 t.text = transItem.texts.join("")
               }
             },
           )
         }
       }
-      // console.log("[test] updateSubtitles state.subtitles: ", state.sttSubtitles)
-      // console.log(
-      //   "[test] updateSubtitles state.sttTranscribeTextList: ",
-      //   state.sttTranscribeTextList,
-      // )
-    },
-    resetSttText: (state) => {
-      state.sttTranscribeTextList = []
-      state.sttTranslateTextMap = {}
-      finalManager.reset()
     },
     addMessage: (state, action: PayloadAction<IMessage>) => {
       state.messageList.push({
@@ -291,7 +226,6 @@ export const globalSlice = createSlice({
       }
     },
     reset: (state) => {
-      finalManager.reset()
       Object.assign(state, getInitialState())
     },
   },
@@ -315,10 +249,7 @@ export const {
   setDialogLanguageType,
   setCaptionLanguages,
   setSttLanguages,
-  addSttTranscribeText,
-  addSttTranslateText,
   updateSubtitles,
-  resetSttText,
   removeMessage,
   addMessage,
   reset,

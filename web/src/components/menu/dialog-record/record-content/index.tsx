@@ -9,10 +9,6 @@ import styles from "./index.module.scss"
 
 const RecordContent = () => {
   const dialogLanguageType = useSelector((state: RootState) => state.global.dialogLanguageType)
-  const sttTranscribeTextList = useSelector(
-    (state: RootState) => state.global.sttTranscribeTextList,
-  )
-  const sttTranslateTextMap = useSelector((state: RootState) => state.global.sttTranslateTextMap)
   const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
   const subtitles = useSelector((state: RootState) => state.global.sttSubtitles)
 
@@ -40,32 +36,7 @@ const RecordContent = () => {
     })
     console.log("[test] [record] list: ", reslist)
     return reslist.sort((a: IChatItem, b: IChatItem) => Number(a.time) - Number(b.time))
-    // return
-    // let targetList = []
-    // if (dialogLanguageType == "live") {
-    //   targetList = sttTranscribeTextList
-    // } else {
-    //   targetList = sttTranslateTextMap[curTranslateLanguage] || []
-    // }
-
-    // // const transMapItem = sttTranslateTextMap[curTranslateLanguage]
-    // // let translatioItem: ITranslationItem
-    // // translatioItem.language = curTranslateLanguage
-    // // translatioItem.
-    // // translatioItem[curTranslateLanguage] = curTranslateLanguage
-    // targetList.forEach((item) => {
-    //   if (item.isFinal) {
-    //     reslist.push({
-    //       userName: item.userName,
-    //       content: item.text,
-    //       translations: [], //[curTranslateLanguage: sttTranslateTextMap[curTranslateLanguage]],
-    //       time: item.time,
-    //     })
-    //   }
-    // })
-
-    // return reslist.sort((a: IChatItem, b: IChatItem) => Number(a.time) - Number(b.time))
-  }, [dialogLanguageType, sttTranscribeTextList, sttTranslateTextMap, curTranslateLanguage])
+  }, [dialogLanguageType, curTranslateLanguage])
 
   return (
     <section className={styles.record}>

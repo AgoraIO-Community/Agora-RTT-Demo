@@ -1,4 +1,3 @@
-import { IUiText } from "@/types"
 import { getUserInfoFromLocal } from "./storage"
 import { CAPTION_SCROLL_PX_LIST } from "./constant"
 
@@ -74,7 +73,8 @@ export const downloadText = (name: string, text: string) => {
   link.click()
 }
 
-export const genContentText = (list: IUiText[]) => {
+// TODO:genContentText
+export const genContentText = (list: any[]) => {
   let res = ""
   list.forEach((item) => {
     res += `${item.userName}: ${item.text}\n`
