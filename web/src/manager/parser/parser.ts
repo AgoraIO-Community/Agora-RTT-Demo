@@ -13,10 +13,7 @@ export class Parser extends AGEventEmitter<ParserEvents> {
     if (!textstream) {
       return console.warn("Prase data failed.")
     }
-    // const { dataType, words, uid, culture, time, durationMs, textTs, trans } = textstream
-
     console.log("[test] textstream praseData", textstream)
-
     this.emit("textstreamReceived", textstream)
   }
 }

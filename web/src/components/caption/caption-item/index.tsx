@@ -11,16 +11,13 @@ interface ICaptionItemProps {
 const CaptionItem = (props: ICaptionItemProps) => {
   const { data } = props
   const { userName, content, translations } = data
-  const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
   return (
     <div className={styles.captionItem}>
       {content || translations?.length ? <div className={styles.userName}>{userName}:</div> : null}
       {content ? <div className={styles.content}>{content}</div> : null}
       {translations?.map((item, index) => (
-        <div className={styles.translate}>
-          {captionLanguages.includes(item?.lang ?? "")
-            ? "[" + item?.lang + "] " + item?.text
-            : null}
+        <div className={styles.translate} key={index}>
+          {"[" + item?.lang + "] " + item?.text}
         </div>
       ))}
     </div>

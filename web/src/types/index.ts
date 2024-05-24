@@ -37,8 +37,8 @@ export interface ITextItem {
   text: string
   isFinal: boolean
   username: string
-  startTextTs: number
-  textTs: number
+  startTextTs: number // start time
+  textTs: number // end time
   translations?: ITranslationItem[]
 }
 

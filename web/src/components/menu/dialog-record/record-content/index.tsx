@@ -29,8 +29,10 @@ const RecordContent = () => {
         time: el.startTextTs,
       }
       el.translations?.forEach((tran) => {
-        const tranItem = { lang: tran.lang, text: tran.text }
-        chatItem.translations?.push(tranItem)
+        if (captionLanguages.includes(tran.lang)) {
+          const tranItem = { lang: tran.lang, text: tran.text }
+          chatItem.translations?.push(tranItem)
+        }
       })
       reslist.push(chatItem)
     })
@@ -53,10 +55,8 @@ const RecordContent = () => {
             <div className={styles.bottom}>
               <div className={styles.content}>{item.content}</div>
               {item.translations?.map((tran, index) => (
-                <div className={styles.content}>
-                  {captionLanguages.includes(tran?.lang ?? "")
-                    ? "[" + tran?.lang + "] " + tran?.text
-                    : null}
+                <div className={styles.content} key={index}>
+                  {"[" + tran?.lang + "] " + tran?.text}
                 </div>
               ))}
             </div>

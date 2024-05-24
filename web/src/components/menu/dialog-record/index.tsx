@@ -45,7 +45,6 @@ const DialogRecord = () => {
 
   const onClickStorage = () => {
     let language = ""
-    // TODO: get content
     const content = ""
     if (dialogLanguageType == "live") {
       language = sttLanguages.transcribe1 ?? ""

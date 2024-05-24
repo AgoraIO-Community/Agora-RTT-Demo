@@ -179,31 +179,28 @@ export const globalSlice = createSlice({
             st.isFinal = isFinal
             st.time = textstream.time + textstream.durationMs
             st.textTs = textstream.textTs
-            // state.sttSubtitles.push(st)
           }
           break
         }
         case "translate": {
           const st = state.sttSubtitles.findLast((el) => {
-            const flag =
+            return (
               el.uid == textstream.uid &&
               (textstream.textTs >= el.startTextTs || textstream.textTs <= el.textTs)
-            return flag
+            )
           })
           if (!st) {
             return
           }
           textstream.trans?.forEach(
             (transItem: { lang: string; texts: any[]; isFinal: boolean }) => {
-              // console.log("[test] transItem", transItem)
-              if (undefined == st.translations) {
-                // console.log("[test] init translations")
+              if (!st.translations) {
                 st.translations = []
               }
               const t = st.translations.findLast((el) => {
                 return el.lang == transItem.lang
               })
-              if (undefined == t) {
+              if (!t) {
                 st.translations.push({ lang: transItem.lang, text: transItem.texts.join("") })
               } else {
                 t.text = transItem.texts.join("")
