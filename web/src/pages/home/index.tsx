@@ -283,7 +283,6 @@ const HomePage = () => {
   }
 
   const onTextStreamReceived = (textstream: ITextstream) => {
-    console.log("[test] HomePage onTextStreamReceived: ", textstream)
     // modify subtitle list
     const targetUser = simpleUserMap.get(Number(textstream.uid))
     dispatch(updateSubtitles({ textstream, username: targetUser?.userName || "" }))

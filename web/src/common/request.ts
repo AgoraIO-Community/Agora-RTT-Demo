@@ -12,6 +12,9 @@ let agoraToken = ""
 let genTokenTime = 0
 
 export async function apiGetAgoraToken(config: { uid: string | number; channel: string }) {
+  if (!appCertificate) {
+    return null
+  }
   const { uid, channel } = config
   const url = `${BASE_URL}/v2/token/generate`
   const data = {
