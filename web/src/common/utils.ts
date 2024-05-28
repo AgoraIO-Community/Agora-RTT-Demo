@@ -37,15 +37,17 @@ export const isLogin = () => {
   return !!userInfo.userId
 }
 
+// seconds s
+// return mm:ss
 export const formatTime = (seconds: number) => {
-  // const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
+  const minutes = Math.floor(seconds / 60)
   const remainingSeconds = seconds % 60
-  // ${_pad(hours)}
 
   return `${_pad(minutes)}:${_pad(remainingSeconds)}`
 }
 
+// ms
+// return hh:mm:ss
 export const formatTime2 = (ms: number | string) => {
   const date = new Date(Number(ms))
   const hours = date.getHours()

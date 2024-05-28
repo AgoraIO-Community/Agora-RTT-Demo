@@ -51,5 +51,8 @@
   "ai": {
     "selectPromptSample": "选择提示模板",
     "selectConversation": "选择对话范例"
+  },
+  "message": {
+    "extendExperience": "延长体验时间成功"
   }
 }
