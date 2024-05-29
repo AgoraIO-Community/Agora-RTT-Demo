@@ -93,21 +93,21 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
   async updateLanguages(languages: ILanguageItem[]) {
     const message: {
       transcribe1: string
-      translate1: string[]
+      translate1List: string[]
       transcribe2: string
-      translate2: string[]
+      translate2List: string[]
     } = {
       transcribe1: "",
-      translate1: [],
+      translate1List: [],
       transcribe2: "",
-      translate2: [],
+      translate2List: [],
     }
     const language1 = languages[0]
     if (language1.source) {
       message.transcribe1 = language1.source
     }
     if (language1.target) {
-      message.translate1.push(...language1.target)
+      message.translate1List.push(...language1.target)
     }
     const language2 = languages[1]
     if (language2) {
@@ -115,7 +115,7 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
         message.transcribe2 = language2.source
       }
       if (language2.target) {
-        message.translate2.push(...language2.target)
+        message.translate2List.push(...language2.target)
       }
     }
     return await this._setChannelMetadata(message)
@@ -260,7 +260,7 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
   }
 
   private _dealStorageDataChanged(metadata: any) {
-    const { hostId, transcribe1, translate1, transcribe2, translate2, sttStatus } = metadata
+    const { hostId, transcribe1, translate1List, transcribe2, translate2List, sttStatus } = metadata
     if (hostId?.value) {
       const hostIdValue = JSON.parse(hostId.value)
       this.emit("hostChanged", hostIdValue)
@@ -268,14 +268,14 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     }
     if (transcribe1?.value) {
       const parseTranscribe1 = JSON.parse(transcribe1.value)
-      const parseTranslate1 = JSON.parse(translate1.value)
+      const parseTranslate1 = JSON.parse(translate1List.value)
       const parseTranscribe2 = JSON.parse(transcribe2.value)
-      const parseTranslate2 = JSON.parse(translate2.value)
+      const parseTranslate2 = JSON.parse(translate2List.value)
       this.emit("languagesChanged", {
         transcribe1: parseTranscribe1,
-        translate1: parseTranslate1,
+        translate1List: parseTranslate1,
         transcribe2: parseTranscribe2,
-        translate2: parseTranslate2,
+        translate2List: parseTranslate2,
       })
     }
     if (sttStatus?.value) {

@@ -8,7 +8,7 @@ import {
   AiIcon,
   ArrowUpIcon,
 } from "../icons"
-import { useHost } from "@/common"
+import { useHost, showAIModule } from "@/common"
 import { useSelector, useDispatch } from "react-redux"
 import {
   setUserInfo,
@@ -34,8 +34,6 @@ import styles from "./index.module.scss"
 interface IFooterProps {
   style?: React.CSSProperties
 }
-
-const showAI = !!import.meta.env.VITE_AGORA_GPT_URL
 
 const Footer = (props: IFooterProps) => {
   const { style } = props
@@ -111,7 +109,7 @@ const Footer = (props: IFooterProps) => {
     setShowLanguageSetting(!showLanguageSetting)
   }
 
-  const toggleDialogSelect = () => {}
+  const toggleDialogSelect = () => { }
 
   const onClickEnd = () => {
     nav("/")
@@ -163,7 +161,7 @@ const Footer = (props: IFooterProps) => {
           <span className={`${styles.text}`}>{t("footer.langaugesSetting")}</span>
         </span>
         {/* ai */}
-        {showAI ? (
+        {showAIModule() ? (
           <span className={styles.item} onClick={onClickAiShow}>
             <AiIcon active={aiShow}></AiIcon>
             <span className={styles.text}>{t("footer.aIAssistant")}</span>

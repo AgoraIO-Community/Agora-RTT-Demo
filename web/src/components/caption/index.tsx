@@ -50,7 +50,6 @@ const Caption = (props: ICaptionProps) => {
       const curScrollTop = captionRef.current.scrollTop ?? 0
       const val = getCaptionScrollPX(curScrollY)
       captionRef.current.scrollTop = curScrollTop + val
-      console.log("[test] scroll", val)
     }
   }
 

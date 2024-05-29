@@ -3,7 +3,7 @@ import {
   IOptions,
   MenuType,
   STTStatus,
-  STTLanguages,
+  ILanguageSelect,
   DialogLanguageType,
   IMessage,
   ITextItem,
@@ -27,8 +27,9 @@ export interface InitialState {
   localAudioMute: boolean
   sttStatus: STTStatus
   sttCountDown: number // ms
-  sttLanguages: STTLanguages
   captionLanguages: string[]
+  captionLanguageSelect: ILanguageSelect
+  recordLanguageSelect: ILanguageSelect
   sttSubtitles: ITextItem[]
   // ------- UI state -------
   memberListShow: boolean
@@ -41,6 +42,15 @@ export interface InitialState {
     height: number
   }
   messageList: IMessage[]
+}
+
+const getDefaultLanguageSelect = (): ILanguageSelect => {
+  return {
+    transcribe1: undefined,
+    translate1List: [],
+    transcribe2: undefined,
+    translate2List: [],
+  }
 }
 
 const getInitialState = (): InitialState => {
@@ -57,12 +67,8 @@ const getInitialState = (): InitialState => {
     aiShow: false,
     captionLanguages: ["live"],
     sttSubtitles: [],
-    sttLanguages: {
-      transcribe1: undefined,
-      translate1: [],
-      transcribe2: undefined,
-      translate2: [],
-    },
+    captionLanguageSelect: getDefaultLanguageSelect(),
+    recordLanguageSelect: getDefaultLanguageSelect(),
     menuList: [],
     sttStatus: "end",
     page: {
@@ -128,8 +134,11 @@ export const globalSlice = createSlice({
     setSttCountDown: (state, action: PayloadAction<number>) => {
       state.sttCountDown = action.payload
     },
-    setSttLanguages: (state, action: PayloadAction<STTLanguages>) => {
-      state.sttLanguages = action.payload
+    setCaptionLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
+      state.captionLanguageSelect = action.payload
+    },
+    setRecordLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
+      state.recordLanguageSelect = action.payload
     },
     setCaptionLanguages: (state, action: PayloadAction<string[]>) => {
       state.captionLanguages = action.payload
@@ -239,7 +248,8 @@ export const {
   setSTTStatus,
   setSttCountDown,
   setCaptionLanguages,
-  setSttLanguages,
+  setCaptionLanguageSelect,
+  setRecordLanguageSelect,
   updateSubtitles,
   removeMessage,
   addMessage,

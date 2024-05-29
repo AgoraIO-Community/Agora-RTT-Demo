@@ -1,9 +1,12 @@
 import { getUserInfoFromLocal } from "./storage"
 import { CAPTION_SCROLL_PX_LIST } from "./constant"
+import { ITextItem } from "@/types"
 
 function _pad(num: number) {
   return num.toString().padStart(2, "0")
 }
+
+const _GPT_URL = import.meta.env.VITE_AGORA_GPT_URL
 
 export const REGEX_SPECIAL_CHAR = /[^a-zA-Z0-9_]/g
 
@@ -74,10 +77,10 @@ export const downloadText = (name: string, text: string) => {
 }
 
 // TODO:genContentText
-export const genContentText = (list: any[]) => {
+export const genContentText = (list: ITextItem[]) => {
   let res = ""
   list.forEach((item) => {
-    res += `${item.userName}: ${item.text}\n`
+    res += `${item.username}: ${item.text}\n`
   })
   return res
 }
@@ -109,4 +112,13 @@ export const genUUID = () => {
     const v = c == "x" ? r : (r & 0x3) | 0x8
     return v.toString(16)
   })
+}
+
+export const showAIModule = () => {
+  return !!_GPT_URL
+}
+
+// example: isArabic("ar-EG") => true
+export const isArabic = (lang: string) => {
+  return lang.includes("ar-")
 }

@@ -1,6 +1,6 @@
 .menu {
   position: relative;
-  width: 368px;
+  width: 400px;
   height: 100%;
   gap: 10px;
   flex-shrink: 0;
@@ -19,9 +19,5 @@
     cursor: col-resize;
   }
 
-  .content {
-    position: relative;
-    width: 100%;
-    height: calc(100% - 40px);
-  }
+
 }

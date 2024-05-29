@@ -9,7 +9,7 @@
   bottom: 0;
   overflow-y: auto;
 
-  .item + .item {
+  .item+.item {
     margin-top: 12px;
   }
 
@@ -18,8 +18,7 @@
     flex-direction: row;
     align-items: flex-start;
 
-    .left {
-    }
+    .left {}
 
     .right {
       margin-left: 12px;
@@ -49,12 +48,8 @@
       }
 
       .bottom {
-        margin-right: 4px;
-        margin-top: 4px;
-        background-color: var(--blue_0, #f4f8ff);
-        padding: 4px 12px;
+        margin-top: 8px;
         box-sizing: border-box;
-        border-radius: 6px;
 
         .content {
           color: var(--Grey-800, #344054);
@@ -62,6 +57,26 @@
           font-weight: 400;
           line-height: 150%;
         }
+
+        .translate {
+          margin-top: 8px;
+          color: var(--Grey-800, #344054);
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 150%;
+          width: 100%;
+          box-sizing: border-box;
+
+          .bold {
+            font-weight: 600;
+          }
+
+          .arabic{
+            direction: rtl;
+          }
+
+        }
+
       }
     }
   }

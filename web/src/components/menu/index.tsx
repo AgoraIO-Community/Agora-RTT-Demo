@@ -1,23 +1,23 @@
 import { useRef, useMemo, useEffect, useState } from "react"
 import MenuTitle from "./menu-title"
+import MenuContent from "./menu-content"
 import { RootState } from "@/store"
 import { useSelector } from "react-redux"
-import AiAssistant from "./ai-assistant"
-import DialogRecord from "./dialog-record"
 
 import styles from "./index.module.scss"
 
-const MIN_WIDTH = 368
-let menuWidth = MIN_WIDTH
+let menuWidth = 0
 let startX = 0
 let isDragging = false
 
 const Menu = () => {
-  const menuList = useSelector((state: RootState) => state.global.menuList)
   const memberListShow = useSelector((state: RootState) => state.global.memberListShow)
-  const activeType = menuList[0]
   const borderLeftRef = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  const menuInitWith = useMemo(() => {
+    return menuRef.current?.offsetWidth ?? 0
+  }, [menuRef.current])
 
   const MAX_WIDTH = useMemo(() => {
     const MEMBER_LIST_WIDTH = 200
@@ -49,6 +49,7 @@ const Menu = () => {
 
   const handleMouseMove = (e: MouseEvent) => {
     if (isDragging) {
+      const MIN_WIDTH = menuInitWith
       const diff = startX - e.clientX
       let newMenuWidth = menuWidth + diff
       if (newMenuWidth > MAX_WIDTH) {
@@ -68,9 +69,7 @@ const Menu = () => {
     <div className={styles.menu} ref={menuRef}>
       <div className={styles.borderLeft} ref={borderLeftRef}></div>
       <MenuTitle></MenuTitle>
-      <div className={styles.content}>
-        {activeType === "AI" ? <AiAssistant></AiAssistant> : <DialogRecord></DialogRecord>}
-      </div>
+      <MenuContent></MenuContent>
     </div>
   )
 }

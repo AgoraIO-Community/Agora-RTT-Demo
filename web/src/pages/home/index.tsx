@@ -1,5 +1,5 @@
 import { useMount, useMessage, useHost } from "@/common"
-import { IUserInfo, IUserData, STTStatus, STTLanguages } from "@/types"
+import { IUserInfo, IUserData, STTStatus, ILanguageSelect } from "@/types"
 import {
   RtcManager,
   RtmManager,
@@ -23,7 +23,7 @@ import {
   setLocalAudioMute,
   setLocalVideoMute,
   setSTTStatus,
-  setSttLanguages,
+  setCaptionLanguageSelect,
   reset,
   setCaptionShow,
   addMessage,
@@ -288,9 +288,9 @@ const HomePage = () => {
     dispatch(updateSubtitles({ textstream, username: targetUser?.userName || "" }))
   }
 
-  const onLanguagesChanged = (languages: STTLanguages) => {
+  const onLanguagesChanged = (languages: ILanguageSelect) => {
     console.log("[test] onLanguagesChanged", languages)
-    dispatch(setSttLanguages(languages))
+    dispatch(setCaptionLanguageSelect(languages))
   }
 
   const onClickUserListItem = (data: IUserData) => {

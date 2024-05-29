@@ -1,4 +1,4 @@
-import { STTLanguages, STTStatus } from "@/types"
+import { ILanguageSelect, STTStatus } from "@/types"
 import { RTMEvents } from "agora-rtm"
 
 export interface ISimpleUserInfo {
@@ -18,7 +18,7 @@ export interface RtmEvents {
       | RTMEvents.StreamChannelConnectionStatusChangeEvent,
   ) => void
   userListChanged: (userList: ISimpleUserInfo[]) => void
-  languagesChanged: (languages: STTLanguages) => void
+  languagesChanged: (languages: ILanguageSelect) => void
   sttStatusChanged: (status: STTStatus) => void
   hostChanged: (hostId: string) => void
 }
