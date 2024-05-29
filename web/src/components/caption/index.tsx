@@ -17,7 +17,6 @@ const Caption = (props: ICaptionProps) => {
   const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
   const captionRef = useRef<HTMLDivElement>(null)
   const subtitles = useSelector((state: RootState) => state.global.sttSubtitles)
-  // const [scrollY, setScrollY] = useState(0)
 
   const captionList: IUICaptionData[] = useMemo(() => {
     const list: IUICaptionData[] = []
@@ -48,10 +47,10 @@ const Caption = (props: ICaptionProps) => {
     const curScrollY = getElementScrollY(captionRef.current)
     if (curScrollY > 0) {
       // TODO: use transformY instead of scrollTop
-      // setScrollY(curScrollY)
       const curScrollTop = captionRef.current.scrollTop ?? 0
-      captionRef.current.scrollTop = curScrollTop + getCaptionScrollPX(curScrollY)
-      console.log("scroll", curScrollY, captionRef.current.scrollTop)
+      const val = getCaptionScrollPX(curScrollY)
+      captionRef.current.scrollTop = curScrollTop + val
+      console.log("[test] scroll", val)
     }
   }
 

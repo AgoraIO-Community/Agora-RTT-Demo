@@ -549,10 +549,6 @@ export const CAPTION_SCROLL_PX_LIST = [
   },
   {
     distance: 150,
-    value: 8,
-  },
-  {
-    distance: 200,
     value: 10,
   },
 ]

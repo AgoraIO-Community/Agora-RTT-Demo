@@ -1,6 +1,7 @@
 .captionItem {
   box-sizing: border-box;
   width: 100%;
+  font-size: 0;
 
   .userName {
     box-sizing: border-box;
@@ -19,7 +20,6 @@
   }
 
   .translate {
-    margin-top: 2px;
     color: var(--Warning-400-T, #ffcf74);
     font-size: 14px;
     font-weight: 400;
@@ -31,4 +31,5 @@
   }
 
 }
+
 
