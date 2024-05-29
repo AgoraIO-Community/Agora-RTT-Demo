@@ -11,6 +11,7 @@
   "transcribing": "Transcribing",
   "closeConversation": "Close Conversation",
   "login": {
+    "github": "Visit GitHub",
     "join": "join channel",
     "title": "Real-Time Transcription"
   },

@@ -537,23 +537,23 @@ export const AI_RESULT_PLACEHOLDER =
 export const CAPTION_SCROLL_PX_LIST = [
   {
     distance: 0,
-    value: 1.5,
-  },
-  {
-    distance: 50,
-    value: 1.75,
-  },
-  {
-    distance: 100,
     value: 2,
   },
   {
+    distance: 50,
+    value: 4,
+  },
+  {
+    distance: 100,
+    value: 6,
+  },
+  {
     distance: 150,
-    value: 2.25,
+    value: 8,
   },
   {
     distance: 200,
-    value: 2.5,
+    value: 10,
   },
 ]
 

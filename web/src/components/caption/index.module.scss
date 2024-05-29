@@ -5,8 +5,9 @@
   transform: translateX(-50%);
   display: flex;
   width: 900px;
-  height: 150px;
+  height: 160px;
   padding: 0px 24px 12px 24px;
+  box-sizing: border-box;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;

@@ -7,40 +7,28 @@
     color: var(---white, #fff);
     font-size: 14px;
     font-weight: 600;
-    line-height: 150%;
+    line-height: 20px;
     letter-spacing: 0.449px;
   }
 
   .content {
-    margin-bottom: 2px;
     color: var(---white, #fff);
     font-size: 14px;
     font-weight: 400;
-    line-height: 150%;
+    line-height: 20px;
   }
 
   .translate {
+    margin-top: 2px;
     color: var(--Warning-400-T, #ffcf74);
     font-size: 14px;
     font-weight: 400;
-    line-height: 150%;
+    line-height: 20px;
   }
 
   .arabic {
     direction: rtl;
   }
 
-
 }
 
-.captionItem+.captionItem {
-  margin-top: 10px;
-}
-
-.captionItem:first-child {
-  margin-top: 10px;
-}
-
-.captionItem:last-child {
-  margin-bottom: 10px;
-}

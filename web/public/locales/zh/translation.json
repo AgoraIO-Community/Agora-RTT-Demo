@@ -11,6 +11,7 @@
   "loadText": "加载文本",
   "closeConversation": "结束对话",
   "login": {
+    "github": "访问 GitHub",
     "join": "加入频道",
     "title": "实时语音转文字"
   },

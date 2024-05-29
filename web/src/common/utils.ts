@@ -93,14 +93,14 @@ export const getElementScrollY = (ele: HTMLElement): number => {
   return ele.scrollHeight - ele.clientHeight - ele.scrollTop
 }
 
-export const getCaptionScrollPX = (top: number = 0) => {
+export const getCaptionScrollPX = (scroll: number = 0) => {
   for (let i = CAPTION_SCROLL_PX_LIST.length - 1; i >= 0; i--) {
     const item = CAPTION_SCROLL_PX_LIST[i]
-    if (top >= item.distance) {
+    if (scroll >= item.distance) {
       return item.value
     }
   }
-  return CAPTION_SCROLL_PX_LIST[0].value
+  return scroll
 }
 
 export const genUUID = () => {
