@@ -1,5 +1,6 @@
 .captionItem {
   box-sizing: border-box;
+  width: 100%;
 
   .userName {
     box-sizing: border-box;
@@ -24,9 +25,15 @@
     font-weight: 400;
     line-height: 150%;
   }
+
+  .arabic {
+    direction: rtl;
+  }
+
+
 }
 
-.captionItem + .captionItem {
+.captionItem+.captionItem {
   margin-top: 10px;
 }
 

@@ -21,7 +21,6 @@ const DialogRecord = () => {
   const sttStatus = useSelector((state: RootState) => state.global.sttStatus)
   const sttCountDown = useSelector((state: RootState) => state.global.sttCountDown)
   const options = useSelector((state: RootState) => state.global.options)
-  const dialogLanguageType = useSelector((state: RootState) => state.global.dialogLanguageType)
   const sttLanguages = useSelector((state: RootState) => state.global.sttLanguages)
   const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
   const hostId = useSelector((state: RootState) => state.global.hostId)
@@ -46,13 +45,13 @@ const DialogRecord = () => {
   const onClickStorage = () => {
     let language = ""
     const content = ""
-    if (dialogLanguageType == "live") {
-      language = sttLanguages.transcribe1 ?? ""
-      // content = genContentText(sttTranscribeTextList)
-    } else {
-      language = captionLanguages.find((item) => item !== "live") || ""
-      // content = genContentText(sttTranslateTextMap[language] || [])
-    }
+    // if (dialogLanguageType == "live") {
+    //   language = sttLanguages.transcribe1 ?? ""
+    //   // content = genContentText(sttTranscribeTextList)
+    // } else {
+    //   language = captionLanguages.find((item) => item !== "live") || ""
+    //   // content = genContentText(sttTranslateTextMap[language] || [])
+    // }
     downloadText(`${channel}_${language}.txt`, content)
     message.success("storage success!")
   }
@@ -80,19 +79,19 @@ const DialogRecord = () => {
           <div className={styles.turnOn}>{t("conversation.sttStopped")}</div>
         )}
       </section>
-      <section
+      {/* <section
         className={styles.content}
         style={{
           top: contentTop + "px",
         }}
       >
         <RecordContent></RecordContent>
-        {/* {sttTranscribeTextList.length ? (
+        {sttTranscribeTextList.length ? (
           <div className={styles.btnStorage} onClick={onClickStorage}>
             {t("storage")}
           </div>
-        ) : null} */}
-      </section>
+        ) : null}
+      </section> */}
     </div>
   )
 }

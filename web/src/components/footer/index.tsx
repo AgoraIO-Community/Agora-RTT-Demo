@@ -22,8 +22,7 @@ import {
   setLocalVideoMute,
   addMessage,
 } from "@/store/reducers/global"
-import LanguageSettingDialog from "../language-setting"
-import DialogPopover from "./dialog-popover"
+import LanguageSettingDialog from "../dialog/language-setting"
 import CaptionPopover from "./caption-popover"
 import { RootState } from "@/store"
 import { useEffect, useMemo, useState } from "react"
@@ -155,11 +154,6 @@ const Footer = (props: IFooterProps) => {
           <TranscriptionIcon active={dialogRecordShow}></TranscriptionIcon>
           <span className={styles.text}>{t("footer.conversationHistory")}</span>
         </span>
-        <DialogPopover>
-          <span className={styles.arrowWrapper} onClick={toggleDialogSelect}>
-            <ArrowUpIcon width={16} height={16}></ArrowUpIcon>
-          </span>
-        </DialogPopover>
         {/* language */}
         <span
           className={`${styles.item} ${!isHost ? "disabled" : ""}`}

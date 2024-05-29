@@ -23,7 +23,7 @@ import { STTStatus } from "@/types"
 const { RTM, constantsType, setParameter } = AgoraRTM
 
 const appId = import.meta.env.VITE_AGORA_APP_ID
-const STREAM_TYPE: ChannelType = "STREAM"
+const CHANNEL_TYPE: ChannelType = "MESSAGE"
 
 export class RtmManager extends AGEventEmitter<RtmEvents> {
   client?: RTMClient
@@ -59,14 +59,13 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     }
     this._listenRtmEvents()
     await this.client.login()
-    const streamChannel = this.client.createStreamChannel(channel)
-    await streamChannel.join({
-      token: this.rtmConfig.token,
+    this.joined = true
+    // subscribe message channel
+    await this.client.subscribe(channel, {
       withPresence: true,
       withMetadata: true,
-      // withLock: boolean;
     })
-    this.joined = true
+    // check host
     this._checkHost()
   }
 
@@ -153,7 +152,7 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     const options = {
       data,
     }
-    await this?.client?.storage.removeChannelMetadata(this.channel, STREAM_TYPE, options)
+    await this?.client?.storage.removeChannelMetadata(this.channel, CHANNEL_TYPE, options)
   }
 
   private async _setChannelMetadata(metadata: Record<string, any>) {
@@ -164,7 +163,7 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
         value: JSON.stringify(metadata[key]),
       })
     }
-    await this?.client?.storage.setChannelMetadata(this.channel, STREAM_TYPE, data)
+    await this?.client?.storage.setChannelMetadata(this.channel, CHANNEL_TYPE, data)
   }
 
   private async _setPresenceState(attr: ValueOf<RtmPresenceMessageData>) {
@@ -176,7 +175,7 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
       const value = attr[key as keyof typeof attr]
       state[key] = isString(value) ? value : JSON.stringify(value)
     }
-    return await this?.client?.presence.setState(this.channel, STREAM_TYPE, state)
+    return await this?.client?.presence.setState(this.channel, CHANNEL_TYPE, state)
   }
 
   private _listenRtmEvents() {
@@ -299,7 +298,7 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
   }
 
   private async _checkHost() {
-    const result = await this.client?.presence.whoNow(this.channel, STREAM_TYPE)
+    const result = await this.client?.presence.whoNow(this.channel, CHANNEL_TYPE)
     console.log("[test] whoNow", result)
     if (result?.totalOccupancy == 1) {
       this.setHost(this.userId)

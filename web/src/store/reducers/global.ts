@@ -28,7 +28,6 @@ export interface InitialState {
   sttStatus: STTStatus
   sttCountDown: number // ms
   sttLanguages: STTLanguages
-  dialogLanguageType: DialogLanguageType
   captionLanguages: string[]
   sttSubtitles: ITextItem[]
   // ------- UI state -------
@@ -64,7 +63,6 @@ const getInitialState = (): InitialState => {
       transcribe2: undefined,
       translate2: [],
     },
-    dialogLanguageType: "live",
     menuList: [],
     sttStatus: "end",
     page: {
@@ -129,9 +127,6 @@ export const globalSlice = createSlice({
     },
     setSttCountDown: (state, action: PayloadAction<number>) => {
       state.sttCountDown = action.payload
-    },
-    setDialogLanguageType: (state, action: PayloadAction<DialogLanguageType>) => {
-      state.dialogLanguageType = action.payload
     },
     setSttLanguages: (state, action: PayloadAction<STTLanguages>) => {
       state.sttLanguages = action.payload
@@ -243,7 +238,6 @@ export const {
   setPageInfo,
   setSTTStatus,
   setSttCountDown,
-  setDialogLanguageType,
   setCaptionLanguages,
   setSttLanguages,
   updateSubtitles,

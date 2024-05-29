@@ -1,6 +1,4 @@
 import { IUICaptionData } from "@/types"
-import { useSelector } from "react-redux"
-import { RootState } from "@/store"
 
 import styles from "./index.module.scss"
 
@@ -16,8 +14,11 @@ const CaptionItem = (props: ICaptionItemProps) => {
       {content || translations?.length ? <div className={styles.userName}>{userName}:</div> : null}
       {content ? <div className={styles.content}>{content}</div> : null}
       {translations?.map((item, index) => (
-        <div className={styles.translate} key={index}>
-          {"[" + item?.lang + "] " + item?.text}
+        <div
+          className={`${styles.translate} ${item?.lang.includes("ar-") ? styles.arabic : ""}`}
+          key={index}
+        >
+          {item?.text}
         </div>
       ))}
     </div>

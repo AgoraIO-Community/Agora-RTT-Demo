@@ -17,6 +17,7 @@ const Caption = (props: ICaptionProps) => {
   const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
   const captionRef = useRef<HTMLDivElement>(null)
   const subtitles = useSelector((state: RootState) => state.global.sttSubtitles)
+  const [scrollY, setScrollY] = useState(0)
 
   const captionList: IUICaptionData[] = useMemo(() => {
     const list: IUICaptionData[] = []
@@ -44,12 +45,13 @@ const Caption = (props: ICaptionProps) => {
     if (!captionRef.current) {
       return
     }
-    const scrollY = getElementScrollY(captionRef.current)
-    if (scrollY > 0) {
+    const curScrollY = getElementScrollY(captionRef.current)
+    if (curScrollY > 0) {
       // TODO: use transformY instead of scrollTop
-      // CaptionItem will be included in container and use transformY to move
+      setScrollY(curScrollY)
       const curScrollTop = captionRef.current.scrollTop ?? 0
-      captionRef.current.scrollTop = curScrollTop + getCaptionScrollPX(scrollY)
+      captionRef.current.scrollTop = curScrollTop + getCaptionScrollPX(curScrollY)
+      console.log("scroll", curScrollY, captionRef.current.scrollTop)
     }
   }
 
@@ -61,7 +63,7 @@ const Caption = (props: ICaptionProps) => {
     return () => {
       clearInterval(id)
     }
-  }, [captionList])
+  }, [captionList, scrollY])
 
   return (
     <div className={`${styles.caption} ${!visible ? "hidden" : ""}`} ref={captionRef}>

@@ -3,7 +3,7 @@ import { IRequestLanguages } from "@/types"
 const MODE = import.meta.env.MODE
 const gatewayAddress =
   MODE == "test" ? "https://service-staging.agora.io/speech-to-text" : "https://api.agora.io"
-const BASE_URL = "https://service.agora.io/toolbox"
+const BASE_URL = "https://service.agora.io/toolbox-overseas"
 
 // ---------------------------------------
 const appId = import.meta.env.VITE_AGORA_APP_ID

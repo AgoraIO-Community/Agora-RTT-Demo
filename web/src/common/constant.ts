@@ -556,3 +556,5 @@ export const CAPTION_SCROLL_PX_LIST = [
     value: 2.5,
   },
 ]
+
+export const GITHUB_URL = "https://github.com/AgoraIO-Community/Agora-RTT-Demo/tree/main/web"
