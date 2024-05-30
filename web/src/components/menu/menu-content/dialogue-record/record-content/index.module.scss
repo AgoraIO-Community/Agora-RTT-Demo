@@ -18,9 +18,12 @@
     flex-direction: row;
     align-items: flex-start;
 
-    .left {}
+    .left {
+      flex:  0 0 auto;
+    }
 
     .right {
+      flex:  1 1 auto;
       margin-left: 12px;
       display: flex;
       flex-direction: column;
@@ -48,10 +51,12 @@
       }
 
       .bottom {
+        width: 100%;
         margin-top: 8px;
         box-sizing: border-box;
 
         .content {
+          width: 100%;
           color: var(--Grey-800, #344054);
           font-size: 14px;
           font-weight: 400;
