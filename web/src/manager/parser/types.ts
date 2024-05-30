@@ -1,12 +1,20 @@
-export interface ITextItem {
-  dataType: "transcribe" | "translate"
-  uid: string
-  language: string
-  time: number
+export interface ITranslationItem {
+  lang: string
   text: string
-  isFinal: boolean
+}
+
+export interface ITextstream {
+  dataType: "transcribe" | "translate"
+  culture?: string
+  uid: string | number
+  startTextTs: number
+  textTs: number
+  time: number
+  durationMs: number
+  words: any[]
+  trans?: any[]
 }
 
 export interface ParserEvents {
-  textAdd: (textItem: ITextItem) => void
+  textstreamReceived: (textstream: ITextstream) => void
 }

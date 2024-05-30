@@ -1,7 +1,7 @@
 {
+  "confirm": "Confirm",
   "liveLanguage": "Live Language",
   "translationLanguage": "Translation Language",
-  "storage": "Storage",
   "clearAll": "Clear All",
   "analyze": "Analyze",
   "analysisResult": "Analysis Result",
@@ -10,7 +10,19 @@
   "loadText": "Load Text",
   "transcribing": "Transcribing",
   "closeConversation": "Close Conversation",
+  "storage": {
+    "text": "Storage",
+    "success": "Storage success"
+  },
+  "export": {
+    "text": "Export",
+    "success": "Export success"
+  },
+  "dialog": {
+    "languageShow": "Language Display"
+  },
   "login": {
+    "github": "Visit GitHub",
     "join": "join channel",
     "title": "Real-Time Transcription"
   },
@@ -38,7 +50,8 @@
     "languagesSelect": "Please select on-site language and translation language",
     "tip": "You can select up to two languages, and each live language can correspond to up to five translation languages",
     "liveLanguage": "Live language",
-    "translationLanguageMax": "Translation language should less than or equal to 5"
+    "translationLanguageMax": "Translation language should less than or equal to 5",
+    "saveSuccess": "Setup success"
   },
   "conversation": {
     "sttStarted": "The host has turned on real-time transcription",

@@ -3,18 +3,59 @@ import { IRequestLanguages } from "@/types"
 const MODE = import.meta.env.MODE
 const gatewayAddress =
   MODE == "test" ? "https://service-staging.agora.io/speech-to-text" : "https://api.agora.io"
-const BASE_URL = "https://service.agora.io/toolbox"
+const BASE_URL = "https://service.agora.io/toolbox-overseas"
 
 // ---------------------------------------
 const appId = import.meta.env.VITE_AGORA_APP_ID
-const certificate = import.meta.env.VITE_AGORA_APP_CERTIFICATE
-const key = import.meta.env.VITE_AGORA_APP_KEY
-const secret = import.meta.env.VITE_AGORA_APP_SECRET
-const authorization = `Basic ` + btoa(`${key}:${secret}`)
+const appCertificate = import.meta.env.VITE_AGORA_APP_CERTIFICATE
+let agoraToken = ""
+let genTokenTime = 0
+
+export async function apiGetAgoraToken(config: { uid: string | number; channel: string }) {
+  if (!appCertificate) {
+    return null
+  }
+  const { uid, channel } = config
+  const url = `${BASE_URL}/v2/token/generate`
+  const data = {
+    appId,
+    appCertificate,
+    channelName: channel,
+    expire: 7200,
+    src: "web",
+    types: [1, 2],
+    uid: uid + "",
+  }
+  let resp = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+  resp = (await resp.json()) || {}
+  // @ts-ignore
+  return resp?.data?.token || ""
+}
+
+const genAuthorization = async (config: { uid: string | number; channel: string }) => {
+  if (agoraToken) {
+    const curTime = new Date().getTime()
+    if (curTime - genTokenTime < 1000 * 60 * 60) {
+      return `agora token="${agoraToken}"`
+    }
+  }
+  agoraToken = await apiGetAgoraToken(config)
+  genTokenTime = new Date().getTime()
+  return `agora token="${agoraToken}"`
+}
 
 // --------------- stt ----------------
-export const apiSTTAcquireToken = async (options: { channel: string }): Promise<any> => {
-  const { channel } = options
+export const apiSTTAcquireToken = async (options: {
+  channel: string
+  uid: string | number
+}): Promise<any> => {
+  const { channel, uid } = options
   const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/builderTokens`
   const data: any = {
     instanceId: channel,
@@ -27,7 +68,7 @@ export const apiSTTAcquireToken = async (options: { channel: string }): Promise<
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: authorization,
+      Authorization: await genAuthorization(options),
     },
     body: JSON.stringify(data),
   })
@@ -43,17 +84,18 @@ export const apiSTTAcquireToken = async (options: { channel: string }): Promise<
 }
 
 export const apiSTTStartTranscription = async (options: {
+  uid: string | number
   channel: string
   languages: IRequestLanguages[]
   token: string
 }): Promise<{ taskId: string }> => {
-  const { channel, languages, token } = options
+  const { channel, languages, token, uid } = options
   const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/tasks?builderToken=${token}`
   const subBotUid = "1000"
   const pubBotUid = "2000"
   let subBotToken = null
   let pubBotToken = null
-  if (certificate) {
+  if (appCertificate) {
     const data = await Promise.all([
       apiGetAgoraToken({
         uid: subBotUid,
@@ -91,7 +133,10 @@ export const apiSTTStartTranscription = async (options: {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: authorization,
+      Authorization: await genAuthorization({
+        uid,
+        channel,
+      }),
     },
     body: JSON.stringify(body),
   })
@@ -102,14 +147,22 @@ export const apiSTTStartTranscription = async (options: {
   return data
 }
 
-export const apiSTTStopTranscription = async (options: { taskId: string; token: string }) => {
-  const { taskId, token } = options
+export const apiSTTStopTranscription = async (options: {
+  taskId: string
+  token: string
+  uid: number | string
+  channel: string
+}) => {
+  const { taskId, token, uid, channel } = options
   const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/tasks/${taskId}?builderToken=${token}`
   await fetch(url, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      Authorization: authorization,
+      Authorization: await genAuthorization({
+        uid,
+        channel,
+      }),
     },
   })
 }
@@ -128,31 +181,4 @@ export const apiAiAnalysis = async (options: { system: string; userContent: stri
     body: JSON.stringify(options),
   })
   return await res.json()
-}
-
-export async function apiGetAgoraToken(config: { uid: string | number; channel: string }) {
-  if (!certificate) {
-    return null
-  }
-  const { uid, channel } = config
-  const url = `${BASE_URL}/v2/token/generate`
-  const data = {
-    appId,
-    appCertificate: certificate,
-    channelName: channel,
-    expire: 7200,
-    src: "web",
-    types: [1, 2],
-    uid: uid + "",
-  }
-  let resp = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-  resp = (await resp.json()) || {}
-  // @ts-ignore
-  return resp?.data?.token || ""
 }

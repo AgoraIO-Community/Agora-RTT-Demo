@@ -9,7 +9,7 @@
   bottom: 0;
   overflow-y: auto;
 
-  .item + .item {
+  .item+.item {
     margin-top: 12px;
   }
 
@@ -19,9 +19,11 @@
     align-items: flex-start;
 
     .left {
+      flex:  0 0 auto;
     }
 
     .right {
+      flex:  1 1 auto;
       margin-left: 12px;
       display: flex;
       flex-direction: column;
@@ -49,19 +51,37 @@
       }
 
       .bottom {
-        margin-right: 4px;
-        margin-top: 4px;
-        background-color: var(--blue_0, #f4f8ff);
-        padding: 4px 12px;
+        width: 100%;
+        margin-top: 8px;
         box-sizing: border-box;
-        border-radius: 6px;
 
         .content {
+          width: 100%;
           color: var(--Grey-800, #344054);
           font-size: 14px;
           font-weight: 400;
           line-height: 150%;
         }
+
+        .translate {
+          margin-top: 8px;
+          color: var(--Grey-800, #344054);
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 150%;
+          width: 100%;
+          box-sizing: border-box;
+
+          .bold {
+            font-weight: 600;
+          }
+
+          .arabic{
+            direction: rtl;
+          }
+
+        }
+
       }
     }
   }

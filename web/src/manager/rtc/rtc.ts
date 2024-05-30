@@ -22,7 +22,7 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
     this.localTracks = {}
     this.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" })
     this._listenRtcEvents()
-    this._listenParserEvents()
+    this._listenParserStreamEvent()
   }
 
   async join({ channel, userId }: { channel: string; userId: number }) {
@@ -85,7 +85,6 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
       })
     })
     this.client.on("stream-message", (uid: UID, stream: any) => {
-      // console.log("[test] stream-message", uid, stream)
       parser.praseData(stream)
     })
   }
@@ -96,9 +95,9 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
     }
   }
 
-  _listenParserEvents() {
-    parser.on("textAdd", (textItem) => {
-      this.emit("textAdd", textItem)
+  _listenParserStreamEvent() {
+    parser.on("textstreamReceived", (textstream) => {
+      this.emit("textstreamReceived", textstream)
     })
   }
 

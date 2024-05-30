@@ -22,8 +22,43 @@
     box-shadow: 0px 32px 64px -12px rgba(8, 15, 52, 0.12);
     box-sizing: border-box;
 
-    .language {
-      text-align: right;
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .github {
+        display: inline-block;
+        text-align: left;
+        display: flex;
+        padding: 4px 8px 4px 4px;
+        align-items: center;
+        gap: 4px;
+        border-radius: 100px;
+        background: var(--Grey-200, #F2F4F7);
+        cursor: pointer;
+
+        &:hover {
+          background: var(--Primary-50-T, #ECEEFE);
+        }
+
+
+        img {
+          width: 22px;
+          height: 22px;
+        }
+
+        .text {
+          color: var(--Grey-800, #344054);
+          font-size: 12px;
+          line-height: 150%;
+          font-weight: 400;
+        }
+      }
+
+      .language {
+        text-align: right;
+      }
     }
 
     .title {
@@ -60,7 +95,7 @@
       }
     }
 
-    .item + .item {
+    .item+.item {
       margin-top: 24px;
     }
 

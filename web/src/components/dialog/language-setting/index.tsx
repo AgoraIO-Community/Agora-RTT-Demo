@@ -5,7 +5,7 @@ import { Modal, Alert, Select, Space } from "antd"
 import { LANGUAGE_LIST, EXPERIENCE_DURATION } from "@/common"
 import { LoadingOutlined } from "@ant-design/icons"
 import { ILanguageItem } from "@/manager"
-import { addMessage, setSttCountDown } from "@/store/reducers/global"
+import { addMessage, setSttCountDown, setRecordLanguageSelect } from "@/store/reducers/global"
 import { useTranslation } from "react-i18next"
 
 import styles from "./index.module.scss"
@@ -37,13 +37,21 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
   const { t } = useTranslation()
   const sttStatus = useSelector((state: RootState) => state.global.sttStatus)
   const globalOptions = useSelector((state: RootState) => state.global.options)
-  const sttLanguages = useSelector((state: RootState) => state.global.sttLanguages)
-  const { transcribe1, translate1 = [], transcribe2, translate2 = [] } = sttLanguages
+  const captionLanguageSelect = useSelector(
+    (state: RootState) => state.global.captionLanguageSelect,
+  )
+  const userInfo = useSelector((state: RootState) => state.global.userInfo)
+  const {
+    transcribe1,
+    translate1List = [],
+    transcribe2,
+    translate2List = [],
+  } = captionLanguageSelect
   const { channel } = globalOptions
   const [sourceLanguage1, setSourceLanguage1] = useState(transcribe1)
-  const [sourceLanguage1List, setSourceLanguage1List] = useState<string[]>(translate1)
+  const [sourceLanguage1List, setSourceLanguage1List] = useState<string[]>(translate1List)
   const [sourceLanguage2, setSourceLanguage2] = useState(transcribe2)
-  const [sourceLanguage2List, setSourceLanguage2List] = useState<string[]>(translate2)
+  const [sourceLanguage2List, setSourceLanguage2List] = useState<string[]>(translate2List)
   const [loading, setLoading] = useState(false)
   const titleRef = useRef<HTMLDivElement>(null)
 
@@ -51,12 +59,12 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
     if (transcribe1) {
       setSourceLanguage1(transcribe1)
     }
-    setSourceLanguage1List(translate1)
+    setSourceLanguage1List(translate1List)
     if (transcribe2) {
       setSourceLanguage2(transcribe2)
     }
-    setSourceLanguage2List(translate2)
-  }, [sttLanguages])
+    setSourceLanguage2List(translate2List)
+  }, [captionLanguageSelect])
 
   const disabled = useMemo(() => {
     return sttStatus == "start"
@@ -96,12 +104,21 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
         await window.sttManager.startTranscription({
           channel,
           languages,
+          uid: userInfo.userId,
         })
         await Promise.all([
           window.rtmManager.updateLanguages(languages),
           window.rtmManager.setSttStatus("start"),
         ])
         dispatch(setSttCountDown(EXPERIENCE_DURATION))
+        dispatch(
+          setRecordLanguageSelect({
+            transcribe1: sourceLanguage1,
+            translate1List: [],
+            transcribe2: sourceLanguage2,
+            translate2List: [],
+          }),
+        )
       } catch (e: any) {
         console.error(e)
         dispatch(addMessage({ content: e.message, type: "error" }))
@@ -172,7 +189,14 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
         <div className={styles.textTop}>{t("setting.languagesSelect")}</div>
         <div className={styles.textBottom}>{t("setting.tip")}</div>
         <div className={styles.section}>
-          <div className={styles.text}>{t("setting.liveLanguage")} 1</div>
+          <Space>
+            <div className={styles.text} style={{ width: 160 }}>
+              {t("setting.liveLanguage")} 1
+            </div>
+            <div className={styles.text}>
+              {t("setting.liveLanguage")} 1 - {t("translationLanguage")}
+            </div>
+          </Space>
           <div className={styles.selectWrapper}>
             <Space>
               <Select
@@ -210,7 +234,14 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
           </div>
         </div>
         <div className={styles.section}>
-          <div className={styles.text}>{t("setting.liveLanguage")} 2</div>
+          <Space>
+            <div className={styles.text} style={{ width: 160 }}>
+              {t("setting.liveLanguage")} 2
+            </div>
+            <div className={styles.text}>
+              {t("setting.liveLanguage")} 2 - {t("translationLanguage")}
+            </div>
+          </Space>
           <div className={styles.selectWrapper}>
             <Space>
               <Select

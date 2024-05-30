@@ -3,10 +3,10 @@ import {
   IOptions,
   MenuType,
   STTStatus,
-  STTLanguages,
+  ILanguageSelect,
   DialogLanguageType,
-  IUiText,
   IMessage,
+  ITextItem,
 } from "@/types"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import {
@@ -15,9 +15,8 @@ import {
   setUserInfoToLocal,
   setOptionsToLocal,
 } from "@/common/storage"
+import { ITextstream } from "@/manager"
 import { EXPERIENCE_DURATION } from "@/common/constant"
-import { finalManager } from "@/common"
-import { findLastIndex } from "lodash-es"
 
 export interface InitialState {
   // ------- user state -------
@@ -28,11 +27,10 @@ export interface InitialState {
   localAudioMute: boolean
   sttStatus: STTStatus
   sttCountDown: number // ms
-  sttLanguages: STTLanguages
-  dialogLanguageType: DialogLanguageType
-  sttTranscribeTextList: IUiText[]
-  sttTranslateTextMap: Record<string, IUiText[]> // string is the language code
   captionLanguages: string[]
+  captionLanguageSelect: ILanguageSelect
+  recordLanguageSelect: ILanguageSelect
+  sttSubtitles: ITextItem[]
   // ------- UI state -------
   memberListShow: boolean
   dialogRecordShow: boolean
@@ -46,6 +44,15 @@ export interface InitialState {
   messageList: IMessage[]
 }
 
+const getDefaultLanguageSelect = (): ILanguageSelect => {
+  return {
+    transcribe1: undefined,
+    translate1List: [],
+    transcribe2: undefined,
+    translate2List: [],
+  }
+}
+
 const getInitialState = (): InitialState => {
   return {
     userInfo: getUserInfoFromLocal(),
@@ -53,21 +60,15 @@ const getInitialState = (): InitialState => {
     localVideoMute: true,
     localAudioMute: true,
     hostId: 0,
-    sttTranscribeTextList: [],
-    sttTranslateTextMap: {},
     sttCountDown: EXPERIENCE_DURATION,
     memberListShow: false,
     dialogRecordShow: false,
     captionShow: false,
     aiShow: false,
     captionLanguages: ["live"],
-    sttLanguages: {
-      transcribe1: undefined,
-      translate1: [],
-      transcribe2: undefined,
-      translate2: [],
-    },
-    dialogLanguageType: "live",
+    sttSubtitles: [],
+    captionLanguageSelect: getDefaultLanguageSelect(),
+    recordLanguageSelect: getDefaultLanguageSelect(),
     menuList: [],
     sttStatus: "end",
     page: {
@@ -133,51 +134,85 @@ export const globalSlice = createSlice({
     setSttCountDown: (state, action: PayloadAction<number>) => {
       state.sttCountDown = action.payload
     },
-    setDialogLanguageType: (state, action: PayloadAction<DialogLanguageType>) => {
-      state.dialogLanguageType = action.payload
+    setCaptionLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
+      state.captionLanguageSelect = action.payload
     },
-    setSttLanguages: (state, action: PayloadAction<STTLanguages>) => {
-      state.sttLanguages = action.payload
+    setRecordLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
+      state.recordLanguageSelect = action.payload
     },
     setCaptionLanguages: (state, action: PayloadAction<string[]>) => {
       state.captionLanguages = action.payload
     },
-    addSttTranscribeText: (state, action: PayloadAction<IUiText>) => {
+    updateSubtitles: (
+      state,
+      action: PayloadAction<{ textstream: ITextstream; username: string }>,
+    ) => {
       const { payload } = action
-      const { isFinal, userName } = payload
-      const curLanguageTextList = state.sttTranscribeTextList
-      const preIndex = finalManager.getIndex("live", userName)
-      let nextIndex = preIndex
-      if (curLanguageTextList[preIndex]?.isFinal) {
-        nextIndex = curLanguageTextList.length
+      const { textstream, username } = payload
+      const { dataType, words } = textstream
+      switch (dataType) {
+        case "transcribe": {
+          console.log("[test] textstream transcribe textStr", textstream)
+          let textStr: string = ""
+          let isFinal = false
+          words.forEach((word: any) => {
+            textStr += word.text
+            if (word.isFinal) {
+              isFinal = true
+            }
+          })
+          const st = state.sttSubtitles.findLast((el) => {
+            return el.uid == textstream.uid && !el.isFinal
+          })
+          if (!st) {
+            const subtitle: ITextItem = {
+              dataType: "transcribe",
+              uid: textstream.uid,
+              username,
+              text: textStr,
+              isFinal,
+              time: textstream.time + textstream.durationMs,
+              startTextTs: textstream.textTs,
+              textTs: textstream.textTs,
+            }
+            const tempList = state.sttSubtitles
+            const nextIndex = tempList.length
+            tempList[nextIndex] = subtitle
+          } else {
+            st.text = textStr
+            st.isFinal = isFinal
+            st.time = textstream.time + textstream.durationMs
+            st.textTs = textstream.textTs
+          }
+          break
+        }
+        case "translate": {
+          const st = state.sttSubtitles.findLast((el) => {
+            return (
+              el.uid == textstream.uid &&
+              (textstream.textTs >= el.startTextTs || textstream.textTs <= el.textTs)
+            )
+          })
+          if (!st) {
+            return
+          }
+          textstream.trans?.forEach(
+            (transItem: { lang: string; texts: any[]; isFinal: boolean }) => {
+              if (!st.translations) {
+                st.translations = []
+              }
+              const t = st.translations.findLast((el) => {
+                return el.lang == transItem.lang
+              })
+              if (!t) {
+                st.translations.push({ lang: transItem.lang, text: transItem.texts.join("") })
+              } else {
+                t.text = transItem.texts.join("")
+              }
+            },
+          )
+        }
       }
-      curLanguageTextList[nextIndex] = payload
-      finalManager.setIndex("live", userName, nextIndex)
-    },
-    addSttTranslateText: (state, action: PayloadAction<{ language: string; text: IUiText }>) => {
-      const { language, text } = action.payload
-      const { isFinal, userName, time } = text
-      if (!state.sttTranslateTextMap[language]) {
-        state.sttTranslateTextMap[language] = []
-      }
-      const curLanguageTextList = state.sttTranslateTextMap[language]
-      let index = findLastIndex(state.sttTranscribeTextList, (item) => {
-        return item?.userName === userName && item.time == time
-      })
-      if (index < 0) {
-        index = findLastIndex(state.sttTranscribeTextList, (item) => {
-          return item?.userName === userName && item.time < time
-        })
-        index = index >= 0 ? index + 1 : -1
-      }
-      if (index >= 0) {
-        curLanguageTextList[index] = text
-      }
-    },
-    resetSttText: (state) => {
-      state.sttTranscribeTextList = []
-      state.sttTranslateTextMap = {}
-      finalManager.reset()
     },
     addMessage: (state, action: PayloadAction<IMessage>) => {
       state.messageList.push({
@@ -192,7 +227,6 @@ export const globalSlice = createSlice({
       }
     },
     reset: (state) => {
-      finalManager.reset()
       Object.assign(state, getInitialState())
     },
   },
@@ -213,12 +247,10 @@ export const {
   setPageInfo,
   setSTTStatus,
   setSttCountDown,
-  setDialogLanguageType,
   setCaptionLanguages,
-  setSttLanguages,
-  addSttTranscribeText,
-  addSttTranslateText,
-  resetSttText,
+  setCaptionLanguageSelect,
+  setRecordLanguageSelect,
+  updateSubtitles,
   removeMessage,
   addMessage,
   reset,

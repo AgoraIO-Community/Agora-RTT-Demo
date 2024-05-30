@@ -8,7 +8,7 @@ import {
   AiIcon,
   ArrowUpIcon,
 } from "../icons"
-import { useHost } from "@/common"
+import { useHost, showAIModule } from "@/common"
 import { useSelector, useDispatch } from "react-redux"
 import {
   setUserInfo,
@@ -22,8 +22,7 @@ import {
   setLocalVideoMute,
   addMessage,
 } from "@/store/reducers/global"
-import LanguageSettingDialog from "../language-setting"
-import DialogPopover from "./dialog-popover"
+import LanguageSettingDialog from "../dialog/language-setting"
 import CaptionPopover from "./caption-popover"
 import { RootState } from "@/store"
 import { useEffect, useMemo, useState } from "react"
@@ -35,8 +34,6 @@ import styles from "./index.module.scss"
 interface IFooterProps {
   style?: React.CSSProperties
 }
-
-const showAI = !!import.meta.env.VITE_AGORA_GPT_URL
 
 const Footer = (props: IFooterProps) => {
   const { style } = props
@@ -112,7 +109,7 @@ const Footer = (props: IFooterProps) => {
     setShowLanguageSetting(!showLanguageSetting)
   }
 
-  const toggleDialogSelect = () => {}
+  const toggleDialogSelect = () => { }
 
   const onClickEnd = () => {
     nav("/")
@@ -155,11 +152,6 @@ const Footer = (props: IFooterProps) => {
           <TranscriptionIcon active={dialogRecordShow}></TranscriptionIcon>
           <span className={styles.text}>{t("footer.conversationHistory")}</span>
         </span>
-        <DialogPopover>
-          <span className={styles.arrowWrapper} onClick={toggleDialogSelect}>
-            <ArrowUpIcon width={16} height={16}></ArrowUpIcon>
-          </span>
-        </DialogPopover>
         {/* language */}
         <span
           className={`${styles.item} ${!isHost ? "disabled" : ""}`}
@@ -169,7 +161,7 @@ const Footer = (props: IFooterProps) => {
           <span className={`${styles.text}`}>{t("footer.langaugesSetting")}</span>
         </span>
         {/* ai */}
-        {showAI ? (
+        {showAIModule() ? (
           <span className={styles.item} onClick={onClickAiShow}>
             <AiIcon active={aiShow}></AiIcon>
             <span className={styles.text}>{t("footer.aIAssistant")}</span>

@@ -25,8 +25,10 @@ const CaptionPopover = (props: ICaptionPopoverProps) => {
   const { children } = props
   const dispatch = useDispatch()
   const { t } = useTranslation()
-  const sttLanguages = useSelector((state: RootState) => state.global.sttLanguages)
   const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
+  const captionLanguageSelect = useSelector(
+    (state: RootState) => state.global.captionLanguageSelect,
+  )
 
   const captionItems = useMemo(() => {
     const items: CaptionPopoverItem[] = []
@@ -36,8 +38,8 @@ const CaptionPopover = (props: ICaptionPopoverProps) => {
       type: "live",
       active: captionLanguages.includes("live"),
     })
-    const { translate1 = [], translate2 = [] } = sttLanguages
-    const translateArr = [...new Set([...translate1, ...translate2])]
+    const { translate1List = [], translate2List = [] } = captionLanguageSelect
+    const translateArr = [...new Set([...translate1List, ...translate2List])]
     for (let i = 0; i < translateArr.length; i++) {
       const target = LANGUAGE_LIST.find((item) => item.stt == translateArr[i])
       if (target) {
@@ -51,7 +53,7 @@ const CaptionPopover = (props: ICaptionPopoverProps) => {
     }
 
     return items
-  }, [sttLanguages, captionLanguages])
+  }, [captionLanguages, captionLanguageSelect])
 
   const onSelect = (item: CaptionPopoverItem) => {
     const languages = [...captionLanguages]

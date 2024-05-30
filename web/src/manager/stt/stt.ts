@@ -11,8 +11,10 @@ export class SttManager extends AGEventEmitter<STTEvents> {
   }
 
   async startTranscription(startOptions: STTManagerStartOptions) {
+    const { channel, languages, uid } = startOptions
     const data = await apiSTTAcquireToken({
-      channel: startOptions.channel,
+      channel,
+      uid,
     })
     const token = data.tokenName
     if (!token) {
@@ -35,7 +37,7 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     if (!this.options) {
       this.options = getSTToptionsFromLocal()
     }
-    const { taskId, token } = this.options
+    const { taskId, token, uid, channel } = this.options
     if (!taskId) {
       throw new Error("taskId is not found")
     }
@@ -45,6 +47,8 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     await apiSTTStopTranscription({
       taskId,
       token,
+      uid,
+      channel,
     })
   }
 
@@ -52,10 +56,11 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     if (!this.options) {
       this.options = getSTToptionsFromLocal()
     }
-    const { channel, languages } = this.options
+    const { channel, languages, uid } = this.options
     await this.startTranscription({
       channel,
       languages,
+      uid,
     })
   }
 

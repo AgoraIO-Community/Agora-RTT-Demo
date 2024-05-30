@@ -35,6 +35,10 @@ if (MODE == "test") {
     { language: "Persian", stt: "fa-IR" },
     { language: "Chinese(HK)", stt: "zh-HK" },
     { language: "Indonesian", stt: "id-ID" },
+    { language: "Arabic(JO)", stt: "ar-JO" },
+    { language: "Arabic(EG)", stt: "ar-EG" },
+    { language: "Arabic(SA)", stt: "ar-SA" },
+    { language: "Arabic(UAE)", stt: "ar-AE" },
     { language: "Chinese(TW)", stt: "zh-TW" },
     { language: "English(US) 	", stt: "en-US" },
     { language: "Hindi", stt: "hi-IN" },
@@ -536,22 +540,20 @@ export const AI_RESULT_PLACEHOLDER =
 export const CAPTION_SCROLL_PX_LIST = [
   {
     distance: 0,
-    value: 1.5,
-  },
-  {
-    distance: 50,
-    value: 1.75,
-  },
-  {
-    distance: 100,
     value: 2,
   },
   {
-    distance: 150,
-    value: 2.25,
+    distance: 50,
+    value: 4,
   },
   {
-    distance: 200,
-    value: 2.5,
+    distance: 100,
+    value: 6,
+  },
+  {
+    distance: 150,
+    value: 10,
   },
 ]
+
+export const GITHUB_URL = "https://github.com/AgoraIO-Community/Agora-RTT-Demo/tree/main/web"

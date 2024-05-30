@@ -1,17 +1,23 @@
 .menu {
   position: relative;
-  width: 368px;
+  width: 400px;
   height: 100%;
   gap: 10px;
   flex-shrink: 0;
   border-radius: 3px 3px 0px 0px;
-  border-left: 1px solid var(--Grey-300, #eaecf0);
-  background: #fff;
+  border-left: 1px solid #eaecf0;
   box-sizing: border-box;
 
-  .content {
-    position: relative;
-    width: 100%;
-    height: calc(100% - 40px);
+  .borderLeft{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    bottom: 0;
+    z-index: 999;
+    box-sizing: border-box;
+    cursor: col-resize;
   }
+
+
 }
