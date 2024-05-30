@@ -11,6 +11,9 @@ if (MODE == "test") {
     { language: "Japanese (Japan)", stt: "ja-JP" },
     { language: "Spanish (Spain)", stt: "es-ES" },
     { language: "Turkish (Turkey)", stt: "tr-TR" },
+    { language: "French", stt: "fr-FR" },
+    { language: "German", stt: "de-DE" },
+    { language: "Italian", stt: "it-IT" },
   ].sort((a, b) => {
     return a.language.localeCompare(b.language)
   })

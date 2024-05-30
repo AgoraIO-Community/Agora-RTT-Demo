@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/store"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { Modal, Alert, Select, Space } from "antd"
 import { LANGUAGE_LIST, EXPERIENCE_DURATION } from "@/common"
 import { LoadingOutlined } from "@ant-design/icons"
@@ -27,6 +27,10 @@ const SELECT_LIVE_LANGUAGE_PLACEHOLDER = "Select on-site language"
 const SELECT_TRANS_LANGUAGE_PLACEHOLDER = "Please select a language to translate into"
 const MAX_COUNT = 5
 
+let clickCount = 0
+const MAX_CLICK_COUNT = 5
+let time = 0
+
 const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
   const { open, onOk, onCancel } = props
   const dispatch = useDispatch()
@@ -49,6 +53,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
   const [sourceLanguage2, setSourceLanguage2] = useState(transcribe2)
   const [sourceLanguage2List, setSourceLanguage2List] = useState<string[]>(translate2List)
   const [loading, setLoading] = useState(false)
+  const titleRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (transcribe1) {
@@ -135,10 +140,45 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
     return true
   }
 
+  const onClickTitle = () => {
+    if (!time) {
+      time = new Date().getTime()
+    }
+    const now = new Date().getTime()
+    if (now - time < 1000) {
+      time = now
+      if (clickCount + 1 >= MAX_CLICK_COUNT) {
+        onMultipleClickTitle()
+        clickCount = 0
+        time = 0
+      } else {
+        clickCount++
+      }
+    } else {
+      time = now
+      clickCount = 1
+    }
+  }
+
+  const onMultipleClickTitle = () => {
+    const time = 120 * 60 * 1000
+    dispatch(setSttCountDown(time))
+    dispatch(
+      addMessage({
+        content: t("message.extendExperience"),
+        type: "success",
+      }),
+    )
+  }
+
   return (
     <Modal
       width={600}
-      title={t("footer.langaugesSetting")}
+      title={
+        <div ref={titleRef} className="title" onClick={onClickTitle}>
+          {t("footer.langaugesSetting")}
+        </div>
+      }
       open={open}
       footer={null}
       onOk={onOk}

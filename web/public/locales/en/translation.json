@@ -64,5 +64,8 @@
   "ai": {
     "selectPromptSample": "Select Prompt Sample",
     "selectConversation": "Select Conversation Text"
+  },
+  "message": {
+    "extendExperience": "Extended experience time success"
   }
 }
