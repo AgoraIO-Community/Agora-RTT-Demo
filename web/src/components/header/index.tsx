@@ -14,11 +14,14 @@ interface IHeaderProps {
 const Header = (props: IHeaderProps) => {
   const { style } = props
   const sttStatus = useSelector((state: RootState) => state.global.sttStatus)
+  const options = useSelector((state: RootState) => state.global.options)
+  const { channel } = options
   const { t } = useTranslation()
 
   return (
     <header className={styles.header} style={style}>
       <NetWork></NetWork>
+      <span className={styles.channelName}>{channel}</span>
       <span className={styles.transcription}>
         {sttStatus == "start" ? (
           <>
