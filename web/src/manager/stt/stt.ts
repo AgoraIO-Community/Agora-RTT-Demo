@@ -7,25 +7,42 @@ import {
   removeSttOptionsFromLocal,
 } from "@/common"
 import { AGEventEmitter } from "../events"
-import { STTEvents, STTManagerStartOptions, STTManagerOptions } from "./types"
+import { STTEvents, STTManagerStartOptions, STTManagerOptions, STTManagerInitData } from "./types"
+import { RtmManager } from "../rtm"
 
 export class SttManager extends AGEventEmitter<STTEvents> {
   options?: STTManagerOptions
   userId: string | number = ""
   channel: string = ""
-  _init: boolean = false
+  rtmManager: RtmManager
+  private _init: boolean = false
 
   get hasInit() {
     return this._init
   }
 
-  constructor() {
+  constructor(data: STTManagerInitData) {
     super()
+    const { rtmManager } = data
+    this.rtmManager = rtmManager
   }
 
-  init({ userId, channel }: { userId: string | number; channel: string }) {
+  async init({
+    userId,
+    channel,
+    userName,
+  }: {
+    userId: string | number
+    channel: string
+    userName: string
+  }) {
     this.userId = userId
     this.channel = channel
+    await this.rtmManager.join({
+      userId: userId + "",
+      userName,
+      channel,
+    })
     this._init = true
   }
 
@@ -33,6 +50,9 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     if (!this.hasInit) {
       throw new Error("please init first")
     }
+    // aquire lock
+    await this.rtmManager.acquireLock()
+    // aquire token
     const data = await apiSTTAcquireToken({
       channel: this.channel,
       uid: this.userId,
@@ -41,6 +61,7 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     if (!token) {
       throw new Error("token is not found")
     }
+    const languages = startOptions.languages
     const res = await apiSTTStartTranscription({
       uid: this.userId,
       channel: this.channel,
@@ -53,11 +74,15 @@ export class SttManager extends AGEventEmitter<STTEvents> {
       taskId,
     }
     setSttOptionsToLocal(this.options)
-
-    return {
-      taskId,
-      token,
-    }
+    Promise.all([
+      this.rtmManager.updateLanguages(languages),
+      this.rtmManager.updateSttData({
+        status: "start",
+        taskId,
+        token,
+      }),
+      this.rtmManager.releaseLock(),
+    ])
   }
 
   async stopTranscription() {
@@ -74,12 +99,25 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     if (!token) {
       throw new Error("token is not found")
     }
+    // aquire lock
+    await this.rtmManager.acquireLock()
     await apiSTTStopTranscription({
       taskId,
       token,
       uid: this.userId,
       channel: this.channel,
     })
+    Promise.all([
+      this.rtmManager.updateSttData({
+        status: "end",
+      }),
+      this.rtmManager.releaseLock(),
+    ])
+  }
+
+  async destroy() {
+    await this.rtmManager.destroy()
+    this._init = false
   }
 
   // async reStartTranscription() {

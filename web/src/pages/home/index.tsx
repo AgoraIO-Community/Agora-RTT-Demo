@@ -37,7 +37,9 @@ import styles from "./index.module.scss"
 
 const rtcManager = new RtcManager()
 const rtmManager = new RtmManager()
-const sttManager = new SttManager()
+const sttManager = new SttManager({
+  rtmManager,
+})
 
 window.rtcManager = rtcManager
 window.rtmManager = rtmManager
@@ -59,11 +61,13 @@ const HomePage = () => {
   const aiShow = useSelector((state: RootState) => state.global.aiShow)
   const sttData = useSelector((state: RootState) => state.global.sttData)
   const sttCountDown = useSelector((state: RootState) => state.global.sttCountDown)
+  const { userId, userName } = userInfo
+  const { channel } = options
   const [localTracks, setLocalTracks] = useState<IUserTracks>()
   const [userRtmList, setRtmUserList] = useState<ISimpleUserInfo[]>([])
   const [rtcUserMap, setRtcUserMap] = useState<Map<number | string, IRtcUser>>(new Map())
   const [centerUserId, setCenterUserId] = useState(userInfo.userId)
-  const [showExtendMessage, setShowExtendMessage] = useState(false)
+  // const [showExtendMessage, setShowExtendMessage] = useState(false)
 
   useEffect(() => {
     let timer: any
@@ -71,13 +75,8 @@ const HomePage = () => {
     if (sttData.status == "start") {
       timer = setTimeout(async () => {
         if (sttCountDown <= 0) {
-          await Promise.all([
-            window.sttManager.stopTranscription(),
-            window.rtmManager.updateSttData({
-              status: "end",
-            }),
-          ])
-          setShowExtendMessage(true)
+          await window.sttManager.stopTranscription()
+          // setShowExtendMessage(true)
           return clearTimeout(timer)
         }
 
@@ -126,8 +125,6 @@ const HomePage = () => {
     if (isMounted) {
       if (sttData.status == "end") {
         dispatch(setCaptionShow(false))
-      } else {
-        setShowExtendMessage(false)
       }
     }
   }, [sttData])
@@ -202,20 +199,15 @@ const HomePage = () => {
   }, [userDataList])
 
   const init = async () => {
-    const userId = userInfo.userId
-    const channel = options.channel
     await Promise.all([
       rtcManager.createTracks(),
       rtcManager.join({
         userId,
         channel,
       }),
-      rtmManager.join({
-        userId: userId + "",
-        channel,
-      }),
       sttManager.init({
         userId: userId + "",
+        userName,
         channel,
       }),
     ])
@@ -223,7 +215,7 @@ const HomePage = () => {
   }
 
   const destory = async () => {
-    await Promise.all([rtcManager.destroy(), rtmManager.destroy()])
+    await Promise.all([rtcManager.destroy(), sttManager.destroy()])
     dispatch(reset())
   }
 

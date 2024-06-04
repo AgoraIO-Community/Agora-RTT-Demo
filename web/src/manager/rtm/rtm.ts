@@ -16,12 +16,14 @@ const { RTM, constantsType, setParameter } = AgoraRTM
 
 const appId = import.meta.env.VITE_AGORA_APP_ID
 const CHANNEL_TYPE: ChannelType = "MESSAGE"
+const LOCK_STT = "lock_stt"
 
 export class RtmManager extends AGEventEmitter<RtmEvents> {
   client?: RTMClient
   private rtmConfig: RTMConfig = DEFAULT_RTM_CONFIG
   channel: string = ""
   userId: string = ""
+  userName: string = ""
   private userMap: Map<string, ISimpleUserInfo> = new Map()
   private joined: boolean = false
 
@@ -29,11 +31,12 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     super()
   }
 
-  async join({ channel, userId }: { channel: string; userId: string }) {
+  async join({ channel, userId, userName }: { channel: string; userId: string; userName: string }) {
     if (this.joined) {
       return
     }
     this.userId = userId
+    this.userName = userName
     this.channel = channel
     if (!this.client) {
       const token = await apiGetAgoraToken({ channel: this.channel, uid: this.userId })
@@ -53,15 +56,9 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     // check host
     await this._checkHost()
     // update user info
-    await this.updateUserInfo()
-  }
-
-  async updateUserInfo() {
-    await this._setPresenceState({
-      type: RtmMessageType.UserInfo,
-      userId: this.userId,
-      userName: this.userId,
-    })
+    await this._updateUserInfo()
+    // set lock
+    this._setLock()
   }
 
   async updateSttData(data: ISttData) {
@@ -104,7 +101,24 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     this._resetData()
   }
 
+  async acquireLock() {
+    // if not accquire lock, will throw error
+    return await this.client?.lock.acquireLock(this.channel, CHANNEL_TYPE, LOCK_STT)
+  }
+
+  async releaseLock() {
+    return await this.client?.lock.releaseLock(this.channel, CHANNEL_TYPE, LOCK_STT)
+  }
+
   // --------------------- private methods ---------------------
+
+  private async _updateUserInfo() {
+    await this._setPresenceState({
+      type: RtmMessageType.UserInfo,
+      userId: this.userId,
+      userName: this.userName,
+    })
+  }
 
   private async _removeChannelMetadata(metadata?: Record<string, any>) {
     const data: MetadataItem[] = []
@@ -274,6 +288,7 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     this.channel = ""
     this.rtmConfig = {}
     this.userId = ""
+    this.userName = ""
     this.userMap.clear()
     this.joined = false
   }
@@ -283,6 +298,13 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     console.log("[test] whoNow", result)
     if (result?.totalOccupancy == 1) {
       this._removeChannelMetadata()
+    }
+  }
+
+  private async _setLock() {
+    const { lockDetails = [] } = (await this.client?.lock.getLock(this.channel, CHANNEL_TYPE)) || {}
+    if (!lockDetails.find((v) => v.lockName === LOCK_STT)) {
+      await this.client?.lock.setLock(this.channel, CHANNEL_TYPE, LOCK_STT)
     }
   }
 }

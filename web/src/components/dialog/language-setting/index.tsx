@@ -97,22 +97,14 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
       return
     }
     setLoading(true)
-    if (!hasSttStarted) {
-      if (!languages.length) {
-        return
-      }
-      try {
-        const { taskId, token } = await window.sttManager.startTranscription({
+    try {
+      if (!hasSttStarted) {
+        if (!languages.length) {
+          return
+        }
+        await window.sttManager.startTranscription({
           languages,
         })
-        await Promise.all([
-          window.rtmManager.updateLanguages(languages),
-          window.rtmManager.updateSttData({
-            status: "start",
-            taskId,
-            token,
-          }),
-        ])
         dispatch(setSttCountDown(EXPERIENCE_DURATION))
         dispatch(
           setRecordLanguageSelect({
@@ -123,16 +115,13 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
           }),
         )
         dispatch(addMessage({ content: t("setting.sttStarted"), type: "success" }))
-      } catch (e: any) {
-        console.error(e)
-        dispatch(addMessage({ content: e.message, type: "error" }))
+      } else {
+        await window.sttManager.stopTranscription()
+        dispatch(addMessage({ content: t("setting.sttStopped"), type: "success" }))
       }
-    } else {
-      await window.sttManager.stopTranscription()
-      window.rtmManager.updateSttData({
-        status: "end",
-      })
-      dispatch(addMessage({ content: t("setting.sttStopped"), type: "success" }))
+    } catch (e: any) {
+      console.error(e)
+      dispatch(addMessage({ content: e.message, type: "error" }))
     }
     setLoading(false)
     onOk?.()
