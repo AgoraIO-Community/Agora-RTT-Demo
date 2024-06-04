@@ -8,7 +8,7 @@ import {
   AiIcon,
   ArrowUpIcon,
 } from "../icons"
-import { useHost, showAIModule } from "@/common"
+import { showAIModule } from "@/common"
 import { useSelector, useDispatch } from "react-redux"
 import {
   setUserInfo,
@@ -40,15 +40,18 @@ const Footer = (props: IFooterProps) => {
   const nav = useNavigate()
   const dispatch = useDispatch()
   const { t } = useTranslation()
-  const { hostId, isHost } = useHost()
   const localAudioMute = useSelector((state: RootState) => state.global.localAudioMute)
   const localVideoMute = useSelector((state: RootState) => state.global.localVideoMute)
   const memberListShow = useSelector((state: RootState) => state.global.memberListShow)
   const dialogRecordShow = useSelector((state: RootState) => state.global.dialogRecordShow)
   const captionShow = useSelector((state: RootState) => state.global.captionShow)
   const aiShow = useSelector((state: RootState) => state.global.aiShow)
-  const sttStatus = useSelector((state: RootState) => state.global.sttStatus)
+  const sttData = useSelector((state: RootState) => state.global.sttData)
   const [showLanguageSetting, setShowLanguageSetting] = useState(false)
+
+  const hasSttStarted = useMemo(() => {
+    return sttData.status === "start"
+  }, [sttData])
 
   const MicText = useMemo(() => {
     return localAudioMute ? t("footer.unMuteAudio") : t("footer.muteAudio")
@@ -84,10 +87,7 @@ const Footer = (props: IFooterProps) => {
   }
 
   const onClickCaption = () => {
-    if (sttStatus !== "start") {
-      if (!isHost) {
-        return dispatch(addMessage({ content: t("footer.tipHostEnableCCFirst"), type: "info" }))
-      }
+    if (sttData.status !== "start") {
       return dispatch(addMessage({ content: t("footer.tipEnableSTTFirst"), type: "info" }))
     }
     dispatch(setCaptionShow(!captionShow))
@@ -103,13 +103,10 @@ const Footer = (props: IFooterProps) => {
   }
 
   const toggleLanguageSettingDialog = () => {
-    if (!isHost) {
-      return dispatch(addMessage({ content: t("footer.tipHostEnableCC"), type: "info" }))
-    }
     setShowLanguageSetting(!showLanguageSetting)
   }
 
-  const toggleDialogSelect = () => { }
+  const toggleDialogSelect = () => {}
 
   const onClickEnd = () => {
     nav("/")
@@ -136,10 +133,10 @@ const Footer = (props: IFooterProps) => {
         </span>
         {/* caption */}
         <span
-          className={`${styles.item} ${sttStatus == "end" ? "disabled" : ""}`}
+          className={`${styles.item} ${!hasSttStarted ? "disabled" : ""}`}
           onClick={onClickCaption}
         >
-          <CaptionIcon disabled={sttStatus == "end"} active={captionShow}></CaptionIcon>
+          <CaptionIcon disabled={!hasSttStarted} active={captionShow}></CaptionIcon>
           <span className={styles.text}>{captionText}</span>
         </span>
         <CaptionPopover>
@@ -153,11 +150,8 @@ const Footer = (props: IFooterProps) => {
           <span className={styles.text}>{t("footer.conversationHistory")}</span>
         </span>
         {/* language */}
-        <span
-          className={`${styles.item} ${!isHost ? "disabled" : ""}`}
-          onClick={toggleLanguageSettingDialog}
-        >
-          <SettingIcon disabled={!isHost}></SettingIcon>
+        <span className={`${styles.item}`} onClick={toggleLanguageSettingDialog}>
+          <SettingIcon></SettingIcon>
           <span className={`${styles.text}`}>{t("footer.langaugesSetting")}</span>
         </span>
         {/* ai */}

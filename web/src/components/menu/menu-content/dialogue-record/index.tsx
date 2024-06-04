@@ -25,14 +25,13 @@ const DialogueRecord = (props: DialogueRecordProps) => {
   const { onExport } = props
   const dispatch = useDispatch()
   const { t } = useTranslation()
-  const sttStatus = useSelector((state: RootState) => state.global.sttStatus)
+  const sttData = useSelector((state: RootState) => state.global.sttData)
   const sttCountDown = useSelector((state: RootState) => state.global.sttCountDown)
   const options = useSelector((state: RootState) => state.global.options)
   const captionLanguageSelect = useSelector(
     (state: RootState) => state.global.captionLanguageSelect,
   )
   const sttSubtitles = useSelector((state: RootState) => state.global.sttSubtitles)
-  const hostId = useSelector((state: RootState) => state.global.hostId)
   const userInfo = useSelector((state: RootState) => state.global.userInfo)
   const { transcribe1 } = captionLanguageSelect
   const { channel } = options
@@ -52,10 +51,6 @@ const DialogueRecord = (props: DialogueRecordProps) => {
       tryRef.current.style.width = "420px"
     }
   }, [headerDimensions])
-
-  const isHost = useMemo(() => {
-    return hostId === userInfo.userId
-  }, [hostId, userInfo.userId])
 
   const contentTop = useMemo(() => {
     return headerDimensions.height + headerDimensions.top || 0
@@ -85,21 +80,19 @@ const DialogueRecord = (props: DialogueRecordProps) => {
   return (
     <div className={styles.dialogRecord}>
       <section ref={headerRef} className={styles.header}>
-        {sttStatus == "start" ? (
+        {sttData.status == "start" ? (
           <>
             <div className={styles.start}>
-              {isHost ? (
-                <div className={styles.try} ref={tryRef}>
-                  <span className={styles.text}>
-                    {t("conversation.onTrial")} &nbsp;
-                    <span className={styles.time}>{formatTime(sttCountDown / 1000)}</span> &nbsp;
-                    <span>{t("conversation.extendExperienceText")}</span>
-                  </span>
-                  <span className={styles.btn} onClick={onClickExtend}>
-                    {t("conversation.extendExperience")}
-                  </span>
-                </div>
-              ) : null}
+              <div className={styles.try} ref={tryRef}>
+                <span className={styles.text}>
+                  {t("conversation.onTrial")} &nbsp;
+                  <span className={styles.time}>{formatTime(sttCountDown / 1000)}</span> &nbsp;
+                  <span>{t("conversation.extendExperienceText")}</span>
+                </span>
+                <span className={styles.btn} onClick={onClickExtend}>
+                  {t("conversation.extendExperience")}
+                </span>
+              </div>
               {/* setting */}
               <div className={styles.setting} onClick={onClickSetting}>
                 <SettingIcon></SettingIcon>

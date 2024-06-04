@@ -126,17 +126,3 @@ export const useResizeObserver = (ref: RefObject<React.ReactNode | HTMLElement>)
 
   return dimensions
 }
-
-export const useHost = () => {
-  const hostId = useSelector((state: RootState) => state.global.hostId)
-  const userInfo = useSelector((state: RootState) => state.global.userInfo)
-
-  const isHost = useMemo(() => {
-    return hostId === userInfo.userId
-  }, [hostId, userInfo.userId])
-
-  return {
-    isHost,
-    hostId,
-  }
-}

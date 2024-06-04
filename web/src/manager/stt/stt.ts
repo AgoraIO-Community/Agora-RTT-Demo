@@ -1,43 +1,73 @@
-import { apiSTTStopTranscription, apiSTTStartTranscription, apiSTTAcquireToken } from "@/common"
+import {
+  apiSTTStopTranscription,
+  apiSTTStartTranscription,
+  apiSTTAcquireToken,
+  getSttOptionsFromLocal,
+  setSttOptionsToLocal,
+  removeSttOptionsFromLocal,
+} from "@/common"
 import { AGEventEmitter } from "../events"
 import { STTEvents, STTManagerStartOptions, STTManagerOptions } from "./types"
-import { getSTToptionsFromLocal, setSTToptionsToLocal, removeSTToptionsFromLocal } from "./storage"
 
 export class SttManager extends AGEventEmitter<STTEvents> {
   options?: STTManagerOptions
+  userId: string | number = ""
+  channel: string = ""
+  _init: boolean = false
+
+  get hasInit() {
+    return this._init
+  }
 
   constructor() {
     super()
   }
 
+  init({ userId, channel }: { userId: string | number; channel: string }) {
+    this.userId = userId
+    this.channel = channel
+    this._init = true
+  }
+
   async startTranscription(startOptions: STTManagerStartOptions) {
-    const { channel, languages, uid } = startOptions
+    if (!this.hasInit) {
+      throw new Error("please init first")
+    }
     const data = await apiSTTAcquireToken({
-      channel,
-      uid,
+      channel: this.channel,
+      uid: this.userId,
     })
     const token = data.tokenName
     if (!token) {
       throw new Error("token is not found")
     }
     const res = await apiSTTStartTranscription({
-      ...startOptions,
+      uid: this.userId,
+      channel: this.channel,
+      languages: startOptions.languages,
       token,
     })
     const taskId = res.taskId
     this.options = {
-      ...startOptions,
       token,
       taskId,
     }
-    setSTToptionsToLocal(this.options)
+    setSttOptionsToLocal(this.options)
+
+    return {
+      taskId,
+      token,
+    }
   }
 
   async stopTranscription() {
-    if (!this.options) {
-      this.options = getSTToptionsFromLocal()
+    if (!this.hasInit) {
+      throw new Error("please init first")
     }
-    const { taskId, token, uid, channel } = this.options
+    if (!this.options) {
+      this.options = getSttOptionsFromLocal()
+    }
+    const { taskId, token } = this.options
     if (!taskId) {
       throw new Error("taskId is not found")
     }
@@ -47,22 +77,17 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     await apiSTTStopTranscription({
       taskId,
       token,
-      uid,
-      channel,
+      uid: this.userId,
+      channel: this.channel,
     })
   }
 
-  async reStartTranscription() {
-    if (!this.options) {
-      this.options = getSTToptionsFromLocal()
-    }
-    const { channel, languages, uid } = this.options
-    await this.startTranscription({
-      channel,
-      languages,
-      uid,
-    })
-  }
+  // async reStartTranscription() {
+  //   if (!this.options) {
+  //     this.options = getSttOptionsFromLocal()
+  //   }
+  //   await this.startTranscription({})
+  // }
 
   // ------------- private -------------
 }

@@ -2,7 +2,7 @@ import {
   IUserInfo,
   IOptions,
   MenuType,
-  STTStatus,
+  ISttData,
   ILanguageSelect,
   DialogLanguageType,
   IMessage,
@@ -14,19 +14,22 @@ import {
   getUserInfoFromLocal,
   setUserInfoToLocal,
   setOptionsToLocal,
+  setSttOptionsToLocal,
 } from "@/common/storage"
 import { ITextstream } from "@/manager"
+// common/hook will use store, so we don't import @/common
+import { getDefaultLanguageSelect } from "@/common/utils"
 import { EXPERIENCE_DURATION } from "@/common/constant"
 
 export interface InitialState {
+  // ------- stt --------------
+  sttData: ISttData
+  sttCountDown: number // ms
   // ------- user state -------
   userInfo: IUserInfo
   options: IOptions
-  hostId: number
   localVideoMute: boolean
   localAudioMute: boolean
-  sttStatus: STTStatus
-  sttCountDown: number // ms
   captionLanguages: string[]
   captionLanguageSelect: ILanguageSelect
   recordLanguageSelect: ILanguageSelect
@@ -44,22 +47,15 @@ export interface InitialState {
   messageList: IMessage[]
 }
 
-const getDefaultLanguageSelect = (): ILanguageSelect => {
-  return {
-    transcribe1: undefined,
-    translate1List: [],
-    transcribe2: undefined,
-    translate2List: [],
-  }
-}
-
 const getInitialState = (): InitialState => {
   return {
+    sttData: {
+      status: "end",
+    },
     userInfo: getUserInfoFromLocal(),
     options: getOptionsFromLocal(),
     localVideoMute: true,
     localAudioMute: true,
-    hostId: 0,
     sttCountDown: EXPERIENCE_DURATION,
     memberListShow: false,
     dialogRecordShow: false,
@@ -70,7 +66,6 @@ const getInitialState = (): InitialState => {
     captionLanguageSelect: getDefaultLanguageSelect(),
     recordLanguageSelect: getDefaultLanguageSelect(),
     menuList: [],
-    sttStatus: "end",
     page: {
       width: 0,
       height: 0,
@@ -116,9 +111,6 @@ export const globalSlice = createSlice({
         state.menuList.splice(index, 1)
       }
     },
-    setHostId: (state, action: PayloadAction<number>) => {
-      state.hostId = action.payload
-    },
     setLocalVideoMute: (state, action: PayloadAction<boolean>) => {
       state.localVideoMute = action.payload
     },
@@ -128,8 +120,13 @@ export const globalSlice = createSlice({
     setPageInfo: (state, action: PayloadAction<{ width: number; height: number }>) => {
       state.page = action.payload
     },
-    setSTTStatus: (state, action: PayloadAction<STTStatus>) => {
-      state.sttStatus = action.payload
+    setSttData: (state, action: PayloadAction<ISttData>) => {
+      const { payload } = action
+      state.sttData = payload
+      setSttOptionsToLocal({
+        taskId: payload.taskId,
+        token: payload.token,
+      })
     },
     setSttCountDown: (state, action: PayloadAction<number>) => {
       state.sttCountDown = action.payload
@@ -241,11 +238,10 @@ export const {
   setAIShow,
   addMenuItem,
   removeMenuItem,
-  setHostId,
   setLocalVideoMute,
   setLocalAudioMute,
   setPageInfo,
-  setSTTStatus,
+  setSttData,
   setSttCountDown,
   setCaptionLanguages,
   setCaptionLanguageSelect,

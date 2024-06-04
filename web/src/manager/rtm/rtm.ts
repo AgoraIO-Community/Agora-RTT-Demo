@@ -1,13 +1,5 @@
-import AgoraRTM, {
-  RTMEvents,
-  ChannelType,
-  RTMClient,
-  RTMConfig,
-  RTMStreamChannel,
-  StateDetail,
-  MetadataItem,
-} from "agora-rtm"
-import { mapToArray, isString, apiGetAgoraToken } from "@/common"
+import AgoraRTM, { RTMEvents, ChannelType, RTMClient, RTMConfig, MetadataItem } from "agora-rtm"
+import { mapToArray, isString, apiGetAgoraToken, getDefaultLanguageSelect } from "@/common"
 import { AGEventEmitter } from "../events"
 import {
   RtmEvents,
@@ -17,8 +9,8 @@ import {
   ValueOf,
   ILanguageItem,
 } from "./types"
-import { Message } from "./message"
-import { STTStatus } from "@/types"
+import { ISttData, Role, ILanguageSelect } from "@/types"
+import { DEFAULT_RTM_CONFIG } from "./constant"
 
 const { RTM, constantsType, setParameter } = AgoraRTM
 
@@ -27,24 +19,14 @@ const CHANNEL_TYPE: ChannelType = "MESSAGE"
 
 export class RtmManager extends AGEventEmitter<RtmEvents> {
   client?: RTMClient
-  private rtmLog: boolean = true
-  private rtmConfig: RTMConfig = {
-    logLevel: "debug",
-    logUpload: true,
-  }
-
+  private rtmConfig: RTMConfig = DEFAULT_RTM_CONFIG
   channel: string = ""
   userId: string = ""
   private userMap: Map<string, ISimpleUserInfo> = new Map()
   private joined: boolean = false
-  private hostId: string = ""
 
   constructor() {
     super()
-  }
-
-  get isHost() {
-    return this.hostId && this.hostId == this.userId
   }
 
   async join({ channel, userId }: { channel: string; userId: string }) {
@@ -54,7 +36,10 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     this.userId = userId
     this.channel = channel
     if (!this.client) {
-      await this._initConfig()
+      const token = await apiGetAgoraToken({ channel: this.channel, uid: this.userId })
+      if (token) {
+        this.rtmConfig.token = token
+      }
       this.client = new RTM(appId, userId, this.rtmConfig)
     }
     this._listenRtmEvents()
@@ -66,28 +51,21 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
       withMetadata: true,
     })
     // check host
-    this._checkHost()
+    await this._checkHost()
+    // update user info
+    await this.updateUserInfo()
   }
 
-  async updateUserInfo(userInfo: ISimpleUserInfo) {
-    const message = Message.gen({
+  async updateUserInfo() {
+    await this._setPresenceState({
       type: RtmMessageType.UserInfo,
-      userName: userInfo.userName,
-      userId: userInfo.userId,
-    })
-    await this._setPresenceState(message)
-  }
-
-  async setHost(userId: string) {
-    return await this._setChannelMetadata({
-      hostId: userId,
+      userId: this.userId,
+      userName: this.userId,
     })
   }
 
-  async setSttStatus(status: STTStatus) {
-    return await this._setChannelMetadata({
-      sttStatus: status,
-    })
+  async updateSttData(data: ISttData) {
+    return await this._setChannelMetadata(data)
   }
 
   async updateLanguages(languages: ILanguageItem[]) {
@@ -122,40 +100,28 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
   }
 
   async destroy() {
-    if (this.isHost) {
-      await this._removeChannelMetadata({
-        hostId: this.userId,
-      })
-    }
     await this.client?.logout()
     this._resetData()
   }
 
   // --------------------- private methods ---------------------
 
-  private async _initConfig() {
-    if (this.rtmLog) {
-      this.rtmConfig.logLevel = "debug"
-      this.rtmConfig.logUpload = true
-    }
-    this.rtmConfig.token = await apiGetAgoraToken({ channel: this.channel, uid: this.userId })
-  }
-
-  private async _removeChannelMetadata(metadata: Record<string, any>) {
+  private async _removeChannelMetadata(metadata?: Record<string, any>) {
     const data: MetadataItem[] = []
+    const options: any = {}
     for (const key in metadata) {
       data.push({
         key,
         value: JSON.stringify(metadata[key]),
       })
     }
-    const options = {
-      data,
+    if (data.length) {
+      options.data = data
     }
     await this?.client?.storage.removeChannelMetadata(this.channel, CHANNEL_TYPE, options)
   }
 
-  private async _setChannelMetadata(metadata: Record<string, any>) {
+  private async _setChannelMetadata(metadata?: Record<string, any>) {
     const data: MetadataItem[] = []
     for (const key in metadata) {
       data.push({
@@ -188,42 +154,10 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
       if (channelName == this.channel) {
         switch (eventType) {
           case "SNAPSHOT":
-            if (!snapshot?.length) {
-              return
-            }
-            let changed = false
-            for (const v of snapshot) {
-              const { states } = v
-              switch (states.type) {
-                case RtmMessageType.UserInfo:
-                  const userInfo = {
-                    userName: states.userName,
-                    userId: states.userId,
-                  }
-                  if (userInfo.userId && userInfo.userId != this.userId) {
-                    this.userMap.set(userInfo.userId, userInfo)
-                    changed = true
-                  }
-                  break
-              }
-            }
-            if (changed) {
-              this._emitUserListChanged()
-            }
+            this._dealPresenceSnapshot(snapshot as any[])
             break
           case "REMOTE_STATE_CHANGED":
-            switch (stateChanged.type) {
-              case RtmMessageType.UserInfo:
-                const userInfo = {
-                  userName: stateChanged.userName,
-                  userId: stateChanged.userId,
-                }
-                if (userInfo.userId) {
-                  this.userMap.set(userInfo.userId, userInfo)
-                  this._emitUserListChanged()
-                }
-                break
-            }
+            this._dealPresenceRemoteState(stateChanged)
             break
           case "REMOTE_JOIN":
             break
@@ -233,17 +167,19 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
               this._emitUserListChanged()
             }
             break
+          case "REMOTE_TIMEOUT":
+            if (this.userMap.has(publisher)) {
+              this.userMap.delete(publisher)
+              this._emitUserListChanged()
+            }
+            break
         }
       }
     })
-
     this.client?.addEventListener("storage", (res) => {
       console.log("[test] storage", res)
       const { eventType, data, channelName } = res
       const { metadata } = data
-      if (Object.keys(metadata).length === 0) {
-        return
-      }
       if (channelName == this.channel) {
         switch (eventType) {
           case "SNAPSHOT":
@@ -259,13 +195,49 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     })
   }
 
-  private _dealStorageDataChanged(metadata: any) {
-    const { hostId, transcribe1, translate1List, transcribe2, translate2List, sttStatus } = metadata
-    if (hostId?.value) {
-      const hostIdValue = JSON.parse(hostId.value)
-      this.emit("hostChanged", hostIdValue)
-      this.hostId = hostIdValue
+  private _dealPresenceRemoteState(stateChanged: any) {
+    switch (stateChanged.type) {
+      case RtmMessageType.UserInfo:
+        const userInfo = {
+          userName: stateChanged.userName,
+          userId: stateChanged.userId,
+        }
+        if (userInfo.userId) {
+          this.userMap.set(userInfo.userId, userInfo)
+          this._emitUserListChanged()
+        }
+        break
     }
+  }
+
+  private _dealPresenceSnapshot(snapshot?: any[]) {
+    if (!snapshot?.length) {
+      return
+    }
+    let changed = false
+    for (const v of snapshot) {
+      const { states } = v
+      switch (states.type) {
+        case RtmMessageType.UserInfo:
+          const userInfo = {
+            userName: states.userName,
+            userId: states.userId,
+          }
+          if (userInfo.userId && userInfo.userId != this.userId) {
+            this.userMap.set(userInfo.userId, userInfo)
+            changed = true
+          }
+          break
+      }
+    }
+    if (changed) {
+      this._emitUserListChanged()
+    }
+  }
+
+  private _dealStorageDataChanged(metadata: any) {
+    const { transcribe1, translate1List, transcribe2, translate2List, status, taskId, token } =
+      metadata
     if (transcribe1?.value) {
       const parseTranscribe1 = JSON.parse(transcribe1.value)
       const parseTranslate1 = JSON.parse(translate1List.value)
@@ -277,9 +249,19 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
         transcribe2: parseTranscribe2,
         translate2List: parseTranslate2,
       })
+    } else {
+      this.emit("languagesChanged", getDefaultLanguageSelect())
     }
-    if (sttStatus?.value) {
-      this.emit("sttStatusChanged", JSON.parse(sttStatus.value))
+    if (status?.value) {
+      this.emit("sttDataChanged", {
+        status: JSON.parse(status?.value),
+        taskId: JSON.parse(taskId?.value),
+        token: JSON.parse(token?.value),
+      })
+    } else {
+      this.emit("sttDataChanged", {
+        status: "end",
+      })
     }
   }
 
@@ -290,7 +272,6 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
   private _resetData() {
     this.client = undefined
     this.channel = ""
-    this.rtmLog = true
     this.rtmConfig = {}
     this.userId = ""
     this.userMap.clear()
@@ -301,9 +282,7 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     const result = await this.client?.presence.whoNow(this.channel, CHANNEL_TYPE)
     console.log("[test] whoNow", result)
     if (result?.totalOccupancy == 1) {
-      this.setHost(this.userId)
-      this.emit("hostChanged", this.userId)
-      this.hostId = this.userId
+      this._removeChannelMetadata()
     }
   }
 }

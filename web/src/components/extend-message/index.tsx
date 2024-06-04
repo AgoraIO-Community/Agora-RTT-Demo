@@ -18,9 +18,9 @@ const ExtendMessage = (props: IExtendMessageProps) => {
   const { t } = useTranslation()
 
   const onClickExtend = () => {
-    window.sttManager.reStartTranscription()
-    window.rtmManager.setSttStatus("start")
-    dispatch(setSttCountDown(EXPERIENCE_DURATION))
+    // window.sttManager.reStartTranscription()
+    // window.rtmManager.updateSttStatus("start")
+    // dispatch(setSttCountDown(EXPERIENCE_DURATION))
     onClose?.()
   }
 

@@ -35,19 +35,16 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
   const { open, onOk, onCancel } = props
   const dispatch = useDispatch()
   const { t } = useTranslation()
-  const sttStatus = useSelector((state: RootState) => state.global.sttStatus)
-  const globalOptions = useSelector((state: RootState) => state.global.options)
+  const sttData = useSelector((state: RootState) => state.global.sttData)
   const captionLanguageSelect = useSelector(
     (state: RootState) => state.global.captionLanguageSelect,
   )
-  const userInfo = useSelector((state: RootState) => state.global.userInfo)
   const {
     transcribe1,
     translate1List = [],
     transcribe2,
     translate2List = [],
   } = captionLanguageSelect
-  const { channel } = globalOptions
   const [sourceLanguage1, setSourceLanguage1] = useState(transcribe1)
   const [sourceLanguage1List, setSourceLanguage1List] = useState<string[]>(translate1List)
   const [sourceLanguage2, setSourceLanguage2] = useState(transcribe2)
@@ -66,49 +63,55 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
     setSourceLanguage2List(translate2List)
   }, [captionLanguageSelect])
 
-  const disabled = useMemo(() => {
-    return sttStatus == "start"
-  }, [sttStatus])
+  const hasSttStarted = useMemo(() => {
+    return sttData.status == "start"
+  }, [sttData])
+
+  const languages = useMemo(() => {
+    const languages: ILanguageItem[] = []
+    if (sourceLanguage1) {
+      languages.push({
+        source: sourceLanguage1,
+        target: sourceLanguage1List,
+      })
+    }
+    if (sourceLanguage2) {
+      languages.push({
+        source: sourceLanguage2,
+        target: sourceLanguage2List,
+      })
+    }
+    return languages
+  }, [sourceLanguage1, sourceLanguage1List, sourceLanguage2, sourceLanguage2List])
 
   const btnText = useMemo(() => {
-    if (sttStatus == "end") {
+    if (!hasSttStarted) {
       return t("setting.sttStart")
     } else {
       return t("setting.sttStop")
     }
-  }, [sttStatus])
+  }, [hasSttStarted])
 
   const onClickBtn = async () => {
     if (loading) {
       return
     }
     setLoading(true)
-    if (sttStatus == "end") {
-      const languages: ILanguageItem[] = []
-      if (sourceLanguage1) {
-        languages.push({
-          source: sourceLanguage1,
-          target: sourceLanguage1List,
-        })
-      }
-      if (sourceLanguage2) {
-        languages.push({
-          source: sourceLanguage2,
-          target: sourceLanguage2List,
-        })
-      }
+    if (!hasSttStarted) {
       if (!languages.length) {
         return
       }
       try {
-        await window.sttManager.startTranscription({
-          channel,
+        const { taskId, token } = await window.sttManager.startTranscription({
           languages,
-          uid: userInfo.userId,
         })
         await Promise.all([
           window.rtmManager.updateLanguages(languages),
-          window.rtmManager.setSttStatus("start"),
+          window.rtmManager.updateSttData({
+            status: "start",
+            taskId,
+            token,
+          }),
         ])
         dispatch(setSttCountDown(EXPERIENCE_DURATION))
         dispatch(
@@ -119,13 +122,17 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
             translate2List: [],
           }),
         )
+        dispatch(addMessage({ content: t("setting.sttStarted"), type: "success" }))
       } catch (e: any) {
         console.error(e)
         dispatch(addMessage({ content: e.message, type: "error" }))
       }
     } else {
       await window.sttManager.stopTranscription()
-      window.rtmManager.setSttStatus("end")
+      window.rtmManager.updateSttData({
+        status: "end",
+      })
+      dispatch(addMessage({ content: t("setting.sttStopped"), type: "success" }))
     }
     setLoading(false)
     onOk?.()
@@ -207,7 +214,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
                     setSourceLanguage1List([])
                   }
                 }}
-                disabled={disabled}
+                disabled={hasSttStarted}
                 allowClear
                 placeholder={SELECT_LIVE_LANGUAGE_PLACEHOLDER}
                 style={{ width: 160 }}
@@ -221,7 +228,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
                   }
                 }}
                 allowClear
-                disabled={disabled || !sourceLanguage1}
+                disabled={hasSttStarted || !sourceLanguage1}
                 showSearch={false}
                 mode="multiple"
                 placeholder={SELECT_TRANS_LANGUAGE_PLACEHOLDER}
@@ -252,7 +259,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
                     setSourceLanguage2List([])
                   }
                 }}
-                disabled={disabled}
+                disabled={hasSttStarted}
                 allowClear
                 placeholder={SELECT_LIVE_LANGUAGE_PLACEHOLDER}
                 style={{ width: 160 }}
@@ -265,7 +272,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
                     setSourceLanguage2List(value)
                   }
                 }}
-                disabled={disabled || !sourceLanguage2}
+                disabled={hasSttStarted || !sourceLanguage2}
                 allowClear
                 showSearch={false}
                 mode="multiple"

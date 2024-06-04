@@ -1,5 +1,5 @@
-import { useMount, useMessage, useHost } from "@/common"
-import { IUserInfo, IUserData, STTStatus, ILanguageSelect } from "@/types"
+import { useMount, useMessage } from "@/common"
+import { IUserInfo, IUserData, ILanguageSelect, ISttData } from "@/types"
 import {
   RtcManager,
   RtmManager,
@@ -18,17 +18,15 @@ import Menu from "../../components/menu"
 import ExtendMessage from "../../components/extend-message"
 import { RootState } from "@/store"
 import {
-  setHostId,
-  setUserInfo,
   setLocalAudioMute,
   setLocalVideoMute,
-  setSTTStatus,
   setCaptionLanguageSelect,
   reset,
   setCaptionShow,
   addMessage,
   setSttCountDown,
   updateSubtitles,
+  setSttData,
 } from "@/store/reducers/global"
 import { useSelector, useDispatch } from "react-redux"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -45,8 +43,6 @@ window.rtcManager = rtcManager
 window.rtmManager = rtmManager
 window.sttManager = sttManager
 
-let hostStartSTT = false
-
 const HomePage = () => {
   const dispatch = useDispatch()
   const nav = useNavigate()
@@ -61,24 +57,25 @@ const HomePage = () => {
   const dialogRecordShow = useSelector((state: RootState) => state.global.dialogRecordShow)
   const captionShow = useSelector((state: RootState) => state.global.captionShow)
   const aiShow = useSelector((state: RootState) => state.global.aiShow)
-  const sttStatus = useSelector((state: RootState) => state.global.sttStatus)
+  const sttData = useSelector((state: RootState) => state.global.sttData)
   const sttCountDown = useSelector((state: RootState) => state.global.sttCountDown)
   const [localTracks, setLocalTracks] = useState<IUserTracks>()
   const [userRtmList, setRtmUserList] = useState<ISimpleUserInfo[]>([])
-  const [rtcUserMap, setRtcUserMap] = useState<Map<number, IRtcUser>>(new Map())
+  const [rtcUserMap, setRtcUserMap] = useState<Map<number | string, IRtcUser>>(new Map())
   const [centerUserId, setCenterUserId] = useState(userInfo.userId)
   const [showExtendMessage, setShowExtendMessage] = useState(false)
-  const { hostId, isHost } = useHost()
 
   useEffect(() => {
     let timer: any
 
-    if (isHost && sttStatus == "start") {
+    if (sttData.status == "start") {
       timer = setTimeout(async () => {
         if (sttCountDown <= 0) {
           await Promise.all([
             window.sttManager.stopTranscription(),
-            window.rtmManager.setSttStatus("end"),
+            window.rtmManager.updateSttData({
+              status: "end",
+            }),
           ])
           setShowExtendMessage(true)
           return clearTimeout(timer)
@@ -91,29 +88,25 @@ const HomePage = () => {
     return () => {
       timer && clearTimeout(timer)
     }
-  }, [sttStatus, sttCountDown, isHost])
+  }, [sttData, sttCountDown])
 
   // host auto stop stt
-  useEffect(() => {
-    const onHashchange = () => {
-      if (isHost && sttStatus === "start") {
-        sttManager.stopTranscription()
-        rtmManager.setSttStatus("end")
-      }
-    }
+  // useEffect(() => {
+  //   const onHashchange = () => {
+  //     if (sttData.status === "start") {
+  //       sttManager.stopTranscription()
+  //       rtmManager.updateSttData({
+  //         status: "end",
+  //       })
+  //     }
+  //   }
 
-    window.addEventListener("hashchange", onHashchange)
+  //   window.addEventListener("hashchange", onHashchange)
 
-    if (isHost && sttStatus == "start") {
-      hostStartSTT = true
-    } else {
-      hostStartSTT = false
-    }
-
-    return () => {
-      window.removeEventListener("hashchange", onHashchange)
-    }
-  }, [isHost, sttStatus])
+  //   return () => {
+  //     window.removeEventListener("hashchange", onHashchange)
+  //   }
+  // }, [sttData])
 
   // init
   useEffect(() => {
@@ -128,20 +121,19 @@ const HomePage = () => {
     }
   }, [])
 
+  // check stt status
   useEffect(() => {
     if (isMounted) {
-      if (sttStatus == "end") {
+      if (sttData.status == "end") {
         dispatch(setCaptionShow(false))
-        dispatch(addMessage({ content: t("setting.sttStopped"), type: "success" }))
       } else {
         setShowExtendMessage(false)
-        dispatch(addMessage({ content: t("setting.sttStarted"), type: "success" }))
       }
     }
-  }, [sttStatus])
+  }, [sttData])
 
-  const simpleUserMap: Map<number, IUserInfo> = useMemo(() => {
-    const map = new Map<number, IUserInfo>()
+  const simpleUserMap: Map<number | string, IUserInfo> = useMemo(() => {
+    const map = new Map<number | string, IUserInfo>()
     for (let i = 0; i < userRtmList.length; i++) {
       const item = userRtmList[i]
       const userId = Number(item.userId)
@@ -161,18 +153,16 @@ const HomePage = () => {
   // listen events
   useEffect(() => {
     window.rtmManager.on("userListChanged", onRtmUserListChanged)
-    window.rtmManager.on("hostChanged", onHostChanged)
     window.rtmManager.on("languagesChanged", onLanguagesChanged)
-    window.rtmManager.on("sttStatusChanged", onSTTStatusChanged)
+    window.rtmManager.on("sttDataChanged", onSttDataChanged)
     window.rtcManager.on("localUserChanged", onLocalUserChanged)
     window.rtcManager.on("remoteUserChanged", onRemoteUserChanged)
     window.rtcManager.on("textstreamReceived", onTextStreamReceived)
 
     return () => {
       window.rtmManager.off("userListChanged", onRtmUserListChanged)
-      window.rtmManager.off("hostChanged", onHostChanged)
       window.rtmManager.off("languagesChanged", onLanguagesChanged)
-      window.rtmManager.off("sttStatusChanged", onSTTStatusChanged)
+      window.rtmManager.off("sttDataChanged", onSttDataChanged)
       window.rtcManager.off("localUserChanged", onLocalUserChanged)
       window.rtcManager.off("remoteUserChanged", onRemoteUserChanged)
       window.rtcManager.off("textstreamReceived", onTextStreamReceived)
@@ -193,21 +183,19 @@ const HomePage = () => {
     for (const item of simpleUserMap.values()) {
       const userId = item.userId
       const rtcUser = rtcUserMap.get(userId)
-      const isHost = item.userId === hostId
       const isCenterUser = userId === centerUserId
       const isLocalUser = userId === userInfo.userId
       list.push({
         userId,
-        isHost,
         isLocal: isLocalUser,
-        order: isCenterUser ? 1000 : isHost ? 100 : 1,
+        order: isCenterUser ? 1000 : 1,
         userName: item.userName,
         videoTrack: isLocalUser ? localTracks?.videoTrack : rtcUser?.videoTrack,
         audioTrack: isLocalUser ? localTracks?.audioTrack : rtcUser?.audioTrack,
       })
     }
     return list.sort((a, b) => b.order - a.order)
-  }, [simpleUserMap, userInfo, localTracks, centerUserId, rtcUserMap, hostId])
+  }, [simpleUserMap, userInfo, localTracks, centerUserId, rtcUserMap])
 
   const curUserData = useMemo(() => {
     return userDataList[0] as IUserData
@@ -216,7 +204,6 @@ const HomePage = () => {
   const init = async () => {
     const userId = userInfo.userId
     const channel = options.channel
-    const userName = userInfo.userName
     await Promise.all([
       rtcManager.createTracks(),
       rtcManager.join({
@@ -227,24 +214,15 @@ const HomePage = () => {
         userId: userId + "",
         channel,
       }),
+      sttManager.init({
+        userId: userId + "",
+        channel,
+      }),
     ])
-    await rtmManager.updateUserInfo({
-      userId: userId + "",
-      userName,
-    })
     await rtcManager.publish()
   }
 
   const destory = async () => {
-    try {
-      if (hostStartSTT) {
-        hostStartSTT = false
-        await Promise.all([sttManager.stopTranscription(), rtmManager.setSttStatus("end")])
-      }
-    } catch (e) {
-      // don't block rtc/rtm destory
-      console.error("[test] destory error", e)
-    }
     await Promise.all([rtcManager.destroy(), rtmManager.destroy()])
     dispatch(reset())
   }
@@ -264,11 +242,6 @@ const HomePage = () => {
     setRtmUserList(list)
   }
 
-  const onHostChanged = (hostId: string) => {
-    console.log("[test] onHostChanged", hostId)
-    dispatch(setHostId(Number(hostId)))
-  }
-
   const onRemoteUserChanged = (user: IRtcUser) => {
     setRtcUserMap((prev) => {
       const newMap = new Map(prev)
@@ -277,9 +250,9 @@ const HomePage = () => {
     })
   }
 
-  const onSTTStatusChanged = (status: STTStatus) => {
-    console.log("[test] onSTTStatusChanged", status)
-    dispatch(setSTTStatus(status))
+  const onSttDataChanged = (data: ISttData) => {
+    console.log("[test] onSttDataChanged", data)
+    dispatch(setSttData(data))
   }
 
   const onTextStreamReceived = (textstream: ITextstream) => {
@@ -318,10 +291,10 @@ const HomePage = () => {
       </section>
       <Footer style={{ flex: "0 0 80px" }} />
       <Caption visible={captionShow}></Caption>
-      <ExtendMessage
+      {/* <ExtendMessage
         open={showExtendMessage}
         onClose={() => setShowExtendMessage(false)}
-      ></ExtendMessage>
+      ></ExtendMessage> */}
     </div>
   )
 }

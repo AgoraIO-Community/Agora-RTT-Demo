@@ -38,7 +38,6 @@
     "startCC": "Start CC",
     "stopCC": "Stop CC",
     "tipEnableSTTFirst": "Please enable speech transcription in language settings first",
-    "tipHostEnableCCFirst": "Please enable the host to activate speech transcription in the language settings first",
     "tipHostEnableCC": "Only the host can operate"
   },
   "setting": {

@@ -1,14 +1,20 @@
 import { ICameraVideoTrack, IMicrophoneAudioTrack } from "agora-rtc-sdk-ng"
 
 export type MenuType = "AI" | "DialogRecord"
-export type STTStatus = "start" | "end"
 export type STTDataType = "transcribe" | "translate"
 export type DialogLanguageType = "live" | "translate"
 export type InputStatuses = "warning" | "error" | ""
+export type Role = "host" | "audience"
+
+export interface ISttData {
+  taskId?: string
+  token?: string
+  status: "start" | "end"
+}
 
 export interface IUserInfo {
   userName: string
-  userId: number
+  userId: number | string
 }
 
 export interface IOptions {
@@ -17,7 +23,7 @@ export interface IOptions {
 }
 
 export interface IUserData extends IUserInfo {
-  isHost: boolean
+  isHost?: boolean
   isLocal: boolean
   order: number
   videoTrack?: ICameraVideoTrack

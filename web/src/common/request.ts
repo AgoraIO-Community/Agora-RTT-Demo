@@ -1,3 +1,4 @@
+// https://confluence.agoralab.co/pages/viewpage.action?pageId=1408371148
 import { IRequestLanguages } from "@/types"
 
 const MODE = import.meta.env.MODE

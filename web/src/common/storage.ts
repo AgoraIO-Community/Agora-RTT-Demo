@@ -1,8 +1,11 @@
+import { DEFAULT_STT_OPTIONS } from "@/common/constant"
 import { IUserInfo, IOptions } from "@/types"
 import { getDefaultLanguage } from "./utils"
+import { STTManagerOptions } from "../manager/stt"
 
 const USER_INFO_KEY = "__user_info__"
 const OPTIONS_KEY = "__options__"
+const STT_KEY = "__stt_options__"
 
 export const DEFAULT_USER_INFO: IUserInfo = {
   userId: 0,
@@ -48,4 +51,19 @@ export const setOptionsToLocal = (options: Partial<IOptions>) => {
     curOptions.channel = options.channel
   }
   localStorage.setItem(OPTIONS_KEY, JSON.stringify(curOptions))
+}
+
+export const getSttOptionsFromLocal = (): STTManagerOptions => {
+  const options = localStorage.getItem(STT_KEY)
+  return options ? JSON.parse(options) : JSON.parse(JSON.stringify(DEFAULT_STT_OPTIONS))
+}
+
+export const setSttOptionsToLocal = (options: Partial<STTManagerOptions>) => {
+  const curOptions = getSttOptionsFromLocal()
+  Object.assign(curOptions, options)
+  localStorage.setItem(STT_KEY, JSON.stringify(curOptions))
+}
+
+export const removeSttOptionsFromLocal = () => {
+  localStorage.removeItem(STT_KEY)
 }

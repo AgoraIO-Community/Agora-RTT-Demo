@@ -25,7 +25,7 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
     this._listenParserStreamEvent()
   }
 
-  async join({ channel, userId }: { channel: string; userId: number }) {
+  async join({ channel, userId }: { channel: string; userId: number | string }) {
     if (!this._joined) {
       const token = await apiGetAgoraToken({ channel, uid: userId })
       await this.client?.join(appId, channel, token, userId)

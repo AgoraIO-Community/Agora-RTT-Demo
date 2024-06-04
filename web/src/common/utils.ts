@@ -1,6 +1,6 @@
 import { getUserInfoFromLocal } from "./storage"
 import { CAPTION_SCROLL_PX_LIST } from "./constant"
-import { ITextItem } from "@/types"
+import { ITextItem, ILanguageSelect } from "@/types"
 
 function _pad(num: number) {
   return num.toString().padStart(2, "0")
@@ -123,4 +123,13 @@ export const showAIModule = () => {
 // example: isArabic("ar-EG") => true
 export const isArabic = (lang: string) => {
   return lang.includes("ar-")
+}
+
+export const getDefaultLanguageSelect = (): ILanguageSelect => {
+  return {
+    transcribe1: undefined,
+    translate1List: [],
+    transcribe2: undefined,
+    translate2List: [],
+  }
 }
