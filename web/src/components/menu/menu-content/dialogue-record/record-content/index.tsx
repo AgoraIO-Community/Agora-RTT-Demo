@@ -3,15 +3,15 @@ import { RootState } from "@/store"
 import { formatTime2, isArabic } from "@/common"
 import { IChatItem } from "@/types"
 import { useSelector } from "react-redux"
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef } from "react"
 
 import styles from "./index.module.scss"
 
 const RecordContent = () => {
   const recordLanguageSelect = useSelector((state: RootState) => state.global.recordLanguageSelect)
   const subtitles = useSelector((state: RootState) => state.global.sttSubtitles)
-
   const { translate1List = [], translate2List = [] } = recordLanguageSelect
+  const contentRef = useRef<HTMLElement>(null)
 
   const translateList = useMemo(() => {
     return [...translate1List, ...translate2List]
@@ -40,8 +40,14 @@ const RecordContent = () => {
     return reslist.sort((a: IChatItem, b: IChatItem) => Number(a.time) - Number(b.time))
   }, [translateList, subtitles])
 
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = contentRef.current.scrollHeight
+    }
+  }, [chatList])
+
   return (
-    <section className={styles.record}>
+    <section className={styles.record} ref={contentRef}>
       {chatList.map((item, index) => (
         <div key={index} className={styles.item}>
           <div className={styles.left}>

@@ -19,12 +19,10 @@ import {
 import { ITextstream } from "@/manager"
 // common/hook will use store, so we don't import @/common
 import { getDefaultLanguageSelect } from "@/common/utils"
-import { EXPERIENCE_DURATION } from "@/common/constant"
 
 export interface InitialState {
   // ------- stt --------------
   sttData: ISttData
-  sttCountDown: number // ms
   // ------- user state -------
   userInfo: IUserInfo
   options: IOptions
@@ -56,7 +54,6 @@ const getInitialState = (): InitialState => {
     options: getOptionsFromLocal(),
     localVideoMute: true,
     localAudioMute: true,
-    sttCountDown: EXPERIENCE_DURATION,
     memberListShow: false,
     dialogRecordShow: false,
     captionShow: false,
@@ -128,9 +125,6 @@ export const globalSlice = createSlice({
         token: payload.token,
       })
     },
-    setSttCountDown: (state, action: PayloadAction<number>) => {
-      state.sttCountDown = action.payload
-    },
     setCaptionLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
       state.captionLanguageSelect = action.payload
     },
@@ -139,6 +133,9 @@ export const globalSlice = createSlice({
     },
     setCaptionLanguages: (state, action: PayloadAction<string[]>) => {
       state.captionLanguages = action.payload
+    },
+    setSubtitles: (state, action: PayloadAction<ITextItem[]>) => {
+      state.sttSubtitles = action.payload
     },
     updateSubtitles: (
       state,
@@ -242,11 +239,11 @@ export const {
   setLocalAudioMute,
   setPageInfo,
   setSttData,
-  setSttCountDown,
   setCaptionLanguages,
   setCaptionLanguageSelect,
   setRecordLanguageSelect,
   updateSubtitles,
+  setSubtitles,
   removeMessage,
   addMessage,
   reset,

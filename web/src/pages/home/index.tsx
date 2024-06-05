@@ -24,7 +24,6 @@ import {
   reset,
   setCaptionShow,
   addMessage,
-  setSttCountDown,
   updateSubtitles,
   setSttData,
 } from "@/store/reducers/global"
@@ -60,7 +59,6 @@ const HomePage = () => {
   const captionShow = useSelector((state: RootState) => state.global.captionShow)
   const aiShow = useSelector((state: RootState) => state.global.aiShow)
   const sttData = useSelector((state: RootState) => state.global.sttData)
-  const sttCountDown = useSelector((state: RootState) => state.global.sttCountDown)
   const { userId, userName } = userInfo
   const { channel } = options
   const [localTracks, setLocalTracks] = useState<IUserTracks>()
@@ -73,39 +71,21 @@ const HomePage = () => {
     let timer: any
 
     if (sttData.status == "start") {
-      timer = setTimeout(async () => {
-        if (sttCountDown <= 0) {
-          await window.sttManager.stopTranscription()
-          // setShowExtendMessage(true)
-          return clearTimeout(timer)
+      timer = setInterval(async () => {
+        const now = new Date().getTime()
+        if (sttData?.startTime && sttData?.duration) {
+          if (now - sttData?.startTime > sttData?.duration) {
+            await window.sttManager.stopTranscription()
+            return clearInterval(timer)
+          }
         }
-
-        dispatch(setSttCountDown(sttCountDown - 1000))
-      }, 1000)
+      }, 5000)
     }
 
     return () => {
-      timer && clearTimeout(timer)
+      timer && clearInterval(timer)
     }
-  }, [sttData, sttCountDown])
-
-  // host auto stop stt
-  // useEffect(() => {
-  //   const onHashchange = () => {
-  //     if (sttData.status === "start") {
-  //       sttManager.stopTranscription()
-  //       rtmManager.updateSttData({
-  //         status: "end",
-  //       })
-  //     }
-  //   }
-
-  //   window.addEventListener("hashchange", onHashchange)
-
-  //   return () => {
-  //     window.removeEventListener("hashchange", onHashchange)
-  //   }
-  // }, [sttData])
+  }, [sttData])
 
   // init
   useEffect(() => {

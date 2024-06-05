@@ -250,8 +250,17 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
   }
 
   private _dealStorageDataChanged(metadata: any) {
-    const { transcribe1, translate1List, transcribe2, translate2List, status, taskId, token } =
-      metadata
+    const {
+      transcribe1,
+      translate1List,
+      transcribe2,
+      translate2List,
+      status,
+      taskId,
+      token,
+      startTime,
+      duration,
+    } = metadata
     if (transcribe1?.value) {
       const parseTranscribe1 = JSON.parse(transcribe1.value)
       const parseTranslate1 = JSON.parse(translate1List.value)
@@ -271,6 +280,8 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
         status: JSON.parse(status?.value),
         taskId: JSON.parse(taskId?.value),
         token: JSON.parse(token?.value),
+        startTime: JSON.parse(startTime?.value),
+        duration: JSON.parse(duration?.value),
       })
     } else {
       this.emit("sttDataChanged", {

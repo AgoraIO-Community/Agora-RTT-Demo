@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/store"
 import { useEffect, useMemo, useState } from "react"
 import { Modal, Alert, Select, Space } from "antd"
-import { LANGUAGE_LIST, EXPERIENCE_DURATION } from "@/common"
+import { LANGUAGE_LIST } from "@/common"
 import { setRecordLanguageSelect, addMessage } from "@/store/reducers/global"
 import { useTranslation } from "react-i18next"
 

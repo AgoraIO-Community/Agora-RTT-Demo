@@ -9,7 +9,9 @@ export type Role = "host" | "audience"
 export interface ISttData {
   taskId?: string
   token?: string
-  status: "start" | "end"
+  startTime?: number // ms
+  duration?: number // ms
+  status?: "start" | "end"
 }
 
 export interface IUserInfo {

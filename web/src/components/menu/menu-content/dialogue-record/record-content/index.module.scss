@@ -1,13 +1,11 @@
 .record {
+  flex: 1 1 auto;
   padding-left: 12px;
   padding-right: 12px;
   padding-bottom: 12px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
   overflow-y: auto;
+  box-sizing: border-box;
+
 
   .item+.item {
     margin-top: 12px;
@@ -17,6 +15,8 @@
     display: flex;
     flex-direction: row;
     align-items: flex-start;
+    width: 100%;
+    box-sizing: border-box;
 
     .left {
       flex:  0 0 auto;

@@ -2,10 +2,10 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/store"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Modal, Alert, Select, Space } from "antd"
-import { LANGUAGE_LIST, EXPERIENCE_DURATION } from "@/common"
+import { LANGUAGE_LIST } from "@/common"
 import { LoadingOutlined } from "@ant-design/icons"
 import { ILanguageItem } from "@/manager"
-import { addMessage, setSttCountDown, setRecordLanguageSelect } from "@/store/reducers/global"
+import { addMessage, setRecordLanguageSelect, setSubtitles } from "@/store/reducers/global"
 import { useTranslation } from "react-i18next"
 
 import styles from "./index.module.scss"
@@ -99,13 +99,9 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
     setLoading(true)
     try {
       if (!hasSttStarted) {
-        if (!languages.length) {
-          return
-        }
         await window.sttManager.startTranscription({
           languages,
         })
-        dispatch(setSttCountDown(EXPERIENCE_DURATION))
         dispatch(
           setRecordLanguageSelect({
             transcribe1: sourceLanguage1,
@@ -115,6 +111,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
           }),
         )
         dispatch(addMessage({ content: t("setting.sttStarted"), type: "success" }))
+        dispatch(setSubtitles([]))
       } else {
         await window.sttManager.stopTranscription()
         dispatch(addMessage({ content: t("setting.sttStopped"), type: "success" }))
@@ -158,7 +155,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
 
   const onMultipleClickTitle = () => {
     const time = 120 * 60 * 1000
-    dispatch(setSttCountDown(time))
+    // dispatch(setSttCountDown(time))
     dispatch(
       addMessage({
         content: t("message.extendExperience"),

@@ -1,9 +1,9 @@
 import { RefObject, useEffect, useRef, useState, useMemo } from "react"
 import { Button, message } from "antd"
 import { RootState, AppDispatch } from "@/store"
-import { removeMessage, setPageInfo, setSttCountDown } from "@/store/reducers/global"
+import { removeMessage, setPageInfo } from "@/store/reducers/global"
 import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux"
-import { EXPERIENCE_DURATION, TOAST_DURATION } from "@/common"
+import { TOAST_DURATION } from "@/common"
 
 export const useAppDispatch = () => useDispatch<AppDispatch>()
 
