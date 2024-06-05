@@ -108,19 +108,8 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
         await window.sttManager.startTranscription({
           languages,
         })
-        dispatch(
-          setRecordLanguageSelect({
-            transcribe1: sourceLanguage1,
-            translate1List: [],
-            transcribe2: sourceLanguage2,
-            translate2List: [],
-          }),
-        )
-        dispatch(addMessage({ content: t("setting.sttStarted"), type: "success" }))
-        dispatch(setSubtitles([]))
       } else {
         await window.sttManager.stopTranscription()
-        dispatch(addMessage({ content: t("setting.sttStopped"), type: "success" }))
       }
     } catch (e: any) {
       console.error(e)

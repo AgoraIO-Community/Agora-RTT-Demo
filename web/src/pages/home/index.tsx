@@ -15,7 +15,6 @@ import CenterArea from "../../components/center-area"
 import UserList from "../../components/user-list"
 import Caption from "../../components/caption"
 import Menu from "../../components/menu"
-import ExtendMessage from "../../components/extend-message"
 import { RootState } from "@/store"
 import {
   setLocalAudioMute,
@@ -26,10 +25,12 @@ import {
   addMessage,
   updateSubtitles,
   setSttData,
+  setSubtitles,
+  setRecordLanguageSelect,
 } from "@/store/reducers/global"
 import { useSelector, useDispatch } from "react-redux"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useNavigate, useLocation, useBeforeUnload } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 import styles from "./index.module.scss"
@@ -65,7 +66,19 @@ const HomePage = () => {
   const [userRtmList, setRtmUserList] = useState<ISimpleUserInfo[]>([])
   const [rtcUserMap, setRtcUserMap] = useState<Map<number | string, IRtcUser>>(new Map())
   const [centerUserId, setCenterUserId] = useState(userInfo.userId)
-  // const [showExtendMessage, setShowExtendMessage] = useState(false)
+
+  // init
+  useEffect(() => {
+    if (!userInfo.userId) {
+      dispatch(addMessage({ content: "Please login first", type: "error" }))
+      nav("/")
+    }
+    init()
+
+    return () => {
+      destory()
+    }
+  }, [])
 
   useEffect(() => {
     let timer: any
@@ -87,27 +100,24 @@ const HomePage = () => {
     }
   }, [sttData])
 
-  // init
-  useEffect(() => {
-    if (!userInfo.userId) {
-      dispatch(addMessage({ content: "Please login first", type: "error" }))
-      nav("/")
-    }
-    init()
-
-    return () => {
-      destory()
-    }
-  }, [])
-
-  // check stt status
   useEffect(() => {
     if (isMounted) {
-      if (sttData.status == "end") {
+      if (sttData.status == "start") {
+        dispatch(
+          setRecordLanguageSelect({
+            translate1List: [],
+            translate2List: [],
+          }),
+        )
+        dispatch(setSubtitles([]))
+        dispatch(addMessage({ content: t("setting.sttStart"), type: "success" }))
+      } else if (sttData.status == "end") {
         dispatch(setCaptionShow(false))
+        dispatch(addMessage({ content: t("setting.sttStop"), type: "success" }))
       }
     }
-  }, [sttData])
+    // do not put isMounted in the dependencies
+  }, [sttData.status])
 
   const simpleUserMap: Map<number | string, IUserInfo> = useMemo(() => {
     const map = new Map<number | string, IUserInfo>()
@@ -263,10 +273,6 @@ const HomePage = () => {
       </section>
       <Footer style={{ flex: "0 0 80px" }} />
       <Caption visible={captionShow}></Caption>
-      {/* <ExtendMessage
-        open={showExtendMessage}
-        onClose={() => setShowExtendMessage(false)}
-      ></ExtendMessage> */}
     </div>
   )
 }

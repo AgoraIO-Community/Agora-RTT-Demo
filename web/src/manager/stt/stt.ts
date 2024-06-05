@@ -134,11 +134,15 @@ export class SttManager extends AGEventEmitter<STTEvents> {
    * @param duration ms
    */
   async extendDuration({ startTime, duration }: { startTime?: number; duration?: number }) {
+    const data: any = {}
+    if (startTime) {
+      data.startTime = startTime
+    }
+    if (duration) {
+      data.duration = duration
+    }
     // set rtm metadata
-    await this.rtmManager.updateSttData({
-      duration,
-      startTime,
-    })
+    await this.rtmManager.updateSttData(data)
   }
 
   async destroy() {

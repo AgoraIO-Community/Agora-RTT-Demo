@@ -49,13 +49,10 @@ const RecordHeader = (props: IRecordHeaderProps) => {
     }
   }, [sttData])
 
-  // const experienceDuration = useMemo(() => {
-  //   // const now = new Date().getTime()
-  //   // return now - (sttData?.startTime || now)
-  // }, [sttData])
-
   const onClickExtend = () => {
-    // dispatch(setSttCountDown(EXPERIENCE_DURATION))
+    window.sttManager.extendDuration({
+      startTime: new Date().getTime(),
+    })
   }
 
   const onClickSetting = () => {

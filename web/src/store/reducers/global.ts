@@ -30,7 +30,10 @@ export interface InitialState {
   localAudioMute: boolean
   captionLanguages: string[]
   captionLanguageSelect: ILanguageSelect
-  recordLanguageSelect: ILanguageSelect
+  recordLanguageSelect: {
+    translate1List?: string[]
+    translate2List?: string[]
+  }
   sttSubtitles: ITextItem[]
   // ------- UI state -------
   memberListShow: boolean
@@ -61,7 +64,7 @@ const getInitialState = (): InitialState => {
     captionLanguages: ["live"],
     sttSubtitles: [],
     captionLanguageSelect: getDefaultLanguageSelect(),
-    recordLanguageSelect: getDefaultLanguageSelect(),
+    recordLanguageSelect: {},
     menuList: [],
     page: {
       width: 0,
@@ -127,18 +130,6 @@ export const globalSlice = createSlice({
     },
     setCaptionLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
       state.captionLanguageSelect = action.payload
-      const { translate1List: cList1 = [], translate2List: cList2 = [] } =
-        state.captionLanguageSelect
-      const { translate1List: rList1 = [], translate2List: rList2 = [] } =
-        state.recordLanguageSelect
-      // record translate list should be in caption translate list
-      const translate1List = rList1.filter((item) => cList1.includes(item))
-      const translate2List = rList2.filter((item) => cList2.includes(item))
-      state.recordLanguageSelect = {
-        ...state.recordLanguageSelect,
-        translate1List,
-        translate2List,
-      }
     },
     setRecordLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
       state.recordLanguageSelect = action.payload

@@ -48,7 +48,7 @@ const LanguageShowDialog = (props: ILanguageSettingDialogProps) => {
   useEffect(() => {
     setTranslateLanguage1List(recordTranslate1List)
     setTranslateLanguage2List(recordTranslate2List)
-  }, [captionLanguageSelect])
+  }, [recordLanguageSelect])
 
   const translateLanguage1Options = useMemo(() => {
     const options: any[] = []
@@ -78,9 +78,7 @@ const LanguageShowDialog = (props: ILanguageSettingDialogProps) => {
   const onClickBtn = async () => {
     dispatch(
       setRecordLanguageSelect({
-        transcribe1,
         translate1List: translateLanguage1List,
-        transcribe2,
         translate2List: translateLanguage2List,
       }),
     )
