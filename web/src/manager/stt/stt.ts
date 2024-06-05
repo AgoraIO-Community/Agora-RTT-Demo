@@ -88,7 +88,7 @@ export class SttManager extends AGEventEmitter<STTEvents> {
         }),
       ])
     } catch (err) {
-      // await this.rtmManager.releaseLock()
+      await this.rtmManager.releaseLock()
       throw err
     }
     await this.rtmManager.releaseLock()

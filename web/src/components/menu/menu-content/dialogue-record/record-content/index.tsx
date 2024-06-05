@@ -36,7 +36,6 @@ const RecordContent = () => {
       })
       reslist.push(chatItem)
     })
-    // console.log("[test] [record] list: ", reslist)
     return reslist.sort((a: IChatItem, b: IChatItem) => Number(a.time) - Number(b.time))
   }, [translateList, subtitles])
 

@@ -7,7 +7,11 @@ import { useTranslation } from "react-i18next"
 
 import styles from "./index.module.scss"
 
-const RecordHeader = () => {
+interface IRecordHeaderProps {
+  onClickSetting?: () => void
+}
+
+const RecordHeader = (props: IRecordHeaderProps) => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
   const sttData = useSelector((state: RootState) => state.global.sttData)
@@ -55,7 +59,7 @@ const RecordHeader = () => {
   }
 
   const onClickSetting = () => {
-    // setOpenLanguageShowDialog(!openLanguageShowDialog)
+    props?.onClickSetting?.()
   }
 
   return (

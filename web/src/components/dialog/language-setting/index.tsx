@@ -26,7 +26,6 @@ const languageOptions = LANGUAGE_LIST.map((item) => {
 const SELECT_LIVE_LANGUAGE_PLACEHOLDER = "Select on-site language"
 const SELECT_TRANS_LANGUAGE_PLACEHOLDER = "Please select a language to translate into"
 const MAX_COUNT = 5
-
 let clickCount = 0
 const MAX_CLICK_COUNT = 5
 let time = 0
@@ -92,9 +91,16 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
     }
   }, [hasSttStarted])
 
+  const checkSomeSourceLanguage = () => {
+    return sourceLanguage1 && sourceLanguage2 && sourceLanguage1 == sourceLanguage2
+  }
+
   const onClickBtn = async () => {
     if (loading) {
       return
+    }
+    if (checkSomeSourceLanguage()) {
+      return dispatch(addMessage({ content: t("setting.sameLanguage"), type: "success" }))
     }
     setLoading(true)
     try {

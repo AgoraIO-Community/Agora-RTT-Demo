@@ -42,7 +42,11 @@ const DialogueRecord = (props: DialogueRecordProps) => {
 
   return (
     <div className={styles.dialogRecord}>
-      <RecordHeader></RecordHeader>
+      <RecordHeader
+        onClickSetting={() => {
+          setOpenLanguageShowDialog(!openLanguageShowDialog)
+        }}
+      ></RecordHeader>
       <RecordContent></RecordContent>
       {sttSubtitles.length ? (
         <div className={styles.btnWrapper}>

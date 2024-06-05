@@ -50,7 +50,8 @@
     "tip": "您最多可以选择两种语言，每个现场语言可最多对应五种翻译语言",
     "liveLanguage": "现场语言",
     "translationLanguageMax": "翻译语言最多可以选择5种",
-    "saveSuccess": "设置成功"
+    "saveSuccess": "设置成功",
+    "sameLanguage": "现场语言不能相同，请重试"
   },
   "conversation": {
     "sttStarted": "主持人已开启实时转写",

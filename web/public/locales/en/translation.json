@@ -50,7 +50,8 @@
     "tip": "You can select up to two languages, and each live language can correspond to up to five translation languages",
     "liveLanguage": "Live language",
     "translationLanguageMax": "Translation language should less than or equal to 5",
-    "saveSuccess": "Setup success"
+    "saveSuccess": "Setup success",
+    "sameLanguage": "The live language cannot be the same, please try again"
   },
   "conversation": {
     "sttStarted": "The host has turned on real-time transcription",

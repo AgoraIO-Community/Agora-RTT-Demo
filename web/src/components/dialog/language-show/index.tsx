@@ -45,29 +45,32 @@ const LanguageShowDialog = (props: ILanguageSettingDialogProps) => {
   const [translateLanguage2List, setTranslateLanguage2List] =
     useState<string[]>(recordTranslate2List)
 
+  useEffect(() => {
+    setTranslateLanguage1List(recordTranslate1List)
+    setTranslateLanguage2List(recordTranslate2List)
+  }, [captionLanguageSelect])
+
   const translateLanguage1Options = useMemo(() => {
-    const options = []
-    for (const item of LANGUAGE_LIST) {
-      if (captionTranslate1List.includes(item.stt)) {
-        options.push({
-          value: item.stt,
-          label: item.language,
-        })
-      }
-    }
+    const options: any[] = []
+    captionTranslate1List.forEach((item) => {
+      const target = LANGUAGE_LIST.find((el) => el.stt === item)
+      options.push({
+        value: target.stt,
+        label: target.language,
+      })
+    })
     return options
   }, [captionTranslate1List])
 
   const translateLanguage2Options = useMemo(() => {
-    const options = []
-    for (const item of LANGUAGE_LIST) {
-      if (captionTranslate2List.includes(item.stt)) {
-        options.push({
-          value: item.stt,
-          label: item.language,
-        })
-      }
-    }
+    const options: any[] = []
+    captionTranslate2List.forEach((item) => {
+      const target = LANGUAGE_LIST.find((el) => el.stt === item)
+      options.push({
+        value: target.stt,
+        label: target.language,
+      })
+    })
 
     return options
   }, [captionTranslate2List])
