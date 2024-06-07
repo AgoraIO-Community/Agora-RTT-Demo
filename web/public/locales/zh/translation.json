@@ -51,7 +51,7 @@
     "liveLanguage": "现场语言",
     "translationLanguageMax": "翻译语言最多可以选择5种",
     "saveSuccess": "设置成功",
-    "sameLanguage": "现场语言不能相同，请重试"
+    "sameLanguage": "现场语言不能相同"
   },
   "conversation": {
     "sttStarted": "主持人已开启实时转写",

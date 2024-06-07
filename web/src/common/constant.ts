@@ -539,11 +539,6 @@ export const AI_PROMPT_PLACEHOLDER =
 export const AI_RESULT_PLACEHOLDER =
   "Agenda: 1. Discuss the features to add to the product. 2. Explore the importance of low friction and shortening meetings. 3. Consider integrating with other tools and workflows. 4. Discuss the use of video relay services and the effectiveness of the backend. 5. Talk about the possibility of adding transcript and annotation features. 6. "
 
-export const DEFAULT_STT_OPTIONS: STTManagerOptions = {
-  token: "",
-  taskId: "",
-}
-
 export const CAPTION_SCROLL_PX_LIST = [
   {
     distance: 0,

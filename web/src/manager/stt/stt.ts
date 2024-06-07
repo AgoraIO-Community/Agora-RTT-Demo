@@ -2,8 +2,6 @@ import {
   apiSTTStopTranscription,
   apiSTTStartTranscription,
   apiSTTAcquireToken,
-  getSttOptionsFromLocal,
-  setSttOptionsToLocal,
   EXPERIENCE_DURATION,
 } from "@/common"
 import { AGEventEmitter } from "../events"
@@ -11,7 +9,7 @@ import { STTEvents, STTManagerStartOptions, STTManagerOptions, STTManagerInitDat
 import { RtmManager } from "../rtm"
 
 export class SttManager extends AGEventEmitter<STTEvents> {
-  options?: STTManagerOptions
+  option?: STTManagerOptions
   userId: string | number = ""
   channel: string = ""
   rtmManager: RtmManager
@@ -25,6 +23,14 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     super()
     const { rtmManager } = data
     this.rtmManager = rtmManager
+  }
+
+  setOption(option: STTManagerOptions) {
+    this.option = option
+  }
+
+  removeOption() {
+    this.option = undefined
   }
 
   async init({
@@ -71,11 +77,10 @@ export class SttManager extends AGEventEmitter<STTEvents> {
         token,
       })
       const { taskId } = res
-      this.options = {
+      this.setOption({
         token,
         taskId,
-      }
-      setSttOptionsToLocal(this.options)
+      })
       // set rtm metadata
       await Promise.all([
         this.rtmManager.updateLanguages(languages),
@@ -98,10 +103,7 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     if (!this.hasInit) {
       throw new Error("please init first")
     }
-    if (!this.options) {
-      this.options = getSttOptionsFromLocal()
-    }
-    const { taskId, token } = this.options
+    const { taskId, token } = this.option || {}
     if (!taskId) {
       throw new Error("taskId is not found")
     }
@@ -147,6 +149,9 @@ export class SttManager extends AGEventEmitter<STTEvents> {
 
   async destroy() {
     await this.rtmManager.destroy()
+    this.option = undefined
+    this.userId = ""
+    this.channel = ""
     this._init = false
   }
 

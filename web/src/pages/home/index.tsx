@@ -109,9 +109,14 @@ const HomePage = () => {
             translate2List: [],
           }),
         )
+        sttManager.setOption({
+          taskId: sttData.taskId ?? "",
+          token: sttData.token ?? "",
+        })
         dispatch(setSubtitles([]))
         dispatch(addMessage({ content: t("setting.sttStart"), type: "success" }))
       } else if (sttData.status == "end") {
+        sttManager.removeOption()
         dispatch(setCaptionShow(false))
         dispatch(addMessage({ content: t("setting.sttStop"), type: "success" }))
       }

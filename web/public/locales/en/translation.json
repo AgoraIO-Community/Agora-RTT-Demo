@@ -51,7 +51,7 @@
     "liveLanguage": "Live language",
     "translationLanguageMax": "Translation language should less than or equal to 5",
     "saveSuccess": "Setup success",
-    "sameLanguage": "The live language cannot be the same, please try again"
+    "sameLanguage": "The live language cannot be the same"
   },
   "conversation": {
     "sttStarted": "The host has turned on real-time transcription",

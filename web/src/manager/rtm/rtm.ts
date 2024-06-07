@@ -308,7 +308,7 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     const result = await this.client?.presence.whoNow(this.channel, CHANNEL_TYPE)
     console.log("[test] whoNow", result)
     if (result?.totalOccupancy == 1) {
-      this._removeChannelMetadata()
+      // this._removeChannelMetadata()
     }
   }
 

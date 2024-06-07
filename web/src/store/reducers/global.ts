@@ -14,7 +14,6 @@ import {
   getUserInfoFromLocal,
   setUserInfoToLocal,
   setOptionsToLocal,
-  setSttOptionsToLocal,
 } from "@/common/storage"
 import { ITextstream } from "@/manager"
 // common/hook will use store, so we don't import @/common
@@ -123,10 +122,6 @@ export const globalSlice = createSlice({
     setSttData: (state, action: PayloadAction<ISttData>) => {
       const { payload } = action
       state.sttData = payload
-      setSttOptionsToLocal({
-        taskId: payload.taskId,
-        token: payload.token,
-      })
     },
     setCaptionLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
       state.captionLanguageSelect = action.payload
