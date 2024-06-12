@@ -28,7 +28,7 @@ export interface InitialState {
   localVideoMute: boolean
   localAudioMute: boolean
   captionLanguages: string[]
-  captionLanguageSelect: ILanguageSelect
+  languageSelect: ILanguageSelect
   recordLanguageSelect: {
     translate1List?: string[]
     translate2List?: string[]
@@ -62,7 +62,7 @@ const getInitialState = (): InitialState => {
     aiShow: false,
     captionLanguages: ["live"],
     sttSubtitles: [],
-    captionLanguageSelect: getDefaultLanguageSelect(),
+    languageSelect: getDefaultLanguageSelect(),
     recordLanguageSelect: {},
     menuList: [],
     page: {
@@ -123,8 +123,8 @@ export const globalSlice = createSlice({
       const { payload } = action
       state.sttData = payload
     },
-    setCaptionLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
-      state.captionLanguageSelect = action.payload
+    setLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
+      state.languageSelect = action.payload
     },
     setRecordLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
       state.recordLanguageSelect = action.payload
@@ -162,6 +162,7 @@ export const globalSlice = createSlice({
               uid: textstream.uid,
               username,
               text: textStr,
+              lang: textstream.culture,
               isFinal,
               time: textstream.time + textstream.durationMs,
               startTextTs: textstream.textTs,
@@ -238,7 +239,7 @@ export const {
   setPageInfo,
   setSttData,
   setCaptionLanguages,
-  setCaptionLanguageSelect,
+  setLanguageSelect,
   setRecordLanguageSelect,
   updateSubtitles,
   setSubtitles,

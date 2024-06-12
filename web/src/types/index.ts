@@ -19,6 +19,8 @@ export interface IUserInfo {
   userId: number | string
 }
 
+export type LangDataType = "transcribe" | "translate"
+
 export interface IOptions {
   language: string
   channel: string
@@ -43,8 +45,9 @@ export interface ITranslationItem {
 }
 
 export interface ITextItem {
-  dataType: "transcribe" | "translate"
+  dataType: LangDataType
   uid: string | number
+  lang: string
   time: number
   text: string
   isFinal: boolean

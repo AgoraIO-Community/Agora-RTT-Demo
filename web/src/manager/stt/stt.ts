@@ -133,7 +133,8 @@ export class SttManager extends AGEventEmitter<STTEvents> {
 
   /**
    *
-   * @param duration ms
+   * startTime ms
+   * duration ms
    */
   async extendDuration({ startTime, duration }: { startTime?: number; duration?: number }) {
     const data: any = {}

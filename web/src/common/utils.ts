@@ -78,7 +78,6 @@ export const downloadText = (name: string, text: string) => {
   link.click()
 }
 
-// TODO:genContentText
 export const genContentText = (list: ITextItem[]) => {
   let res = ""
   list.forEach((item) => {

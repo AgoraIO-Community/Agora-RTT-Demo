@@ -19,7 +19,9 @@
     "success": "Export success"
   },
   "dialog": {
-    "languageShow": "Language Display"
+    "languageShow": "Language Display",
+    "languageExport": "Language Export",
+    "languageExportTip": "Please select the language to export"
   },
   "login": {
     "github": "Visit GitHub",

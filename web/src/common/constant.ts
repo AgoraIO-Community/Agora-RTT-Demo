@@ -1,62 +1,71 @@
-import { STTManagerOptions } from "../manager/stt"
-
 const MODE = import.meta.env.MODE
 
-export let LANGUAGE_LIST: any[] = []
+interface ISttLanguage {
+  label: string
+  code: string
+}
+
+export let LANGUAGE_LIST: ISttLanguage[] = []
 
 if (MODE == "test") {
   LANGUAGE_LIST = [
-    { language: "Chinese (Cantonese, Traditional)", stt: "zh-HK" },
-    { language: "Chinese (Mandarin, Simplified)", stt: "zh-CN" },
-    { language: "Chinese (Taiwanese Putonghua) ", stt: "zh-TW" },
-    { language: "English (US)", stt: "en-US" },
-    { language: "Japanese (Japan)", stt: "ja-JP" },
-    { language: "Spanish (Spain)", stt: "es-ES" },
-    { language: "Turkish (Turkey)", stt: "tr-TR" },
-    { language: "French", stt: "fr-FR" },
-    { language: "German", stt: "de-DE" },
-    { language: "Italian", stt: "it-IT" },
+    { label: "Chinese (Cantonese, Traditional)", code: "zh-HK" },
+    { label: "Chinese (Mandarin, Simplified)", code: "zh-CN" },
+    { label: "Chinese (Taiwanese Putonghua) ", code: "zh-TW" },
+    { label: "English (US)", code: "en-US" },
+    { label: "Japanese (Japan)", code: "ja-JP" },
+    { label: "Spanish (Spain)", code: "es-ES" },
+    { label: "Turkish (Turkey)", code: "tr-TR" },
+    { label: "French", code: "fr-FR" },
+    { label: "German", code: "de-DE" },
+    { label: "Italian", code: "it-IT" },
   ].sort((a, b) => {
-    return a.language.localeCompare(b.language)
+    return a.label.localeCompare(b.label)
   })
 } else {
   LANGUAGE_LIST = [
-    { language: "Kannada", stt: "kn-IN" },
-    { language: "Gujarati", stt: "gu-IN" },
-    { language: "Telugu", stt: "te-IN" },
-    { language: "Tamil", stt: "ta-IN" },
-    { language: "Bengali(IN)", stt: "bn-IN" },
-    { language: "Hebrew", stt: "he-IL	" },
-    { language: "Dutch", stt: "nl-NL" },
-    { language: "Filipino", stt: "fil-PH" },
-    { language: "Thai", stt: "th-TH" },
-    { language: "Vietnamese", stt: "vi-VN" },
-    { language: "Turkish", stt: "tr-TR" },
-    { language: "Russian", stt: "ru-RU" },
-    { language: "Malay", stt: "ms-MY" },
-    { language: "Persian", stt: "fa-IR" },
-    { language: "Chinese(HK)", stt: "zh-HK" },
-    { language: "Indonesian", stt: "id-ID" },
-    { language: "Arabic(JO)", stt: "ar-JO" },
-    { language: "Arabic(EG)", stt: "ar-EG" },
-    { language: "Arabic(SA)", stt: "ar-SA" },
-    { language: "Arabic(UAE)", stt: "ar-AE" },
-    { language: "Chinese(TW)", stt: "zh-TW" },
-    { language: "English(US) 	", stt: "en-US" },
-    { language: "Hindi", stt: "hi-IN" },
-    { language: "Korean", stt: "ko-KR" },
-    { language: "Japanese", stt: "ja-JP" },
-    { language: "German", stt: "de-DE" },
-    { language: "Spanish", stt: "es-ES" },
-    { language: "French", stt: "fr-FR" },
-    { language: "Italian", stt: "it-IT" },
-    { language: "Chinese", stt: "zh-CN" },
-    { language: "Portuguese", stt: "pt-PT" },
+    { label: "Kannada", code: "kn-IN" },
+    { label: "Gujarati", code: "gu-IN" },
+    { label: "Telugu", code: "te-IN" },
+    { label: "Tamil", code: "ta-IN" },
+    { label: "Bengali(IN)", code: "bn-IN" },
+    { label: "Hebrew", code: "he-IL	" },
+    { label: "Dutch", code: "nl-NL" },
+    { label: "Filipino", code: "fil-PH" },
+    { label: "Thai", code: "th-TH" },
+    { label: "Vietnamese", code: "vi-VN" },
+    { label: "Turkish", code: "tr-TR" },
+    { label: "Russian", code: "ru-RU" },
+    { label: "Malay", code: "ms-MY" },
+    { label: "Persian", code: "fa-IR" },
+    { label: "Chinese(HK)", code: "zh-HK" },
+    { label: "Indonesian", code: "id-ID" },
+    { label: "Arabic(JO)", code: "ar-JO" },
+    { label: "Arabic(EG)", code: "ar-EG" },
+    { label: "Arabic(SA)", code: "ar-SA" },
+    { label: "Arabic(UAE)", code: "ar-AE" },
+    { label: "Chinese(TW)", code: "zh-TW" },
+    { label: "English(US) 	", code: "en-US" },
+    { label: "Hindi", code: "hi-IN" },
+    { label: "Korean", code: "ko-KR" },
+    { label: "Japanese", code: "ja-JP" },
+    { label: "German", code: "de-DE" },
+    { label: "Spanish", code: "es-ES" },
+    { label: "French", code: "fr-FR" },
+    { label: "Italian", code: "it-IT" },
+    { label: "Chinese", code: "zh-CN" },
+    { label: "Portuguese", code: "pt-PT" },
   ].sort((a, b) => {
-    return a.language.localeCompare(b.language)
+    return a.label.localeCompare(b.label)
   })
 }
 
+export const LANGUAGE_OPTIONS = LANGUAGE_LIST.map((item) => {
+  return {
+    value: item.code,
+    label: item.label,
+  }
+})
 export const TOAST_DURATION = 5
 export const EXPERIENCE_DURATION = 10 * 60 * 1000 // ms
 
@@ -67,7 +76,7 @@ export const AI_PROMPT_OPTIONS = [
   },
   {
     label: "Language Learning",
-    value: `You are an assistant of language learning teacher. You need analyze a conversation of a lesson and provide students language skill level, like TOEFL score and IELTS score. In this conversation, Mantho is teacher, Washington and Saverio are student. Please summary what students interesting on. And provide suggestion for teacher for the content of next lesson.
+    value: `You are an assistant of label learning teacher. You need analyze a conversation of a lesson and provide students label skill level, like TOEFL score and IELTS score. In this conversation, Mantho is teacher, Washington and Saverio are student. Please summary what students interesting on. And provide suggestion for teacher for the content of next lesson.
 The output result has 3 part, the first is course summary, the second is the course evaluation for every student, the 3rd is the suggestion for the teacher :
 --------------------------------------------
 Course summary:   <list the course summary>
@@ -310,7 +319,7 @@ Mantho: Alright. And what about your scenario? What do you do outside of the Eng
 Saverio: I'm doing a lot of things. I studied grammar by my side. I'm reviewing the grammar and go through some, yeah, some case, 
 Saverio: some exercise, you have a lot of work. And also as as Washington, I watch movie every day. hmm. Mhmm. And also listening in podcast 
 Saverio: and was so watching news like BDC, NBS, so a lot of things. Yeah.
-Mantho: Okay. Alright. That is that is definitely a good way of learning the language and improving the language.
+Mantho: Okay. Alright. That is that is definitely a good way of learning the label and improving the label.
 Mantho: I want to try out something. So since you guys are both on the journey of learning English, How about you exchange ideas?
 Mantho: How about you talk about tell each other what has worked for you, what has been difficult for you in your English journey, 
 Mantho: and what what tips and ideas do you have for any image.
@@ -464,7 +473,7 @@ Mantho: All right. And what about you, Saverio. What do you do outside of the En
 Saverio: Uh, I'm doing a lot of things. I study in grammar by myself. I'm reviewing the grammar and go through some, uh. Yeah, some .
 Saverio: Some exercise. I have a lot of book.And also as a as watch. I watch movie every day and also listening podcast 
 Saverio: and also watching news like BBC. And so a lot of things. Yeah.
-Mantho: Okay. All right. All right. That is that is definitely a good way of learning the language and improving the language .
+Mantho: Okay. All right. All right. That is that is definitely a good way of learning the label and improving the label .
 Mantho: Um, I want to try out something. So since you guys are both on the journey of learning English, how about you exchange ideas.
 Mantho: How about you, Um, talk about. Tell each other what has worked for you. What has been difficult for you in your English journey 
 Mantho: And what what tips and ideas do you have for learning English .
@@ -534,7 +543,7 @@ Mantho: Okay. All right. All right.`,
 ]
 
 export const AI_PROMPT_PLACEHOLDER =
-  "You are an assistant of language learning teacher. You need analyze a conversation of a lesson and provide students language skill level, like TOEFL score and IELTS score. In this conversation, Mantho is teacher, Washington and Saverio are student. Please summary what students interesting on. And provide suggestion for teacher for the content of next lesson."
+  "You are an assistant of label learning teacher. You need analyze a conversation of a lesson and provide students label skill level, like TOEFL score and IELTS score. In this conversation, Mantho is teacher, Washington and Saverio are student. Please summary what students interesting on. And provide suggestion for teacher for the content of next lesson."
 
 export const AI_RESULT_PLACEHOLDER =
   "Agenda: 1. Discuss the features to add to the product. 2. Explore the importance of low friction and shortening meetings. 3. Consider integrating with other tools and workflows. 4. Discuss the use of video relay services and the effectiveness of the backend. 5. Talk about the possibility of adding transcript and annotation features. 6. "

@@ -19,7 +19,9 @@
     "success": "导出成功"
   },
   "dialog": {
-    "languageShow": "语言展示"
+    "languageShow": "语言展示",
+    "languageExport": "语言导出",
+    "languageExportTip": "请选择一种语言导出"
   },
   "login": {
     "github": "访问 GitHub",

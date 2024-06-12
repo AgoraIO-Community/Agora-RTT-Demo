@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/store"
 import { useEffect, useMemo, useState } from "react"
 import { Modal, Alert, Select, Space } from "antd"
-import { LANGUAGE_LIST } from "@/common"
+import { LANGUAGE_OPTIONS } from "@/common"
 import { setRecordLanguageSelect, addMessage } from "@/store/reducers/global"
 import { useTranslation } from "react-i18next"
 
@@ -14,13 +14,6 @@ interface ILanguageSettingDialogProps {
   onCancel?: () => void
 }
 
-const languageOptions = LANGUAGE_LIST.map((item) => {
-  return {
-    value: item.stt,
-    label: item.language,
-  }
-})
-
 const SELECT_TRANS_LANGUAGE_PLACEHOLDER = "Please select a language to translate into"
 const MAX_COUNT = 2
 
@@ -28,16 +21,14 @@ const LanguageShowDialog = (props: ILanguageSettingDialogProps) => {
   const { open, onOk, onCancel } = props
   const dispatch = useDispatch()
   const { t } = useTranslation()
-  const captionLanguageSelect = useSelector(
-    (state: RootState) => state.global.captionLanguageSelect,
-  )
+  const languageSelect = useSelector((state: RootState) => state.global.languageSelect)
   const recordLanguageSelect = useSelector((state: RootState) => state.global.recordLanguageSelect)
   const {
     transcribe1,
     translate1List: captionTranslate1List = [],
     transcribe2,
     translate2List: captionTranslate2List = [],
-  } = captionLanguageSelect
+  } = languageSelect
   const { translate1List: recordTranslate1List = [], translate2List: recordTranslate2List = [] } =
     recordLanguageSelect
   const [translateLanguage1List, setTranslateLanguage1List] =
@@ -53,11 +44,13 @@ const LanguageShowDialog = (props: ILanguageSettingDialogProps) => {
   const translateLanguage1Options = useMemo(() => {
     const options: any[] = []
     captionTranslate1List.forEach((item) => {
-      const target = LANGUAGE_LIST.find((el) => el.stt === item)
-      options.push({
-        value: target.stt,
-        label: target.language,
-      })
+      const target = LANGUAGE_OPTIONS.find((el) => el.value === item)
+      if (target) {
+        options.push({
+          value: target?.value,
+          label: target?.label,
+        })
+      }
     })
     return options
   }, [captionTranslate1List])
@@ -65,11 +58,13 @@ const LanguageShowDialog = (props: ILanguageSettingDialogProps) => {
   const translateLanguage2Options = useMemo(() => {
     const options: any[] = []
     captionTranslate2List.forEach((item) => {
-      const target = LANGUAGE_LIST.find((el) => el.stt === item)
-      options.push({
-        value: target.stt,
-        label: target.language,
-      })
+      const target = LANGUAGE_OPTIONS.find((el) => el.value === item)
+      if (target) {
+        options.push({
+          value: target.value,
+          label: target.label,
+        })
+      }
     })
 
     return options
@@ -116,7 +111,7 @@ const LanguageShowDialog = (props: ILanguageSettingDialogProps) => {
                 value={transcribe1}
                 disabled={true}
                 style={{ width: 160 }}
-                options={languageOptions}
+                options={LANGUAGE_OPTIONS}
               />
               <Select
                 value={translateLanguage1List}
@@ -152,7 +147,7 @@ const LanguageShowDialog = (props: ILanguageSettingDialogProps) => {
                 disabled={true}
                 allowClear
                 style={{ width: 160 }}
-                options={languageOptions}
+                options={LANGUAGE_OPTIONS}
               />
               <Select
                 value={translateLanguage2List}

@@ -19,7 +19,7 @@ import { RootState } from "@/store"
 import {
   setLocalAudioMute,
   setLocalVideoMute,
-  setCaptionLanguageSelect,
+  setLanguageSelect,
   reset,
   setCaptionShow,
   addMessage,
@@ -250,7 +250,7 @@ const HomePage = () => {
 
   const onLanguagesChanged = (languages: ILanguageSelect) => {
     console.log("[test] onLanguagesChanged", languages)
-    dispatch(setCaptionLanguageSelect(languages))
+    dispatch(setLanguageSelect(languages))
   }
 
   const onClickUserListItem = (data: IUserData) => {

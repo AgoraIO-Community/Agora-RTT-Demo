@@ -2,7 +2,7 @@ import { Popover } from "antd"
 import { CheckOutlined } from "@ant-design/icons"
 import { LANGUAGE_LIST } from "@/common"
 import { RootState } from "@/store"
-import { setDialogLanguageType, setCaptionLanguages } from "@/store/reducers/global"
+import { setCaptionLanguages } from "@/store/reducers/global"
 import { useSelector, useDispatch } from "react-redux"
 import { DialogLanguageType } from "@/types"
 
@@ -26,9 +26,7 @@ const CaptionPopover = (props: ICaptionPopoverProps) => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
   const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
-  const captionLanguageSelect = useSelector(
-    (state: RootState) => state.global.captionLanguageSelect,
-  )
+  const languageSelect = useSelector((state: RootState) => state.global.languageSelect)
 
   const captionItems = useMemo(() => {
     const items: CaptionPopoverItem[] = []
@@ -38,13 +36,13 @@ const CaptionPopover = (props: ICaptionPopoverProps) => {
       type: "live",
       active: captionLanguages.includes("live"),
     })
-    const { translate1List = [], translate2List = [] } = captionLanguageSelect
+    const { translate1List = [], translate2List = [] } = languageSelect
     const translateArr = [...new Set([...translate1List, ...translate2List])]
     for (let i = 0; i < translateArr.length; i++) {
-      const target = LANGUAGE_LIST.find((item) => item.stt == translateArr[i])
+      const target = LANGUAGE_LIST.find((item) => item.code == translateArr[i])
       if (target) {
         items.push({
-          text: target?.language || "",
+          text: target?.label || "",
           stt: translateArr[i],
           type: "translate",
           active: captionLanguages.includes(translateArr[i]),
@@ -53,7 +51,7 @@ const CaptionPopover = (props: ICaptionPopoverProps) => {
     }
 
     return items
-  }, [captionLanguages, captionLanguageSelect])
+  }, [captionLanguages, languageSelect])
 
   const onSelect = (item: CaptionPopoverItem) => {
     const languages = [...captionLanguages]

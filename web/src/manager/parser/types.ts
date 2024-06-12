@@ -5,7 +5,7 @@ export interface ITranslationItem {
 
 export interface ITextstream {
   dataType: "transcribe" | "translate"
-  culture?: string
+  culture: string
   uid: string | number
   startTextTs: number
   textTs: number

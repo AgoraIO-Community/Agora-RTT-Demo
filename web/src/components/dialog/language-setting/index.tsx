@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/store"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Modal, Alert, Select, Space } from "antd"
-import { LANGUAGE_LIST } from "@/common"
+import { LANGUAGE_OPTIONS } from "@/common"
 import { LoadingOutlined } from "@ant-design/icons"
 import { ILanguageItem } from "@/manager"
 import { addMessage, setRecordLanguageSelect, setSubtitles } from "@/store/reducers/global"
@@ -16,13 +16,6 @@ interface ILanguageSettingDialogProps {
   onCancel?: () => void
 }
 
-const languageOptions = LANGUAGE_LIST.map((item) => {
-  return {
-    value: item.stt,
-    label: item.language,
-  }
-})
-
 const SELECT_LIVE_LANGUAGE_PLACEHOLDER = "Select on-site language"
 const SELECT_TRANS_LANGUAGE_PLACEHOLDER = "Please select a language to translate into"
 const MAX_COUNT = 5
@@ -35,15 +28,8 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
   const sttData = useSelector((state: RootState) => state.global.sttData)
-  const captionLanguageSelect = useSelector(
-    (state: RootState) => state.global.captionLanguageSelect,
-  )
-  const {
-    transcribe1,
-    translate1List = [],
-    transcribe2,
-    translate2List = [],
-  } = captionLanguageSelect
+  const languageSelect = useSelector((state: RootState) => state.global.languageSelect)
+  const { transcribe1, translate1List = [], transcribe2, translate2List = [] } = languageSelect
   const [sourceLanguage1, setSourceLanguage1] = useState(transcribe1)
   const [sourceLanguage1List, setSourceLanguage1List] = useState<string[]>(translate1List)
   const [sourceLanguage2, setSourceLanguage2] = useState(transcribe2)
@@ -60,7 +46,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
       setSourceLanguage2(transcribe2)
     }
     setSourceLanguage2List(translate2List)
-  }, [captionLanguageSelect])
+  }, [languageSelect])
 
   const hasSttStarted = useMemo(() => {
     return sttData.status == "start"
@@ -149,8 +135,10 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
   }
 
   const onMultipleClickTitle = () => {
-    const time = 120 * 60 * 1000
-    // dispatch(setSttCountDown(time))
+    const duration = 120 * 60 * 1000
+    window.sttManager.extendDuration({
+      duration,
+    })
     dispatch(
       addMessage({
         content: t("message.extendExperience"),
@@ -199,7 +187,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
                 allowClear
                 placeholder={SELECT_LIVE_LANGUAGE_PLACEHOLDER}
                 style={{ width: 160 }}
-                options={languageOptions}
+                options={LANGUAGE_OPTIONS}
               />
               <Select
                 value={sourceLanguage1List}
@@ -216,7 +204,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
                 maxCount={MAX_COUNT}
                 style={{ width: 380 }}
                 maxTagTextLength={10}
-                options={languageOptions}
+                options={LANGUAGE_OPTIONS}
               />
             </Space>
           </div>
@@ -244,7 +232,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
                 allowClear
                 placeholder={SELECT_LIVE_LANGUAGE_PLACEHOLDER}
                 style={{ width: 160 }}
-                options={languageOptions}
+                options={LANGUAGE_OPTIONS}
               />
               <Select
                 value={sourceLanguage2List}
@@ -261,7 +249,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
                 maxCount={MAX_COUNT}
                 style={{ width: 380 }}
                 maxTagTextLength={10}
-                options={languageOptions}
+                options={LANGUAGE_OPTIONS}
               />
             </Space>
           </div>

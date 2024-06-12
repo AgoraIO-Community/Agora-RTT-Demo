@@ -69,6 +69,16 @@ export const useMount = (callback?: () => {}) => {
   return isMountRef.current
 }
 
+export const usePrevious = (value: any) => {
+  const ref = useRef()
+
+  useEffect(() => {
+    ref.current = value
+  }, [value])
+
+  return ref.current
+}
+
 export const useMessage = () => {
   const dispatch = useDispatch()
   const messageList = useSelector((state: RootState) => state.global.messageList)
