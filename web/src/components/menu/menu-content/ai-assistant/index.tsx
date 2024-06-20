@@ -49,7 +49,7 @@ const AiAssistant = forwardRef((props: AiAssistantProps, ref) => {
   const onPromptChange = (value: string) => {
     setSystem(value)
     setConversationSelectValue("")
-    setContentText("")
+    // setContentText("")
     const target = AI_PROMPT_OPTIONS.find((item) => item.label === value)
     if (target) {
       setSystemText(target.value)
