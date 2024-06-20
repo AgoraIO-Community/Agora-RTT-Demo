@@ -55,7 +55,7 @@ const LanguageStorageDialog = (props: ILanguageSettingDialogProps) => {
       const target = LANGUAGE_OPTIONS.find((item) => item.value === transcribe1)
       res.push({
         value: target?.value,
-        label: target?.label,
+        label: "live: " + target?.label,
       })
     }
 
@@ -63,7 +63,7 @@ const LanguageStorageDialog = (props: ILanguageSettingDialogProps) => {
       const target = LANGUAGE_OPTIONS.find((item) => item.value === transcribe2)
       res.push({
         value: target?.value,
-        label: target?.label,
+        label: "live: " + target?.label,
       })
     }
 
@@ -71,14 +71,16 @@ const LanguageStorageDialog = (props: ILanguageSettingDialogProps) => {
       const target = LANGUAGE_OPTIONS.find((item) => item.value === lang)
       res.push({
         value: lang,
-        label: target?.label,
+        label: "translate: " + target?.label,
       })
     })
+
     translate2List.forEach((lang) => {
       const target = LANGUAGE_OPTIONS.find((item) => item.value === lang)
+      if (res.find((item) => item.value === lang)) return
       res.push({
         value: lang,
-        label: target?.label,
+        label: "translate: " + target?.label,
       })
     })
 
