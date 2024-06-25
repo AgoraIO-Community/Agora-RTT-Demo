@@ -1,4 +1,3 @@
-// https://confluence.agoralab.co/pages/viewpage.action?pageId=1408371148
 import { IRequestLanguages } from "@/types"
 
 const MODE = import.meta.env.MODE
@@ -9,6 +8,9 @@ const BASE_URL = "https://service.agora.io/toolbox-overseas"
 // ---------------------------------------
 const appId = import.meta.env.VITE_AGORA_APP_ID
 const appCertificate = import.meta.env.VITE_AGORA_APP_CERTIFICATE
+const SUB_BOT_UID = "1000"
+const PUB_BOT_UID = "2000"
+
 let agoraToken = ""
 let genTokenTime = 0
 
@@ -92,18 +94,16 @@ export const apiSTTStartTranscription = async (options: {
 }): Promise<{ taskId: string }> => {
   const { channel, languages, token, uid } = options
   const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/tasks?builderToken=${token}`
-  const subBotUid = "1000"
-  const pubBotUid = "2000"
   let subBotToken = null
   let pubBotToken = null
   if (appCertificate) {
     const data = await Promise.all([
       apiGetAgoraToken({
-        uid: subBotUid,
+        uid: SUB_BOT_UID,
         channel,
       }),
       apiGetAgoraToken({
-        uid: pubBotUid,
+        uid: PUB_BOT_UID,
         channel,
       }),
     ])
@@ -115,15 +115,14 @@ export const apiSTTStartTranscription = async (options: {
     maxIdleTime: 60,
     rtcConfig: {
       channelName: channel,
-      subBotUid,
-      pubBotUid,
+      subBotUid: SUB_BOT_UID,
+      pubBotUid: PUB_BOT_UID,
     },
   }
   if (subBotToken && pubBotToken) {
     body.rtcConfig.subBotToken = subBotToken
     body.rtcConfig.pubBotToken = pubBotToken
   }
-
   if (languages.find((item) => item.target.length)) {
     body.translateConfig = {
       forceTranslateInterval: 2,
@@ -166,6 +165,55 @@ export const apiSTTStopTranscription = async (options: {
       }),
     },
   })
+}
+
+export const apiSTTQueryTranscription = async (options: {
+  taskId: string
+  token: string
+  uid: number | string
+  channel: string
+}) => {
+  const { taskId, token, uid, channel } = options
+  const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/tasks/${taskId}?builderToken=${token}`
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: await genAuthorization({
+        uid,
+        channel,
+      }),
+    },
+  })
+  return await res.json()
+}
+
+export const apiSTTUpdateTranscription = async (options: {
+  taskId: string
+  token: string
+  uid: number | string
+  channel: string
+  updateMaskList: string[]
+  data: any
+}) => {
+  const { taskId, token, uid, channel, data, updateMaskList } = options
+  const updateMask = updateMaskList.join(",")
+  const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/tasks/${taskId}?builderToken=${token}&sequenceId=1&updateMask=${updateMask}`
+  const body: any = {
+    ...data,
+  }
+  const res = await fetch(url, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: await genAuthorization({
+        uid,
+        channel,
+      }),
+    },
+    body: JSON.stringify(body),
+  })
+  return await res.json()
 }
 
 // --------------- gpt ----------------

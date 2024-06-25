@@ -1,12 +1,15 @@
 import {
   apiSTTStopTranscription,
   apiSTTStartTranscription,
+  apiSTTQueryTranscription,
+  apiSTTUpdateTranscription,
   apiSTTAcquireToken,
   EXPERIENCE_DURATION,
 } from "@/common"
 import { AGEventEmitter } from "../events"
 import { STTEvents, STTManagerStartOptions, STTManagerOptions, STTManagerInitData } from "./types"
 import { RtmManager } from "../rtm"
+import { IRequestLanguages } from "@/types"
 
 export class SttManager extends AGEventEmitter<STTEvents> {
   option?: STTManagerOptions
@@ -69,7 +72,7 @@ export class SttManager extends AGEventEmitter<STTEvents> {
         uid: this.userId,
       })
       const token = data.tokenName
-      // start
+      // api start
       const res = await apiSTTStartTranscription({
         uid: this.userId,
         channel: this.channel,
@@ -113,7 +116,7 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     // aquire lock
     await this.rtmManager.acquireLock()
     try {
-      // stop
+      // api stop
       await apiSTTStopTranscription({
         taskId,
         token,
@@ -129,6 +132,43 @@ export class SttManager extends AGEventEmitter<STTEvents> {
       throw err
     }
     await this.rtmManager.releaseLock()
+  }
+
+  async queryTranscription() {
+    const { taskId, token } = this.option || {}
+    if (!taskId) {
+      throw new Error("taskId is not found")
+    }
+    if (!token) {
+      throw new Error("token is not found")
+    }
+    // api query
+    return await apiSTTQueryTranscription({
+      taskId,
+      token,
+      uid: this.userId,
+      channel: this.channel,
+    })
+  }
+
+  async updateTranscription(options: { data: any; updateMaskList: string[] }) {
+    const { data, updateMaskList } = options
+    const { taskId, token } = this.option || {}
+    if (!taskId) {
+      throw new Error("taskId is not found")
+    }
+    if (!token) {
+      throw new Error("token is not found")
+    }
+    // api update
+    return await apiSTTUpdateTranscription({
+      taskId,
+      token,
+      uid: this.userId,
+      channel: this.channel,
+      data,
+      updateMaskList,
+    })
   }
 
   /**
