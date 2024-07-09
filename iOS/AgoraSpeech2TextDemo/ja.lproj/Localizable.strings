@@ -1,0 +1,26 @@
+/* 
+  Localizable.strings
+  AgoraSpeech2TextDemo
+
+  Created by Yuhua Hu on 2023/02/14.
+  
+*/
+
+"en-US" = "英語 (アメリカ)";
+"en-IN" = "英語 (インド)";
+"ja-JP" = "日本語 (日本)";
+"zh-CN" = "中国語 (簡体)";
+"zh-TW" = "中国語 (台湾繁体)";
+"zh-HK" = "中国語 (香港繁体)";
+"hi-IN" = "ヒンディー語 (インド)";
+"ko-KR" = "韓国語 (韓国)";
+"de-DE" = "ドイツ語 (ドイツ)";
+"es-ES" = "スペイン語 (スペイン)";
+"fr-FR" = "フランス語 (フランス)";
+"it-IT" = "イタリア語 (イタリア)";
+"pt-PT" = "ポルトガル語 (ポルトガル)";
+"id-ID" = "Indonesian (Indonesia)";
+"ar-JO" = "Arabic (Jordan}";
+"ar-EG" = "Arabic (Egyptian}";
+"ar-SA" = "Arabic (Saudi Arabia}";
+"ar-AE" = "Arabic (United Arab Emirates}";

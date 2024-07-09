@@ -1,0 +1,51 @@
+
+/* Class = "UIButton"; configuration.subtitle = "Join room as a host"; ObjectID = "A1c-PH-krf"; */
+"A1c-PH-krf.configuration.subtitle" = "作为主播加入频道";
+
+/* Class = "UIButton"; configuration.title = "Join as Host"; ObjectID = "A1c-PH-krf"; */
+"A1c-PH-krf.configuration.title" = "加入频道";
+
+/* Class = "UIButton"; normalTitle = "Normal Room - Host"; ObjectID = "A1c-PH-krf"; */
+"A1c-PH-krf.normalTitle" = "加入频道";
+
+/* Class = "UIViewController"; title = "Home"; ObjectID = "BYZ-38-t0r"; */
+"BYZ-38-t0r.title" = "首页";
+
+/* Class = "UILabel"; text = "Uid"; ObjectID = "H46-8f-Mjw"; */
+"H46-8f-Mjw.text" = "Uid";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "K7I-rS-a16"; */
+"K7I-rS-a16.text" = "Label";
+
+/* Class = "UILabel"; text = " Channel Name"; ObjectID = "M3K-Xk-R6Y"; */
+"M3K-Xk-R6Y.text" = "频道名";
+
+/* Class = "UILabel"; text = "Subtitle"; ObjectID = "PpE-RO-sPX"; */
+"PpE-RO-sPX.text" = "字幕";
+
+/* Class = "UIButton"; configuration.title = "Add"; ObjectID = "biM-m2-Ncj"; */
+"biM-m2-Ncj.configuration.title" = "+ 翻译语言";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "biM-m2-Ncj"; */
+"biM-m2-Ncj.normalTitle" = "+ 翻译语言";
+
+/* Class = "UILabel"; text = "Languages"; ObjectID = "dbB-ev-N2J"; */
+"dbB-ev-N2J.text" = "语言";
+
+/* Class = "UILabel"; text = "STT Language :"; ObjectID = "dbX-WB-2pv"; */
+"dbX-WB-2pv.text" = "STT 语言 :";
+
+/* Class = "UIButton"; configuration.title = "Start"; ObjectID = "jtk-fT-WcO"; */
+"jtk-fT-WcO.configuration.title" = "Start";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "jtk-fT-WcO"; */
+"jtk-fT-WcO.normalTitle" = "Button";
+
+/* Class = "UIViewController"; title = "ChatRoom"; ObjectID = "n4j-AD-Kp5"; */
+"n4j-AD-Kp5.title" = "ChatRoom";
+
+/* Class = "UIButton"; configuration.title = "Add"; ObjectID = "biM-m2-Ncj"; */
+"WI1-6n-cXW.configuration.title" = "+ STT语言";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "biM-m2-Ncj"; */
+"WI1-6n-cXW.normalTitle" = "+ STT语言";

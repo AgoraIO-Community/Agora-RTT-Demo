@@ -1,0 +1,87 @@
+PODS:
+  - AgoraRtcEngine_iOS (4.2.6):
+    - AgoraRtcEngine_iOS/AIAEC (= 4.2.6)
+    - AgoraRtcEngine_iOS/AINS (= 4.2.6)
+    - AgoraRtcEngine_iOS/AudioBeauty (= 4.2.6)
+    - AgoraRtcEngine_iOS/ClearVision (= 4.2.6)
+    - AgoraRtcEngine_iOS/ContentInspect (= 4.2.6)
+    - AgoraRtcEngine_iOS/DRM (= 4.2.6)
+    - AgoraRtcEngine_iOS/FaceDetection (= 4.2.6)
+    - AgoraRtcEngine_iOS/ReplayKit (= 4.2.6)
+    - AgoraRtcEngine_iOS/RtcBasic (= 4.2.6)
+    - AgoraRtcEngine_iOS/SpatialAudio (= 4.2.6)
+    - AgoraRtcEngine_iOS/VideoCodecDec (= 4.2.6)
+    - AgoraRtcEngine_iOS/VideoCodecEnc (= 4.2.6)
+    - AgoraRtcEngine_iOS/VirtualBackground (= 4.2.6)
+    - AgoraRtcEngine_iOS/VQA (= 4.2.6)
+  - AgoraRtcEngine_iOS/AIAEC (4.2.6)
+  - AgoraRtcEngine_iOS/AINS (4.2.6)
+  - AgoraRtcEngine_iOS/AudioBeauty (4.2.6)
+  - AgoraRtcEngine_iOS/ClearVision (4.2.6)
+  - AgoraRtcEngine_iOS/ContentInspect (4.2.6)
+  - AgoraRtcEngine_iOS/DRM (4.2.6)
+  - AgoraRtcEngine_iOS/FaceDetection (4.2.6)
+  - AgoraRtcEngine_iOS/ReplayKit (4.2.6)
+  - AgoraRtcEngine_iOS/RtcBasic (4.2.6)
+  - AgoraRtcEngine_iOS/SpatialAudio (4.2.6)
+  - AgoraRtcEngine_iOS/VideoCodecDec (4.2.6)
+  - AgoraRtcEngine_iOS/VideoCodecEnc (4.2.6)
+  - AgoraRtcEngine_iOS/VirtualBackground (4.2.6)
+  - AgoraRtcEngine_iOS/VQA (4.2.6)
+  - AgoraRtm_Special_iOS (1.6.0.202)
+  - Alamofire (4.9.1)
+  - DarkEggKit (1.0.1):
+    - DarkEggKit/Common (= 1.0.1)
+  - DarkEggKit/AnimatedImageView (1.0.1):
+    - DarkEggKit/Common
+  - DarkEggKit/Common (1.0.1)
+  - DarkEggKit/PopupMessage (1.0.1):
+    - DarkEggKit/Common
+  - MBProgressHUD (1.2.0)
+  - PromiseKit (6.17.0):
+    - PromiseKit/CorePromise (= 6.17.0)
+    - PromiseKit/Foundation (= 6.17.0)
+    - PromiseKit/UIKit (= 6.17.0)
+  - PromiseKit/Alamofire (6.17.0):
+    - Alamofire (~> 4.0)
+    - PromiseKit/CorePromise
+  - PromiseKit/CorePromise (6.17.0)
+  - PromiseKit/Foundation (6.17.0):
+    - PromiseKit/CorePromise
+  - PromiseKit/UIKit (6.17.0):
+    - PromiseKit/CorePromise
+  - Protobuf (3.21.12)
+
+DEPENDENCIES:
+  - AgoraRtcEngine_iOS (= 4.2.6)
+  - AgoraRtm_Special_iOS (= 1.6.0.202)
+  - DarkEggKit (= 1.0.1)
+  - DarkEggKit/AnimatedImageView
+  - DarkEggKit/PopupMessage
+  - MBProgressHUD
+  - PromiseKit
+  - PromiseKit/Alamofire
+  - Protobuf (= 3.21.12)
+
+SPEC REPOS:
+  trunk:
+    - AgoraRtcEngine_iOS
+    - AgoraRtm_Special_iOS
+    - Alamofire
+    - DarkEggKit
+    - MBProgressHUD
+    - PromiseKit
+    - Protobuf
+
+SPEC CHECKSUMS:
+  AgoraRtcEngine_iOS: ac647332ad8f86d79cf810601c9e62b28c3a4de0
+  AgoraRtm_Special_iOS: 9a46c3d580f436c5d8cb74b6f4b67bb2d6014456
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  DarkEggKit: a568dc3a5af2a6df8a959d88aa5dda4aca9f0d98
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
+  PromiseKit: 996202d4cae72b7801b312abef4cd2f995b2978a
+  Protobuf: 120350fc38646e2dedc26f49ecba778184ea1de2
+
+PODFILE CHECKSUM: 43b85b0a2cac3c1b8241d1bc1d3a14a6ca9809fe
+
+COCOAPODS: 1.14.3
