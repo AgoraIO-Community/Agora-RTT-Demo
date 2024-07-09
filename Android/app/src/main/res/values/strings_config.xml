@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="agora_app_id" translatable="false">agora_app_id</string>
+    <string name="agora_token" translatable="false"></string>
+    <string name="stt_gateway_address" translatable="false">https://api.agora.io</string>
+    <string name="agora_app_key" translatable="false"></string>
+    <string name="agora_app_secret" translatable="false"></string>
+
+    <string name="enable_cloud_storage" translatable="false">false</string>
+    <string name="cloud_storage_access_key" translatable="false"></string>
+    <string name="cloud_storage_secret_key" translatable="false"></string>
+    <string name="cloud_storage_region" translatable="false"></string>
+    <string name="cloud_storage_vendor" translatable="false"></string>
+</resources>
