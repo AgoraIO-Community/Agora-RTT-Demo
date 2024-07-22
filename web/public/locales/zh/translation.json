@@ -30,7 +30,7 @@
   },
   "footer": {
     "aIAssistant": "AI助手",
-    "langaugesSetting": "语言设置",
+    "langaugesSetting": "配置与启动",
     "conversationHistory": "对话记录",
     "participantsList": "成员列表",
     "muteAudio": "开启静音",
@@ -39,7 +39,7 @@
     "unMuteVideo": "开启视频",
     "startCC": "开启字幕",
     "stopCC": "关闭字幕",
-    "tipEnableSTTFirst": "请先在语言设置中启动语音转写",
+    "tipEnableSTTFirst": "请设置语言并启动转录或翻译服务",
     "tipHostEnableCC": "只有主持人才能操作"
   },
   "setting": {

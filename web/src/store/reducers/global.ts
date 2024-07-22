@@ -39,6 +39,7 @@ export interface InitialState {
   dialogRecordShow: boolean
   captionShow: boolean
   aiShow: boolean
+  tipSTTEnable: boolean
   menuList: MenuType[]
   page: {
     width: number
@@ -65,6 +66,7 @@ const getInitialState = (): InitialState => {
     languageSelect: getDefaultLanguageSelect(),
     recordLanguageSelect: {},
     menuList: [],
+    tipSTTEnable: false,
     page: {
       width: 0,
       height: 0,
@@ -134,6 +136,9 @@ export const globalSlice = createSlice({
     },
     setSubtitles: (state, action: PayloadAction<ITextItem[]>) => {
       state.sttSubtitles = action.payload
+    },
+    setTipSTTEnable: (state, action: PayloadAction<boolean>) => {
+      state.tipSTTEnable = action.payload
     },
     updateSubtitles: (
       state,
@@ -245,6 +250,7 @@ export const {
   setSubtitles,
   removeMessage,
   addMessage,
+  setTipSTTEnable,
   reset,
 } = globalSlice.actions
 
