@@ -1,8 +1,6 @@
 import React, { useState } from "react"
 import { CloseOutlined } from "@ant-design/icons"
 import { useDispatch } from "react-redux"
-import { setSttCountDown } from "@/store/reducers/global"
-import { EXPERIENCE_DURATION } from "@/common"
 import { useTranslation } from "react-i18next"
 
 import styles from "./index.module.scss"
@@ -18,9 +16,8 @@ const ExtendMessage = (props: IExtendMessageProps) => {
   const { t } = useTranslation()
 
   const onClickExtend = () => {
-    window.sttManager.reStartTranscription()
-    window.rtmManager.setSttStatus("start")
-    dispatch(setSttCountDown(EXPERIENCE_DURATION))
+    // window.sttManager.reStartTranscription()
+    // window.rtmManager.updateSttStatus("start")
     onClose?.()
   }
 

@@ -1,3 +1,4 @@
+import { isArabic } from "@/common/utils"
 import { IUICaptionData } from "@/types"
 
 import styles from "./index.module.scss"
@@ -8,12 +9,19 @@ interface ICaptionItemProps {
 
 const CaptionItem = (props: ICaptionItemProps) => {
   const { data } = props
-  const { userName, content, translate } = data
+  const { userName, content, translations } = data
   return (
     <div className={styles.captionItem}>
-      <div className={styles.userName}>{userName}:</div>
+      {content || translations?.length ? <div className={styles.userName}>{userName}:</div> : null}
       {content ? <div className={styles.content}>{content}</div> : null}
-      {translate ? <div className={styles.translate}>{translate}</div> : null}
+      {translations?.map((item, index) => (
+        <div
+          className={`${styles.translate} ${isArabic(item?.lang) ? styles.arabic : ""}`}
+          key={index}
+        >
+          {item?.text}
+        </div>
+      ))}
     </div>
   )
 }

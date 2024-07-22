@@ -1,7 +1,7 @@
 {
+  "confirm": "确认",
   "liveLanguage": "现场语言",
   "translationLanguage": "翻译语言",
-  "storage": "存储",
   "clearAll": "清除全部内容",
   "analyze": "分析",
   "analysisResult": "分析结果",
@@ -10,7 +10,21 @@
   "transcribing": "转写中",
   "loadText": "加载文本",
   "closeConversation": "结束对话",
+  "storage": {
+    "text": "存储",
+    "success": "存储成功"
+  },
+  "export": {
+    "text": "导出",
+    "success": "导出成功"
+  },
+  "dialog": {
+    "languageShow": "语言展示",
+    "languageExport": "语言导出",
+    "languageExportTip": "请选择一种语言导出"
+  },
   "login": {
+    "github": "访问 GitHub",
     "join": "加入频道",
     "title": "实时语音转文字"
   },
@@ -26,7 +40,6 @@
     "startCC": "开启字幕",
     "stopCC": "关闭字幕",
     "tipEnableSTTFirst": "请先在语言设置中启动语音转写",
-    "tipHostEnableCCFirst": "请主持人先在语言设置中启动语音转写",
     "tipHostEnableCC": "只有主持人才能操作"
   },
   "setting": {
@@ -38,7 +51,9 @@
     "languagesSelect": "请选择现场语言和翻译语言",
     "tip": "您最多可以选择两种语言，每个现场语言可最多对应五种翻译语言",
     "liveLanguage": "现场语言",
-    "translationLanguageMax": "翻译语言最多可以选择5种"
+    "translationLanguageMax": "翻译语言最多可以选择5种",
+    "saveSuccess": "设置成功",
+    "sameLanguage": "现场语言不能相同"
   },
   "conversation": {
     "sttStarted": "主持人已开启实时转写",

@@ -13,11 +13,18 @@
   box-sizing: border-box;
   z-index: 1;
 
+  .channelName {
+    margin-left: 6px;
+    color: #667085;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
   .transcription {
     flex: 1 1 auto;
     display: flex;
     align-items: center;
-    margin-left: 12px;
+    margin-left: 6px;
     font-size: 0;
 
     .text {

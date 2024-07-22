@@ -1,10 +1,12 @@
-import { IUiText } from "@/types"
 import { getUserInfoFromLocal } from "./storage"
 import { CAPTION_SCROLL_PX_LIST } from "./constant"
+import { ITextItem, ILanguageSelect } from "@/types"
 
 function _pad(num: number) {
   return num.toString().padStart(2, "0")
 }
+
+const _GPT_URL = import.meta.env.VITE_AGORA_GPT_URL
 
 export const REGEX_SPECIAL_CHAR = /[^a-zA-Z0-9_]/g
 
@@ -76,10 +78,10 @@ export const downloadText = (name: string, text: string) => {
   link.click()
 }
 
-export const genContentText = (list: IUiText[]) => {
+export const genContentText = (list: ITextItem[]) => {
   let res = ""
   list.forEach((item) => {
-    res += `${item.userName}: ${item.text}\n`
+    res += `${item.username}: ${item.text}\n`
   })
   return res
 }
@@ -95,14 +97,14 @@ export const getElementScrollY = (ele: HTMLElement): number => {
   return ele.scrollHeight - ele.clientHeight - ele.scrollTop
 }
 
-export const getCaptionScrollPX = (top: number = 0) => {
+export const getCaptionScrollPX = (scroll: number = 0) => {
   for (let i = CAPTION_SCROLL_PX_LIST.length - 1; i >= 0; i--) {
     const item = CAPTION_SCROLL_PX_LIST[i]
-    if (top >= item.distance) {
+    if (scroll >= item.distance) {
       return item.value
     }
   }
-  return CAPTION_SCROLL_PX_LIST[0].value
+  return scroll
 }
 
 export const genUUID = () => {
@@ -111,4 +113,22 @@ export const genUUID = () => {
     const v = c == "x" ? r : (r & 0x3) | 0x8
     return v.toString(16)
   })
+}
+
+export const showAIModule = () => {
+  return !!_GPT_URL
+}
+
+// example: isArabic("ar-EG") => true
+export const isArabic = (lang: string) => {
+  return lang.includes("ar-")
+}
+
+export const getDefaultLanguageSelect = (): ILanguageSelect => {
+  return {
+    transcribe1: undefined,
+    translate1List: [],
+    transcribe2: undefined,
+    translate2List: [],
+  }
 }

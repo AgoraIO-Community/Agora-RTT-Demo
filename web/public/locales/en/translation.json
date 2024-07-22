@@ -1,7 +1,7 @@
 {
+  "confirm": "Confirm",
   "liveLanguage": "Live Language",
   "translationLanguage": "Translation Language",
-  "storage": "Storage",
   "clearAll": "Clear All",
   "analyze": "Analyze",
   "analysisResult": "Analysis Result",
@@ -10,7 +10,21 @@
   "loadText": "Load Text",
   "transcribing": "Transcribing",
   "closeConversation": "Close Conversation",
+  "storage": {
+    "text": "Storage",
+    "success": "Storage success"
+  },
+  "export": {
+    "text": "Export",
+    "success": "Export success"
+  },
+  "dialog": {
+    "languageShow": "Language Display",
+    "languageExport": "Language Export",
+    "languageExportTip": "Please select the language to export"
+  },
   "login": {
+    "github": "Visit GitHub",
     "join": "join channel",
     "title": "Real-Time Transcription"
   },
@@ -26,7 +40,6 @@
     "startCC": "Start CC",
     "stopCC": "Stop CC",
     "tipEnableSTTFirst": "Please enable speech transcription in language settings first",
-    "tipHostEnableCCFirst": "Please enable the host to activate speech transcription in the language settings first",
     "tipHostEnableCC": "Only the host can operate"
   },
   "setting": {
@@ -38,7 +51,9 @@
     "languagesSelect": "Please select on-site language and translation language",
     "tip": "You can select up to two languages, and each live language can correspond to up to five translation languages",
     "liveLanguage": "Live language",
-    "translationLanguageMax": "Translation language should less than or equal to 5"
+    "translationLanguageMax": "Translation language should less than or equal to 5",
+    "saveSuccess": "Setup success",
+    "sameLanguage": "The live language cannot be the same"
   },
   "conversation": {
     "sttStarted": "The host has turned on real-time transcription",

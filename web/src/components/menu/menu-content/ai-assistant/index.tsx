@@ -8,14 +8,20 @@ import {
   apiAiAnalysis,
 } from "@/common"
 import { UploadIcon } from "@/components/icons"
-import { InputHTMLAttributes, useMemo, useRef, useState } from "react"
+import { forwardRef, useMemo, useRef, useState, useImperativeHandle } from "react"
 
 import styles from "./index.module.scss"
 import { useTranslation } from "react-i18next"
 
 const { TextArea } = Input
 
-const AiAssistant = () => {
+interface AiAssistantProps {}
+
+export interface AiAssistantHandler {
+  setConversation: (value: string) => void
+}
+
+const AiAssistant = forwardRef((props: AiAssistantProps, ref) => {
   const { t } = useTranslation()
   const [systemText, setSystemText] = useState("")
   const [system, setSystem] = useState("")
@@ -24,6 +30,14 @@ const AiAssistant = () => {
   const [conversationSelectValue, setConversationSelectValue] = useState("")
   const [loading, setLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useImperativeHandle(ref, () => {
+    return {
+      setConversation(value) {
+        setContentText(value)
+      },
+    } as AiAssistantHandler
+  })
 
   const aiUserContentOptions = useMemo(() => {
     return AI_USER_CONTENT_OPTIONS.filter((item) => item.type === system).map((item) => ({
@@ -35,7 +49,7 @@ const AiAssistant = () => {
   const onPromptChange = (value: string) => {
     setSystem(value)
     setConversationSelectValue("")
-    setContentText("")
+    // setContentText("")
     const target = AI_PROMPT_OPTIONS.find((item) => item.label === value)
     if (target) {
       setSystemText(target.value)
@@ -166,6 +180,6 @@ const AiAssistant = () => {
       </div>
     </div>
   )
-}
+})
 
 export default AiAssistant

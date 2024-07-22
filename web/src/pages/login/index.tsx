@@ -4,13 +4,14 @@ import { RootState } from "@/store"
 import { InputStatuses } from "@/types"
 import { useTranslation } from "react-i18next"
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { genRandomUserId, REGEX_SPECIAL_CHAR } from "@/common"
+import { genRandomUserId, REGEX_SPECIAL_CHAR, GITHUB_URL } from "@/common"
 import { setOptions, setUserInfo } from "@/store/reducers/global"
 import { version } from "../../../package.json"
 import { useNavigate, useLocation } from "react-router-dom"
 
 import styles from "./index.module.scss"
 import logoSrc from "@/assets/login_logo.png"
+import githubSrc from "@/assets/github.jpg"
 
 const LoginPage = () => {
   const nav = useNavigate()
@@ -67,19 +68,29 @@ const LoginPage = () => {
     nav("/home")
   }
 
+  const onClickGithub = () => {
+    window.open(GITHUB_URL, "_blank")
+  }
+
   return (
     <div className={styles.loginPage}>
       {contextHolder}
       <section className={styles.content}>
-        <div className={styles.language}>
-          <Switch
-            size="default"
-            checkedChildren="中文"
-            unCheckedChildren="English"
-            value={options.language === "zh"}
-            onChange={onLanguageChange}
-          />
-        </div>
+        <section className={styles.top}>
+          <span className={styles.github} onClick={onClickGithub}>
+            <img src={githubSrc} alt="" />
+            <span className={styles.text}>{t("login.github")}</span>
+          </span>
+          <span className={styles.language}>
+            <Switch
+              size="default"
+              checkedChildren="中文"
+              unCheckedChildren="English"
+              value={options.language === "zh"}
+              onChange={onLanguageChange}
+            />
+          </span>
+        </section>
         <div className={styles.title}>
           <div className={styles.logo}>
             <img src={logoSrc} alt="" />

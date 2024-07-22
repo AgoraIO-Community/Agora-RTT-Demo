@@ -1,9 +1,9 @@
 import { RefObject, useEffect, useRef, useState, useMemo } from "react"
 import { Button, message } from "antd"
 import { RootState, AppDispatch } from "@/store"
-import { removeMessage, setPageInfo, setSttCountDown } from "@/store/reducers/global"
+import { removeMessage, setPageInfo } from "@/store/reducers/global"
 import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux"
-import { EXPERIENCE_DURATION, TOAST_DURATION } from "@/common"
+import { TOAST_DURATION } from "@/common"
 
 export const useAppDispatch = () => useDispatch<AppDispatch>()
 
@@ -69,6 +69,16 @@ export const useMount = (callback?: () => {}) => {
   return isMountRef.current
 }
 
+export const usePrevious = (value: any) => {
+  const ref = useRef()
+
+  useEffect(() => {
+    ref.current = value
+  }, [value])
+
+  return ref.current
+}
+
 export const useMessage = () => {
   const dispatch = useDispatch()
   const messageList = useSelector((state: RootState) => state.global.messageList)
@@ -125,18 +135,4 @@ export const useResizeObserver = (ref: RefObject<React.ReactNode | HTMLElement>)
   }, [ref])
 
   return dimensions
-}
-
-export const useHost = () => {
-  const hostId = useSelector((state: RootState) => state.global.hostId)
-  const userInfo = useSelector((state: RootState) => state.global.userInfo)
-
-  const isHost = useMemo(() => {
-    return hostId === userInfo.userId
-  }, [hostId, userInfo.userId])
-
-  return {
-    isHost,
-    hostId,
-  }
 }

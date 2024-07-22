@@ -1,4 +1,4 @@
-import { STTLanguages, STTStatus } from "@/types"
+import { ILanguageSelect, ISttData, Role } from "@/types"
 import { RTMEvents } from "agora-rtm"
 
 export interface ISimpleUserInfo {
@@ -18,9 +18,8 @@ export interface RtmEvents {
       | RTMEvents.StreamChannelConnectionStatusChangeEvent,
   ) => void
   userListChanged: (userList: ISimpleUserInfo[]) => void
-  languagesChanged: (languages: STTLanguages) => void
-  sttStatusChanged: (status: STTStatus) => void
-  hostChanged: (hostId: string) => void
+  languagesChanged: (languages: ILanguageSelect) => void
+  sttDataChanged: (status: ISttData) => void
 }
 
 export enum RtmMessageType {
@@ -36,14 +35,6 @@ export interface RtmPresenceMessageData {
     userName: string
     userId: string
     type: RtmMessageType.UserInfo
-  }
-  [RtmMessageType.BeHost]?: {
-    userId: string
-    type: RtmMessageType.BeHost
-  }
-  [RtmMessageType.Transcription]?: {
-    status: "start" | "stop"
-    type: RtmMessageType.Transcription
   }
 }
 

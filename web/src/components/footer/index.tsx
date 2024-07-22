@@ -8,7 +8,7 @@ import {
   AiIcon,
   ArrowUpIcon,
 } from "../icons"
-import { useHost } from "@/common"
+import { showAIModule } from "@/common"
 import { useSelector, useDispatch } from "react-redux"
 import {
   setUserInfo,
@@ -22,8 +22,7 @@ import {
   setLocalVideoMute,
   addMessage,
 } from "@/store/reducers/global"
-import LanguageSettingDialog from "../language-setting"
-import DialogPopover from "./dialog-popover"
+import LanguageSettingDialog from "../dialog/language-setting"
 import CaptionPopover from "./caption-popover"
 import { RootState } from "@/store"
 import { useEffect, useMemo, useState } from "react"
@@ -36,22 +35,23 @@ interface IFooterProps {
   style?: React.CSSProperties
 }
 
-const showAI = !!import.meta.env.VITE_AGORA_GPT_URL
-
 const Footer = (props: IFooterProps) => {
   const { style } = props
   const nav = useNavigate()
   const dispatch = useDispatch()
   const { t } = useTranslation()
-  const { hostId, isHost } = useHost()
   const localAudioMute = useSelector((state: RootState) => state.global.localAudioMute)
   const localVideoMute = useSelector((state: RootState) => state.global.localVideoMute)
   const memberListShow = useSelector((state: RootState) => state.global.memberListShow)
   const dialogRecordShow = useSelector((state: RootState) => state.global.dialogRecordShow)
   const captionShow = useSelector((state: RootState) => state.global.captionShow)
   const aiShow = useSelector((state: RootState) => state.global.aiShow)
-  const sttStatus = useSelector((state: RootState) => state.global.sttStatus)
+  const sttData = useSelector((state: RootState) => state.global.sttData)
   const [showLanguageSetting, setShowLanguageSetting] = useState(false)
+
+  const hasSttStarted = useMemo(() => {
+    return sttData.status === "start"
+  }, [sttData])
 
   const MicText = useMemo(() => {
     return localAudioMute ? t("footer.unMuteAudio") : t("footer.muteAudio")
@@ -87,10 +87,7 @@ const Footer = (props: IFooterProps) => {
   }
 
   const onClickCaption = () => {
-    if (sttStatus !== "start") {
-      if (!isHost) {
-        return dispatch(addMessage({ content: t("footer.tipHostEnableCCFirst"), type: "info" }))
-      }
+    if (sttData.status !== "start") {
       return dispatch(addMessage({ content: t("footer.tipEnableSTTFirst"), type: "info" }))
     }
     dispatch(setCaptionShow(!captionShow))
@@ -106,9 +103,6 @@ const Footer = (props: IFooterProps) => {
   }
 
   const toggleLanguageSettingDialog = () => {
-    if (!isHost) {
-      return dispatch(addMessage({ content: t("footer.tipHostEnableCC"), type: "info" }))
-    }
     setShowLanguageSetting(!showLanguageSetting)
   }
 
@@ -139,10 +133,10 @@ const Footer = (props: IFooterProps) => {
         </span>
         {/* caption */}
         <span
-          className={`${styles.item} ${sttStatus == "end" ? "disabled" : ""}`}
+          className={`${styles.item} ${!hasSttStarted ? "disabled" : ""}`}
           onClick={onClickCaption}
         >
-          <CaptionIcon disabled={sttStatus == "end"} active={captionShow}></CaptionIcon>
+          <CaptionIcon disabled={!hasSttStarted} active={captionShow}></CaptionIcon>
           <span className={styles.text}>{captionText}</span>
         </span>
         <CaptionPopover>
@@ -155,21 +149,13 @@ const Footer = (props: IFooterProps) => {
           <TranscriptionIcon active={dialogRecordShow}></TranscriptionIcon>
           <span className={styles.text}>{t("footer.conversationHistory")}</span>
         </span>
-        <DialogPopover>
-          <span className={styles.arrowWrapper} onClick={toggleDialogSelect}>
-            <ArrowUpIcon width={16} height={16}></ArrowUpIcon>
-          </span>
-        </DialogPopover>
         {/* language */}
-        <span
-          className={`${styles.item} ${!isHost ? "disabled" : ""}`}
-          onClick={toggleLanguageSettingDialog}
-        >
-          <SettingIcon disabled={!isHost}></SettingIcon>
+        <span className={`${styles.item}`} onClick={toggleLanguageSettingDialog}>
+          <SettingIcon></SettingIcon>
           <span className={`${styles.text}`}>{t("footer.langaugesSetting")}</span>
         </span>
         {/* ai */}
-        {showAI ? (
+        {showAIModule() ? (
           <span className={styles.item} onClick={onClickAiShow}>
             <AiIcon active={aiShow}></AiIcon>
             <span className={styles.text}>{t("footer.aIAssistant")}</span>
