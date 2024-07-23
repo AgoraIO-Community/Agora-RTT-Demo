@@ -22,6 +22,10 @@ import { getDefaultLanguageSelect } from "@/common/utils"
 export interface InitialState {
   // ------- stt --------------
   sttData: ISttData
+  // ------- url --------------
+  queryData: {
+    [key: string]: string
+  }
   // ------- user state -------
   userInfo: IUserInfo
   options: IOptions
@@ -39,6 +43,7 @@ export interface InitialState {
   dialogRecordShow: boolean
   captionShow: boolean
   aiShow: boolean
+  tipSTTEnable: boolean
   menuList: MenuType[]
   page: {
     width: number
@@ -52,6 +57,7 @@ const getInitialState = (): InitialState => {
     sttData: {
       status: "end",
     },
+    queryData: {},
     userInfo: getUserInfoFromLocal(),
     options: getOptionsFromLocal(),
     localVideoMute: true,
@@ -65,6 +71,7 @@ const getInitialState = (): InitialState => {
     languageSelect: getDefaultLanguageSelect(),
     recordLanguageSelect: {},
     menuList: [],
+    tipSTTEnable: false,
     page: {
       width: 0,
       height: 0,
@@ -80,6 +87,9 @@ export const globalSlice = createSlice({
     setOptions: (state, action: PayloadAction<Partial<IOptions>>) => {
       Object.assign(state.options, action.payload)
       setOptionsToLocal(action.payload)
+    },
+    setQueryData: (state, action: PayloadAction<{ [key: string]: string }>) => {
+      state.queryData = action.payload
     },
     setUserInfo: (state, action: PayloadAction<Partial<IUserInfo>>) => {
       Object.assign(state.userInfo, action.payload)
@@ -134,6 +144,9 @@ export const globalSlice = createSlice({
     },
     setSubtitles: (state, action: PayloadAction<ITextItem[]>) => {
       state.sttSubtitles = action.payload
+    },
+    setTipSTTEnable: (state, action: PayloadAction<boolean>) => {
+      state.tipSTTEnable = action.payload
     },
     updateSubtitles: (
       state,
@@ -245,6 +258,8 @@ export const {
   setSubtitles,
   removeMessage,
   addMessage,
+  setTipSTTEnable,
+  setQueryData,
   reset,
 } = globalSlice.actions
 

@@ -1,3 +1,5 @@
+import store from "@/store"
+import { parseQuery } from "./utils"
 import { IRequestLanguages } from "@/types"
 
 const MODE = import.meta.env.MODE
@@ -64,8 +66,9 @@ export const apiSTTAcquireToken = async (options: {
     instanceId: channel,
   }
   if (MODE == "test") {
+    const queryData = store.getState().global.queryData
     data.testIp = "218.205.37.49"
-    data.testPort = 4447
+    data.testPort = queryData.port ? Number(queryData.port) : 4447
   }
   let res = await fetch(url, {
     method: "POST",

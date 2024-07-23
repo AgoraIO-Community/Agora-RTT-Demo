@@ -30,7 +30,7 @@
   },
   "footer": {
     "aIAssistant": "AI Assistant",
-    "langaugesSetting": "Langauges Setting",
+    "langaugesSetting": "Set & Start",
     "conversationHistory": "Conversation History",
     "participantsList": "Participants List",
     "muteAudio": "Mute Audio",
@@ -39,7 +39,7 @@
     "unMuteVideo": "UnMute Video",
     "startCC": "Start CC",
     "stopCC": "Stop CC",
-    "tipEnableSTTFirst": "Please enable speech transcription in language settings first",
+    "tipEnableSTTFirst": "Please set language and start STT or Translation service",
     "tipHostEnableCC": "Only the host can operate"
   },
   "setting": {

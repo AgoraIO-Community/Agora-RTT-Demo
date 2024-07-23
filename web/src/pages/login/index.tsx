@@ -4,8 +4,8 @@ import { RootState } from "@/store"
 import { InputStatuses } from "@/types"
 import { useTranslation } from "react-i18next"
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { genRandomUserId, REGEX_SPECIAL_CHAR, GITHUB_URL } from "@/common"
-import { setOptions, setUserInfo } from "@/store/reducers/global"
+import { genRandomUserId, REGEX_SPECIAL_CHAR, GITHUB_URL, parseQuery } from "@/common"
+import { setOptions, setUserInfo, setQueryData } from "@/store/reducers/global"
 import { version } from "../../../package.json"
 import { useNavigate, useLocation } from "react-router-dom"
 
@@ -65,7 +65,9 @@ const LoginPage = () => {
         userId: genRandomUserId(),
       }),
     )
-    nav("/home")
+    const queryData = parseQuery(window.location.href)
+    dispatch(setQueryData(queryData))
+    nav(`/home`)
   }
 
   const onClickGithub = () => {

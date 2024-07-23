@@ -132,3 +132,16 @@ export const getDefaultLanguageSelect = (): ILanguageSelect => {
     translate2List: [],
   }
 }
+
+export const parseQuery = (url: string) => {
+  const queryParams = url.split("?")[1]
+  const result: any = {}
+  if (queryParams) {
+    queryParams.split("&").forEach((item) => {
+      const [key, value] = item.split("=")
+      result[key] = value
+    })
+  }
+
+  return result
+}

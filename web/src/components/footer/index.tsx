@@ -21,9 +21,11 @@ import {
   setLocalAudioMute,
   setLocalVideoMute,
   addMessage,
+  setTipSTTEnable,
 } from "@/store/reducers/global"
 import LanguageSettingDialog from "../dialog/language-setting"
 import CaptionPopover from "./caption-popover"
+import { Popover } from "antd"
 import { RootState } from "@/store"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -45,9 +47,18 @@ const Footer = (props: IFooterProps) => {
   const memberListShow = useSelector((state: RootState) => state.global.memberListShow)
   const dialogRecordShow = useSelector((state: RootState) => state.global.dialogRecordShow)
   const captionShow = useSelector((state: RootState) => state.global.captionShow)
+  const tipSTTEnable = useSelector((state: RootState) => state.global.tipSTTEnable)
   const aiShow = useSelector((state: RootState) => state.global.aiShow)
   const sttData = useSelector((state: RootState) => state.global.sttData)
   const [showLanguageSetting, setShowLanguageSetting] = useState(false)
+
+  useEffect(() => {
+    if (tipSTTEnable) {
+      setTimeout(() => {
+        dispatch(setTipSTTEnable(false))
+      }, 4000)
+    }
+  }, [tipSTTEnable])
 
   const hasSttStarted = useMemo(() => {
     return sttData.status === "start"
@@ -88,7 +99,7 @@ const Footer = (props: IFooterProps) => {
 
   const onClickCaption = () => {
     if (sttData.status !== "start") {
-      return dispatch(addMessage({ content: t("footer.tipEnableSTTFirst"), type: "info" }))
+      return dispatch(setTipSTTEnable(true))
     }
     dispatch(setCaptionShow(!captionShow))
   }
@@ -150,10 +161,12 @@ const Footer = (props: IFooterProps) => {
           <span className={styles.text}>{t("footer.conversationHistory")}</span>
         </span>
         {/* language */}
-        <span className={`${styles.item}`} onClick={toggleLanguageSettingDialog}>
-          <SettingIcon></SettingIcon>
-          <span className={`${styles.text}`}>{t("footer.langaugesSetting")}</span>
-        </span>
+        <Popover placement="top" content={t("footer.tipEnableSTTFirst")} open={tipSTTEnable}>
+          <span className={`${styles.item}`} onClick={toggleLanguageSettingDialog}>
+            <SettingIcon></SettingIcon>
+            <span className={`${styles.text}`}>{t("footer.langaugesSetting")}</span>
+          </span>
+        </Popover>
         {/* ai */}
         {showAIModule() ? (
           <span className={styles.item} onClick={onClickAiShow}>
