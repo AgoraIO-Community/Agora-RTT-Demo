@@ -1,11 +1,8 @@
 syntax = "proto3";
 
 package Agora.SpeechToText;
-
 option objc_class_prefix = "Stt";
-
 option csharp_namespace = "AgoraSTTSample.Protobuf";
-
 option java_package = "io.agora.rtc.speech2text";
 option java_outer_classname = "AgoraSpeech2TextProtobuffer";
 
