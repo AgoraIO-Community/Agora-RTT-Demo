@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/store"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Modal, Alert, Select, Space, Switch } from "antd"
-import { LANGUAGE_OPTIONS } from "@/common"
+import { LANGUAGE_OPTIONS, parseQuery } from "@/common"
 import { LoadingOutlined } from "@ant-design/icons"
 import { ILanguageItem } from "@/manager"
 import { addMessage, setRecordLanguageSelect, setSubtitles } from "@/store/reducers/global"
@@ -29,7 +29,6 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
   const { t } = useTranslation()
   const sttData = useSelector((state: RootState) => state.global.sttData)
   const languageSelect = useSelector((state: RootState) => state.global.languageSelect)
-  const [denoise, setDenoise] = useState(false)
   const { transcribe1, translate1List = [], transcribe2, translate2List = [] } = languageSelect
   const [sourceLanguage1, setSourceLanguage1] = useState(transcribe1)
   const [sourceLanguage1List, setSourceLanguage1List] = useState<string[]>(translate1List)
@@ -93,7 +92,6 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
     try {
       if (!hasSttStarted) {
         await window.sttManager.startTranscription({
-          denoise,
           languages,
         })
       } else {
@@ -256,7 +254,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
             </Space>
           </div>
         </div>
-        <div className={styles.section}>
+        {/* <div className={styles.section}>
           <span className={styles.text}>{t("denoise")}</span>
           <Switch
             className={styles.switch}
@@ -264,7 +262,7 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
             onChange={(v) => setDenoise(v)}
             disabled={hasSttStarted}
           />
-        </div>
+        </div> */}
       </div>
       <div className={styles.btnWrapper}>
         <span className={styles.btn} onClick={onClickBtn}>
