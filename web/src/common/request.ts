@@ -3,8 +3,9 @@ import { parseQuery } from "./utils"
 import { IRequestLanguages } from "@/types"
 
 const MODE = import.meta.env.MODE
-const gatewayAddress =
-  MODE == "test" ? "https://service-staging.agora.io/speech-to-text" : "https://api.agora.io"
+const TEST_REQUEST_URL = "https://service-staging.agora.io/speech-to-text"
+const TEST_FILTER_REQUEST_URL = "https://service-staging.agora.io/speech-to-text-filter"
+let gatewayAddress = "https://api.agora.io"
 const BASE_URL = "https://service.agora.io/toolbox-overseas"
 
 // ---------------------------------------
@@ -59,17 +60,23 @@ const genAuthorization = async (config: { uid: string | number; channel: string 
 export const apiSTTAcquireToken = async (options: {
   channel: string
   uid: string | number
+  denoise: boolean
 }): Promise<any> => {
-  const { channel, uid } = options
-  const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/builderTokens`
+  const { channel, uid, denoise } = options
   const data: any = {
     instanceId: channel,
   }
   if (MODE == "test") {
-    const queryData = store.getState().global.queryData
+    // const queryData = store.getState().global.queryData
     data.testIp = "218.205.37.49"
-    data.testPort = queryData.port ? Number(queryData.port) : 4447
+    data.testPort = 4447
+    if (denoise) {
+      gatewayAddress = TEST_FILTER_REQUEST_URL
+    } else {
+      gatewayAddress = TEST_REQUEST_URL
+    }
   }
+  const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/builderTokens`
   let res = await fetch(url, {
     method: "POST",
     headers: {

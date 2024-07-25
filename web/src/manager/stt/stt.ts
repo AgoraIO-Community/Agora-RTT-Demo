@@ -59,7 +59,7 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     if (!this.hasInit) {
       throw new Error("please init first")
     }
-    const { languages } = startOptions
+    const { languages, denoise } = startOptions
     if (!languages.length) {
       return
     }
@@ -70,6 +70,7 @@ export class SttManager extends AGEventEmitter<STTEvents> {
       const data = await apiSTTAcquireToken({
         channel: this.channel,
         uid: this.userId,
+        denoise,
       })
       const token = data.tokenName
       // api start

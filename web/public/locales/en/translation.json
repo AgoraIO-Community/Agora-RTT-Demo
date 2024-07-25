@@ -4,6 +4,7 @@
   "translationLanguage": "Translation Language",
   "clearAll": "Clear All",
   "analyze": "Analyze",
+  "denoise": "Denoise",
   "analysisResult": "Analysis Result",
   "prompt": "Prompt",
   "conversationText": "Conversation Text",

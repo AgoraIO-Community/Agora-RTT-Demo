@@ -5,6 +5,7 @@
   "clearAll": "清除全部内容",
   "analyze": "分析",
   "analysisResult": "分析结果",
+  "denoise": "降噪",
   "prompt": "提示",
   "conversationText": "对话文本",
   "transcribing": "转写中",

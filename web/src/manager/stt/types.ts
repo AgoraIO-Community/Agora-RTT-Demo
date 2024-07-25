@@ -5,6 +5,7 @@ export interface STTEvents {}
 
 export interface STTManagerStartOptions {
   languages: IRequestLanguages[]
+  denoise: boolean
 }
 
 export interface STTManagerOptions {
