@@ -70,8 +70,10 @@ export const apiSTTAcquireToken = async (options: {
     const denoise = queryData.denoise
     if (denoise == "true") {
       gatewayAddress = import.meta.env.VITE_FILTER_URL
+      data.testIp = "183.131.160.168"
     } else if (denoise == "false") {
       gatewayAddress = import.meta.env.VITE_NO_FILTER_URL
+      data.testIp = "114.236.138.39"
     }
   }
   const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/builderTokens`
