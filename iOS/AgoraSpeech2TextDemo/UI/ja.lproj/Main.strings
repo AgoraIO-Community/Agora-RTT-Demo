@@ -1,0 +1,48 @@
+
+/* Class = "UIButton"; configuration.subtitle = "Join room as a host"; ObjectID = "A1c-PH-krf"; */
+"A1c-PH-krf.configuration.subtitle" = "ホストとして入室";
+
+/* Class = "UIButton"; configuration.title = "Join as Host"; ObjectID = "A1c-PH-krf"; */
+"A1c-PH-krf.configuration.title" = "入室";
+
+/* Class = "UIButton"; normalTitle = "Normal Room - Host"; ObjectID = "A1c-PH-krf"; */
+"A1c-PH-krf.normalTitle" = "入室";
+
+/* Class = "UIViewController"; title = "Home"; ObjectID = "BYZ-38-t0r"; */
+"BYZ-38-t0r.title" = "Home";
+
+/* Class = "UILabel"; text = "Uid"; ObjectID = "H46-8f-Mjw"; */
+"H46-8f-Mjw.text" = "Uid";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "K7I-rS-a16"; */
+"K7I-rS-a16.text" = "Label";
+
+/* Class = "UILabel"; text = " Channel Name"; ObjectID = "M3K-Xk-R6Y"; */
+"M3K-Xk-R6Y.text" = "チャンネル名";
+
+/* Class = "UILabel"; text = "Subtitle"; ObjectID = "PpE-RO-sPX"; */
+"PpE-RO-sPX.text" = "字幕";
+
+/* Class = "UIButton"; configuration.title = "Add"; ObjectID = "biM-m2-Ncj"; */
+"biM-m2-Ncj.configuration.title" = "翻訳言語追加";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "biM-m2-Ncj"; */
+"biM-m2-Ncj.normalTitle" = "翻訳言語追加";
+
+/* Class = "UILabel"; text = "STT Language :"; ObjectID = "dbX-WB-2pv"; */
+"dbX-WB-2pv.text" = "STT言語 :";
+
+/* Class = "UIButton"; configuration.title = "Start"; ObjectID = "jtk-fT-WcO"; */
+"jtk-fT-WcO.configuration.title" = "開始";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "jtk-fT-WcO"; */
+"jtk-fT-WcO.normalTitle" = "Button";
+
+/* Class = "UIViewController"; title = "ChatRoom"; ObjectID = "n4j-AD-Kp5"; */
+"n4j-AD-Kp5.title" = "ChatRoom";
+
+/* Class = "UIButton"; configuration.title = "Add"; ObjectID = "biM-m2-Ncj"; */
+"WI1-6n-cXW.configuration.title" = "STT言語追加";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "biM-m2-Ncj"; */
+"WI1-6n-cXW.normalTitle" = "STT言語追加";

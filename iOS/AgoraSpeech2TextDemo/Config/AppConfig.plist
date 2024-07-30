@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Agora</key>
+	<dict>
+		<key>AppId</key>
+		<string></string>
+		<key>ApiBaseUrl</key>
+		<string></string>
+	</dict>
+	<key>AgoraRtt</key>
+	<dict>
+		<key>ApiBaseUrl</key>
+		<string></string>
+	</dict>
+	<key>APIServer</key>
+	<dict>
+		<key>ApiBaseUrl</key>
+		<string></string>
+	</dict>
+	<key>CloudStorage</key>
+	<dict>
+		<key>AccessKey</key>
+		<string></string>
+		<key>SecretKey</key>
+		<string></string>
+		<key>Bucket</key>
+		<string></string>
+		<key>Vendor</key>
+		<integer>0</integer>
+		<key>Region</key>
+		<integer>0</integer>
+		<key>FileNamePrefix</key>
+		<array>
+			<string>AgoraRtt</string>
+			<string>iOSDemo</string>
+		</array>
+	</dict>
+</dict>
+</plist>
