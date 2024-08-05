@@ -51,6 +51,7 @@ export interface ITextItem {
   time: number
   text: string
   isFinal: boolean
+  lastUpateIndex: number
   username: string
   startTextTs: number // start time
   textTs: number // end time

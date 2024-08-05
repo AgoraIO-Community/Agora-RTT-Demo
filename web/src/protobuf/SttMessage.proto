@@ -22,6 +22,8 @@ message Text {
   string data_type = 13; // transcribe ,translate
   repeated Translation trans = 14;
   string culture = 15;
+  int64 text_ts = 16;
+  int32 sentence_end_index = 17;
 }
 message Word {
   string text = 1;
@@ -32,6 +34,6 @@ message Word {
 }
 message Translation {
   bool is_final = 1;
-  string lang = 2; // 翻译语言
+  string lang = 2; // translate language
   repeated string texts = 3;
 }

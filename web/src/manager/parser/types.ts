@@ -13,6 +13,7 @@ export interface ITextstream {
   durationMs: number
   words: any[]
   trans?: any[]
+  sentenceEndIndex?: number // only in transcribe
 }
 
 export interface ParserEvents {

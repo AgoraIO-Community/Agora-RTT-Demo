@@ -77,6 +77,30 @@ const getInitialState = (): InitialState => {
   }
 }
 
+const genSubtitle = (
+  textstream: ITextstream,
+  username: string,
+  textStr: string,
+  isFinal: boolean,
+): ITextItem => {
+  const { dataType, uid, culture, sentenceEndIndex } = textstream
+
+  const data: ITextItem = {
+    dataType,
+    uid,
+    username,
+    text: textStr,
+    lang: culture,
+    lastUpateIndex: isFinal ? textStr.length : 0,
+    isFinal: typeof sentenceEndIndex == "number" && sentenceEndIndex >= 0,
+    time: textstream.time + textstream.durationMs,
+    startTextTs: textstream.textTs,
+    textTs: textstream.textTs,
+  }
+
+  return data
+}
+
 export const globalSlice = createSlice({
   name: "global",
   initialState: getInitialState(),
@@ -151,41 +175,43 @@ export const globalSlice = createSlice({
     ) => {
       const { payload } = action
       const { textstream, username } = payload
-      const { dataType, words } = textstream
+      const { dataType, words, sentenceEndIndex } = textstream
       switch (dataType) {
         case "transcribe": {
-          console.log("[test] textstream transcribe textStr", textstream)
+          console.log("[test] updateSubtitles transcribe", textstream)
           let textStr: string = ""
-          let isFinal = false
+          let isStageFinal = false // stage final
           words.forEach((word: any) => {
             textStr += word.text
             if (word.isFinal) {
-              isFinal = true
+              isStageFinal = true
             }
           })
           const st = state.sttSubtitles.findLast((el) => {
             return el.uid == textstream.uid && !el.isFinal
           })
           if (!st) {
-            const subtitle: ITextItem = {
-              dataType: "transcribe",
-              uid: textstream.uid,
-              username,
-              text: textStr,
-              lang: textstream.culture,
-              isFinal,
-              time: textstream.time + textstream.durationMs,
-              startTextTs: textstream.textTs,
-              textTs: textstream.textTs,
-            }
+            // add new subtitle
+            const newSubtitle = genSubtitle(textstream, username, textStr, isStageFinal)
             const tempList = state.sttSubtitles
             const nextIndex = tempList.length
-            tempList[nextIndex] = subtitle
+            tempList[nextIndex] = newSubtitle
+            // console.log("st.text add", newSubtitle.text)
           } else {
-            st.text = textStr
-            st.isFinal = isFinal
+            // update subtitle
+            const isLastUpdated = typeof sentenceEndIndex == "number" && sentenceEndIndex >= 0
+            st.text = st.text.slice(0, st.lastUpateIndex) + textStr
+            if (isStageFinal) {
+              st.lastUpateIndex = st.text.length
+            }
             st.time = textstream.time + textstream.durationMs
             st.textTs = textstream.textTs
+            if (isLastUpdated) {
+              st.isFinal = true
+            } else {
+              st.isFinal = false
+            }
+            // console.log("st.text update", st.text)
           }
           break
         }
@@ -199,21 +225,20 @@ export const globalSlice = createSlice({
           if (!st) {
             return
           }
-          textstream.trans?.forEach(
-            (transItem: { lang: string; texts: any[]; isFinal: boolean }) => {
-              if (!st.translations) {
-                st.translations = []
-              }
-              const t = st.translations.findLast((el) => {
-                return el.lang == transItem.lang
-              })
-              if (!t) {
-                st.translations.push({ lang: transItem.lang, text: transItem.texts.join("") })
-              } else {
-                t.text = transItem.texts.join("")
-              }
-            },
-          )
+          console.log("[test] updateSubtitles translate", textstream)
+          textstream.trans?.forEach((transItem) => {
+            if (!st.translations) {
+              st.translations = []
+            }
+            const target = st.translations.findLast((el) => {
+              return el.lang == transItem.lang
+            })
+            if (!target) {
+              st.translations.push({ lang: transItem.lang, text: transItem.texts.join("") })
+            } else {
+              target.text = transItem.texts.join("")
+            }
+          })
         }
       }
     },
