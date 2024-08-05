@@ -254,15 +254,6 @@ const LanguageSettingDialog = (props: ILanguageSettingDialogProps) => {
             </Space>
           </div>
         </div>
-        {/* <div className={styles.section}>
-          <span className={styles.text}>{t("denoise")}</span>
-          <Switch
-            className={styles.switch}
-            value={denoise}
-            onChange={(v) => setDenoise(v)}
-            disabled={hasSttStarted}
-          />
-        </div> */}
       </div>
       <div className={styles.btnWrapper}>
         <span className={styles.btn} onClick={onClickBtn}>

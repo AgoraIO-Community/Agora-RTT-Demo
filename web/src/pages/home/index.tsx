@@ -102,17 +102,13 @@ const HomePage = () => {
     }
   }, [sttData])
 
+  const hasSttStarted = useMemo(() => {
+    return sttData.status == "start"
+  }, [sttData])
+
   useEffect(() => {
     if (isMounted) {
-      if (sttData.status == "start") {
-        const defaultLanguageSelect = {
-          transcribe1: languageSelect.transcribe1,
-          translate1List: languageSelect.translate1List?.length
-            ? [languageSelect.translate1List[0]]
-            : [],
-        }
-        dispatch(setCaptionLanguages(defaultLanguageSelect))
-        dispatch(setRecordLanguages(defaultLanguageSelect))
+      if (hasSttStarted) {
         sttManager.setOption({
           taskId: sttData.taskId ?? "",
           token: sttData.token ?? "",
@@ -120,14 +116,27 @@ const HomePage = () => {
         dispatch(setSubtitles([]))
         dispatch(addMessage({ content: t("setting.sttStart"), type: "success" }))
         dispatch(setCaptionShow(true))
-      } else if (sttData.status == "end") {
+      } else {
         sttManager.removeOption()
         dispatch(setCaptionShow(false))
         dispatch(addMessage({ content: t("setting.sttStop"), type: "success" }))
       }
     }
     // do not put isMounted in the dependencies
-  }, [sttData.status, languageSelect])
+  }, [hasSttStarted])
+
+  useEffect(() => {
+    if (isMounted && hasSttStarted) {
+      const defaultLanguageSelect = {
+        transcribe1: languageSelect.transcribe1,
+        translate1List: languageSelect.translate1List?.length
+          ? [languageSelect.translate1List[0]]
+          : [],
+      }
+      dispatch(setCaptionLanguages(defaultLanguageSelect))
+      dispatch(setRecordLanguages(defaultLanguageSelect))
+    }
+  }, [hasSttStarted, languageSelect])
 
   const simpleUserMap: Map<number | string, IUserInfo> = useMemo(() => {
     const map = new Map<number | string, IUserInfo>()

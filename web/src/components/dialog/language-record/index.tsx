@@ -98,6 +98,7 @@ const LanguageRecordDialog = (props: ILanguageSettingDialogProps) => {
                   setTempLanguages((pre) => ({
                     ...pre,
                     transcribe1: val,
+                    translate1List: val ? pre.translate1List : [],
                   }))
                 }}
               />
@@ -142,6 +143,7 @@ const LanguageRecordDialog = (props: ILanguageSettingDialogProps) => {
                   setTempLanguages((pre) => ({
                     ...pre,
                     transcribe2: val,
+                    translate2List: val ? pre.translate2List : [],
                   }))
                 }}
               />

@@ -119,11 +119,13 @@ const LanguageCaptionDialog = (props: ILanguageSettingDialogProps) => {
               <Select
                 value={tempLanguages.transcribe1}
                 style={{ width: 160 }}
+                allowClear
                 options={transcribe1Options}
                 onChange={(value) => {
                   setTempLanguages((pre) => ({
                     ...pre,
                     transcribe1: value,
+                    translate1List: value ? pre.translate1List : [],
                   }))
                 }}
               />
@@ -168,6 +170,7 @@ const LanguageCaptionDialog = (props: ILanguageSettingDialogProps) => {
                   setTempLanguages((pre) => ({
                     ...pre,
                     transcribe2: value,
+                    translate2List: value ? pre.translate2List : [],
                   }))
                 }}
               />
