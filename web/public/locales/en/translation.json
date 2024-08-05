@@ -20,6 +20,7 @@
     "success": "Export success"
   },
   "dialog": {
+    "languageCaption": "Language Caption",
     "languageShow": "Language Display",
     "languageExport": "Language Export",
     "languageExportTip": "Please select the language to export"
@@ -61,6 +62,7 @@
     "sttStopped": "Language to text service is not enabled",
     "onTrial": "On trial",
     "extendExperience": "Extend",
+    "setLanguage": "Render Langauges selection",
     "extendExperienceText": "Extended experience can be extended by 10 minutes",
     "extendExperienceFreeText": "The free version of the language to text service trial lasts for 10 minutes and has been used up."
   },

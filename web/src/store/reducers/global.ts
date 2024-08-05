@@ -31,12 +31,9 @@ export interface InitialState {
   options: IOptions
   localVideoMute: boolean
   localAudioMute: boolean
-  captionLanguages: string[]
-  languageSelect: ILanguageSelect
-  recordLanguageSelect: {
-    translate1List?: string[]
-    translate2List?: string[]
-  }
+  captionLanguages: ILanguageSelect // caption languages select
+  languageSelect: ILanguageSelect // trans language select
+  recordLanguages: ILanguageSelect // record language select
   sttSubtitles: ITextItem[]
   // ------- UI state -------
   memberListShow: boolean
@@ -66,10 +63,10 @@ const getInitialState = (): InitialState => {
     dialogRecordShow: false,
     captionShow: false,
     aiShow: false,
-    captionLanguages: ["live"],
+    captionLanguages: {},
     sttSubtitles: [],
     languageSelect: getDefaultLanguageSelect(),
-    recordLanguageSelect: {},
+    recordLanguages: {},
     menuList: [],
     tipSTTEnable: false,
     page: {
@@ -136,10 +133,10 @@ export const globalSlice = createSlice({
     setLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
       state.languageSelect = action.payload
     },
-    setRecordLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
-      state.recordLanguageSelect = action.payload
+    setRecordLanguages: (state, action: PayloadAction<ILanguageSelect>) => {
+      state.recordLanguages = action.payload
     },
-    setCaptionLanguages: (state, action: PayloadAction<string[]>) => {
+    setCaptionLanguages: (state, action: PayloadAction<ILanguageSelect>) => {
       state.captionLanguages = action.payload
     },
     setSubtitles: (state, action: PayloadAction<ITextItem[]>) => {
@@ -253,7 +250,7 @@ export const {
   setSttData,
   setCaptionLanguages,
   setLanguageSelect,
-  setRecordLanguageSelect,
+  setRecordLanguages,
   updateSubtitles,
   setSubtitles,
   removeMessage,

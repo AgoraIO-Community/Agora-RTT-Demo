@@ -10,10 +10,10 @@ import styles from "./index.module.scss"
 let lastScrollTop = 0
 
 const RecordContent = () => {
-  const recordLanguageSelect = useSelector((state: RootState) => state.global.recordLanguageSelect)
+  const recordLanguages = useSelector((state: RootState) => state.global.recordLanguages)
   const languageSelect = useSelector((state: RootState) => state.global.languageSelect)
   const subtitles = useSelector((state: RootState) => state.global.sttSubtitles)
-  const { translate1List = [], translate2List = [] } = recordLanguageSelect
+  const { translate1List = [], translate2List = [] } = recordLanguages
   const { transcribe1, transcribe2 } = languageSelect
   const contentRef = useRef<HTMLElement>(null)
   const [humanScroll, setHumanScroll] = useState(false)

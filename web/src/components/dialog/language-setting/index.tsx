@@ -5,7 +5,7 @@ import { Modal, Alert, Select, Space, Switch } from "antd"
 import { LANGUAGE_OPTIONS, parseQuery } from "@/common"
 import { LoadingOutlined } from "@ant-design/icons"
 import { ILanguageItem } from "@/manager"
-import { addMessage, setRecordLanguageSelect, setSubtitles } from "@/store/reducers/global"
+import { addMessage, setRecordLanguages, setSubtitles } from "@/store/reducers/global"
 import { useTranslation } from "react-i18next"
 
 import styles from "./index.module.scss"

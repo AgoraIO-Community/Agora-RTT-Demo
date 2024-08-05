@@ -66,12 +66,12 @@ export interface IChatItem {
   time: string | number
 }
 
-export interface IUICaptionData {
-  content: string
-  translate?: string
-  userName: string
-  translations?: ITranslationItem[]
-}
+// export interface IUICaptionData {
+//   content: string
+//   translate?: string
+//   userName: string
+//   translations?: ITranslationItem[]
+// }
 
 export interface ILanguageSelect {
   transcribe1?: string

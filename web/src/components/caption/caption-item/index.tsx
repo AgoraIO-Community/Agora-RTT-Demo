@@ -1,10 +1,10 @@
 import { isArabic } from "@/common/utils"
-import { IUICaptionData } from "@/types"
+import { IChatItem } from "@/types"
 
 import styles from "./index.module.scss"
 
 interface ICaptionItemProps {
-  data: IUICaptionData
+  data: IChatItem
 }
 
 const CaptionItem = (props: ICaptionItemProps) => {
