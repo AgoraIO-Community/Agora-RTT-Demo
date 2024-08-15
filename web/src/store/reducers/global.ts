@@ -178,7 +178,7 @@ export const globalSlice = createSlice({
       const { dataType, words, sentenceEndIndex } = textstream
       switch (dataType) {
         case "transcribe": {
-          console.log("[test] updateSubtitles transcribe", textstream)
+          // console.log("[test] updateSubtitles transcribe", textstream)
           let textStr: string = ""
           let isStageFinal = false // stage final
           words.forEach((word: any) => {
@@ -196,7 +196,10 @@ export const globalSlice = createSlice({
             const tempList = state.sttSubtitles
             const nextIndex = tempList.length
             tempList[nextIndex] = newSubtitle
-            // console.log("st.text add", newSubtitle.text)
+            console.log(
+              `[test] add new subtitle,index:${nextIndex},text:${textStr},isStageFinal:${isStageFinal},
+              startTextTs:${newSubtitle.startTextTs},textTs:${newSubtitle.textTs},sentenceEndIndex:${sentenceEndIndex}`,
+            )
           } else {
             // update subtitle
             const isLastUpdated = typeof sentenceEndIndex == "number" && sentenceEndIndex >= 0
@@ -206,12 +209,11 @@ export const globalSlice = createSlice({
             }
             st.time = textstream.time + textstream.durationMs
             st.textTs = textstream.textTs
-            if (isLastUpdated) {
-              st.isFinal = true
-            } else {
-              st.isFinal = false
-            }
-            // console.log("st.text update", st.text)
+            st.isFinal = isLastUpdated
+            console.log(
+              `[test] update subtitle,text:${st.text},isStageFinal:${isStageFinal},
+              startTextTs:${st.startTextTs},textTs:${st.textTs},isLastUpdated:${isLastUpdated},sentenceEndIndex:${sentenceEndIndex}`,
+            )
           }
           break
         }
@@ -225,7 +227,6 @@ export const globalSlice = createSlice({
           if (!st) {
             return
           }
-          console.log("[test] updateSubtitles translate", textstream)
           textstream.trans?.forEach((transItem) => {
             if (!st.translations) {
               st.translations = []
@@ -234,9 +235,18 @@ export const globalSlice = createSlice({
               return el.lang == transItem.lang
             })
             if (!target) {
-              st.translations.push({ lang: transItem.lang, text: transItem.texts.join("") })
+              const text = transItem.texts.join("")
+              st.translations.push({ lang: transItem.lang, text })
+              console.log(
+                `[test] add translation,language:${transItem.lang},text:${text},
+                startTextTs:${st.startTextTs},textTs:${st.textTs},`,
+              )
             } else {
               target.text = transItem.texts.join("")
+              console.log(
+                `[test] update translation,language:${transItem.lang},text:${target.text},
+                startTextTs:${st.startTextTs},textTs:${st.textTs}`,
+              )
             }
           })
         }

@@ -13,7 +13,7 @@ export class Parser extends AGEventEmitter<ParserEvents> {
     if (!textstream) {
       return console.warn("Prase data failed.")
     }
-    console.log("[test] textstream praseData", textstream)
+    console.log("[test] textstream praseData", JSON.stringify(textstream))
     this.emit("textstreamReceived", textstream)
   }
 }
