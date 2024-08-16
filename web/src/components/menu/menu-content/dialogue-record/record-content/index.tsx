@@ -20,9 +20,7 @@ const RecordContent = () => {
           userName: el.username,
           content: el.text,
           translations: [],
-          startTextTs: el.startTextTs,
-          textTs: el.textTs,
-          time: el.startTextTs,
+          startTime: el.startTime,
         }
         el.translations?.forEach((tran) => {
           if (recordLanguages?.translate1List?.includes(tran.lang)) {
@@ -36,9 +34,7 @@ const RecordContent = () => {
           userName: el.username,
           content: el.text,
           translations: [],
-          startTextTs: el.startTextTs,
-          textTs: el.textTs,
-          time: el.startTextTs,
+          startTime: el.startTime,
         }
         el.translations?.forEach((tran) => {
           if (recordLanguages?.translate2List?.includes(tran.lang)) {
@@ -49,7 +45,7 @@ const RecordContent = () => {
         reslist.push(chatItem)
       }
     })
-    return reslist.sort((a: IChatItem, b: IChatItem) => Number(a.time) - Number(b.time))
+    return reslist.sort((a: IChatItem, b: IChatItem) => Number(a.startTime) - Number(b.startTime))
   }, [recordLanguages, subtitles])
 
   useEffect(() => {

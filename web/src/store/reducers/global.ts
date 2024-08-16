@@ -81,7 +81,7 @@ const genSubtitle = (
   textstream: ITextstream,
   username: string,
   textStr: string,
-  isFinal: boolean,
+  isStageFinal: boolean,
 ): ITextItem => {
   const { dataType, uid, culture, sentenceEndIndex } = textstream
 
@@ -91,11 +91,10 @@ const genSubtitle = (
     username,
     text: textStr,
     lang: culture,
-    lastUpateIndex: isFinal ? textStr.length : 0,
+    lastUpateIndex: isStageFinal ? textStr.length : 0,
     isFinal: typeof sentenceEndIndex == "number" && sentenceEndIndex >= 0,
-    time: textstream.time + textstream.durationMs,
-    startTextTs: textstream.textTs,
-    textTs: textstream.textTs,
+    startTime: textstream.textTs,
+    endTime: textstream.textTs,
   }
 
   return data
@@ -191,28 +190,26 @@ export const globalSlice = createSlice({
             return el.uid == textstream.uid && !el.isFinal
           })
           if (!st) {
-            // add new subtitle
+            // add subtitle
             const newSubtitle = genSubtitle(textstream, username, textStr, isStageFinal)
             const tempList = state.sttSubtitles
             const nextIndex = tempList.length
             tempList[nextIndex] = newSubtitle
             console.log(
-              `[test] add new subtitle,index:${nextIndex},text:${textStr},isStageFinal:${isStageFinal},
-              startTextTs:${newSubtitle.startTextTs},textTs:${newSubtitle.textTs},sentenceEndIndex:${sentenceEndIndex}`,
+              `[test] subtitle add,index:${nextIndex},text:${textStr},
+              isStageFinal:${isStageFinal},startTime:${newSubtitle.startTime},endTime:${newSubtitle.endTime},sentenceEndIndex:${sentenceEndIndex}`,
             )
           } else {
             // update subtitle
-            const isLastUpdated = typeof sentenceEndIndex == "number" && sentenceEndIndex >= 0
             st.text = st.text.slice(0, st.lastUpateIndex) + textStr
             if (isStageFinal) {
               st.lastUpateIndex = st.text.length
             }
-            st.time = textstream.time + textstream.durationMs
-            st.textTs = textstream.textTs
-            st.isFinal = isLastUpdated
+            st.endTime = textstream.textTs
+            st.isFinal = typeof sentenceEndIndex == "number" && sentenceEndIndex >= 0
             console.log(
-              `[test] update subtitle,text:${st.text},isStageFinal:${isStageFinal},
-              startTextTs:${st.startTextTs},textTs:${st.textTs},isLastUpdated:${isLastUpdated},sentenceEndIndex:${sentenceEndIndex}`,
+              `[test] subtitle update,text:${st.text},isStageFinal:${isStageFinal},
+              startTime:${st.startTime},endTime:${st.endTime},isFinal:${st.isFinal},sentenceEndIndex:${sentenceEndIndex}`,
             )
           }
           break
@@ -221,7 +218,7 @@ export const globalSlice = createSlice({
           const st = state.sttSubtitles.findLast((el) => {
             return (
               el.uid == textstream.uid &&
-              (textstream.textTs >= el.startTextTs || textstream.textTs <= el.textTs)
+              (textstream.textTs >= el.startTime || textstream.textTs <= el.endTime)
             )
           })
           if (!st) {
@@ -231,21 +228,21 @@ export const globalSlice = createSlice({
             if (!st.translations) {
               st.translations = []
             }
+            const transText = transItem.texts.join("")
             const target = st.translations.findLast((el) => {
               return el.lang == transItem.lang
             })
             if (!target) {
-              const text = transItem.texts.join("")
-              st.translations.push({ lang: transItem.lang, text })
+              // add translation
+              st.translations.push({ lang: transItem.lang, text: transText })
               console.log(
-                `[test] add translation,language:${transItem.lang},text:${text},
-                startTextTs:${st.startTextTs},textTs:${st.textTs},`,
+                `[test] translation add,language:${transItem.lang},text:${transText},textTs:${textstream.textTs}`,
               )
             } else {
-              target.text = transItem.texts.join("")
+              // update translation
+              target.text = target.text + transText
               console.log(
-                `[test] update translation,language:${transItem.lang},text:${target.text},
-                startTextTs:${st.startTextTs},textTs:${st.textTs}`,
+                `[test] translation update,language:${transItem.lang},text:${transText},textTs:${textstream.textTs}`,
               )
             }
           })

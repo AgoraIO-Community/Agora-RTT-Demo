@@ -27,9 +27,7 @@ const Caption = (props: ICaptionProps) => {
           userName: el.username,
           content: el.text,
           translations: [],
-          startTextTs: el.startTextTs,
-          textTs: el.textTs,
-          time: el.startTextTs,
+          startTime: el.startTime,
         }
         el.translations?.forEach((tran) => {
           if (captionLanguages?.translate1List?.includes(tran.lang)) {
@@ -43,9 +41,7 @@ const Caption = (props: ICaptionProps) => {
           userName: el.username,
           content: el.text,
           translations: [],
-          startTextTs: el.startTextTs,
-          textTs: el.textTs,
-          time: el.startTextTs,
+          startTime: el.startTime,
         }
         el.translations?.forEach((tran) => {
           if (captionLanguages?.translate2List?.includes(tran.lang)) {
