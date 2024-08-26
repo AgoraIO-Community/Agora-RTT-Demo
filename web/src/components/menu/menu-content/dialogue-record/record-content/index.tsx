@@ -64,7 +64,7 @@ const RecordContent = () => {
           <div className={styles.right}>
             <div className={styles.up}>
               <div className={styles.userName}>{item.userName}</div>
-              <div className={styles.time}>{formatTime2(item.time)}</div>
+              <div className={styles.time}>{formatTime2(item.startTime)}</div>
             </div>
             <div className={styles.bottom}>
               <div className={styles.content}>{item.content}</div>
