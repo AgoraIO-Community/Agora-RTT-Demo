@@ -5,6 +5,7 @@
   "clearAll": "清除全部内容",
   "analyze": "分析",
   "analysisResult": "分析结果",
+  "denoise": "降噪",
   "prompt": "提示",
   "conversationText": "对话文本",
   "transcribing": "转写中",
@@ -19,6 +20,7 @@
     "success": "导出成功"
   },
   "dialog": {
+    "languageCaption": "字幕语言",
     "languageShow": "语言展示",
     "languageExport": "语言导出",
     "languageExportTip": "请选择一种语言导出"
@@ -61,6 +63,7 @@
     "onTrial": "试用中",
     "extendExperience": "延长体验",
     "extendExperienceText": "延长体验可延长使用10分钟",
+    "setLanguage": "展示语言选择",
     "extendExperienceFreeText": "免费版语音转文字体验时长 10 分钟，当前已用完"
   },
   "ai": {

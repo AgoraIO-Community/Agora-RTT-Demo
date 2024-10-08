@@ -48,12 +48,12 @@ export interface ITextItem {
   dataType: LangDataType
   uid: string | number
   lang: string
-  time: number
   text: string
   isFinal: boolean
+  lastUpateIndex: number
   username: string
-  startTextTs: number // start time
-  textTs: number // end time
+  startTime: number // start time
+  endTime: number // end time
   translations?: ITranslationItem[]
 }
 
@@ -61,17 +61,15 @@ export interface IChatItem {
   userName: string
   content: string
   translations: ITranslationItem[]
-  startTextTs: string | number
-  textTs: string | number
-  time: string | number
+  startTime: number
 }
 
-export interface IUICaptionData {
-  content: string
-  translate?: string
-  userName: string
-  translations?: ITranslationItem[]
-}
+// export interface IUICaptionData {
+//   content: string
+//   translate?: string
+//   userName: string
+//   translations?: ITranslationItem[]
+// }
 
 export interface ILanguageSelect {
   transcribe1?: string

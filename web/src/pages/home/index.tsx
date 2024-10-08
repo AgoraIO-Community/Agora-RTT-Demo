@@ -26,7 +26,8 @@ import {
   updateSubtitles,
   setSttData,
   setSubtitles,
-  setRecordLanguageSelect,
+  setRecordLanguages,
+  setCaptionLanguages,
 } from "@/store/reducers/global"
 import { useSelector, useDispatch } from "react-redux"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -57,6 +58,7 @@ const HomePage = () => {
   const options = useSelector((state: RootState) => state.global.options)
   const memberListShow = useSelector((state: RootState) => state.global.memberListShow)
   const dialogRecordShow = useSelector((state: RootState) => state.global.dialogRecordShow)
+  const languageSelect = useSelector((state: RootState) => state.global.languageSelect)
   const captionShow = useSelector((state: RootState) => state.global.captionShow)
   const aiShow = useSelector((state: RootState) => state.global.aiShow)
   const sttData = useSelector((state: RootState) => state.global.sttData)
@@ -100,29 +102,41 @@ const HomePage = () => {
     }
   }, [sttData])
 
+  const hasSttStarted = useMemo(() => {
+    return sttData.status == "start"
+  }, [sttData])
+
   useEffect(() => {
     if (isMounted) {
-      if (sttData.status == "start") {
-        dispatch(
-          setRecordLanguageSelect({
-            translate1List: [],
-            translate2List: [],
-          }),
-        )
+      if (hasSttStarted) {
         sttManager.setOption({
           taskId: sttData.taskId ?? "",
           token: sttData.token ?? "",
         })
         dispatch(setSubtitles([]))
         dispatch(addMessage({ content: t("setting.sttStart"), type: "success" }))
-      } else if (sttData.status == "end") {
+        dispatch(setCaptionShow(true))
+      } else {
         sttManager.removeOption()
         dispatch(setCaptionShow(false))
         dispatch(addMessage({ content: t("setting.sttStop"), type: "success" }))
       }
     }
     // do not put isMounted in the dependencies
-  }, [sttData.status])
+  }, [hasSttStarted])
+
+  useEffect(() => {
+    if (isMounted && hasSttStarted) {
+      const defaultLanguageSelect = {
+        transcribe1: languageSelect.transcribe1,
+        translate1List: languageSelect.translate1List?.length
+          ? [languageSelect.translate1List[0]]
+          : [],
+      }
+      dispatch(setCaptionLanguages(defaultLanguageSelect))
+      dispatch(setRecordLanguages(defaultLanguageSelect))
+    }
+  }, [hasSttStarted, languageSelect])
 
   const simpleUserMap: Map<number | string, IUserInfo> = useMemo(() => {
     const map = new Map<number | string, IUserInfo>()
@@ -216,9 +230,9 @@ const HomePage = () => {
 
   const onLocalUserChanged = (tracks: IUserTracks) => {
     setLocalTracks(tracks)
-    if (tracks.videoTrack) {
-      dispatch(setLocalVideoMute(false))
-    }
+    // if (tracks.videoTrack) {
+    //   dispatch(setLocalVideoMute(false))
+    // }
     if (tracks.audioTrack) {
       dispatch(setLocalAudioMute(false))
     }
