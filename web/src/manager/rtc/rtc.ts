@@ -34,9 +34,7 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
   }
 
   async createTracks() {
-    const tracks = await AgoraRTC.createMicrophoneAndCameraTracks({
-      AGC: false,
-    })
+    const tracks = await AgoraRTC.createMicrophoneAndCameraTracks()
     this.localTracks.audioTrack = tracks[0]
     this.localTracks.videoTrack = tracks[1]
     this.emit("localUserChanged", this.localTracks)

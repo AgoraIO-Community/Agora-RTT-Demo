@@ -24,7 +24,7 @@ import {
   setTipSTTEnable,
 } from "@/store/reducers/global"
 import LanguageSettingDialog from "../dialog/language-setting"
-import LanguageCaptionDialog from "../dialog/language-caption"
+import CaptionPopover from "./caption-popover"
 import { Popover } from "antd"
 import { RootState } from "@/store"
 import { useEffect, useMemo, useState } from "react"
@@ -51,7 +51,6 @@ const Footer = (props: IFooterProps) => {
   const aiShow = useSelector((state: RootState) => state.global.aiShow)
   const sttData = useSelector((state: RootState) => state.global.sttData)
   const [showLanguageSetting, setShowLanguageSetting] = useState(false)
-  const [showLanguageCaption, setShowLanguageCaption] = useState(false)
 
   useEffect(() => {
     if (tipSTTEnable) {
@@ -118,9 +117,7 @@ const Footer = (props: IFooterProps) => {
     setShowLanguageSetting(!showLanguageSetting)
   }
 
-  const onClickCaptionArrowUp = () => {
-    setShowLanguageCaption(!showLanguageCaption)
-  }
+  const toggleDialogSelect = () => {}
 
   const onClickEnd = () => {
     nav("/")
@@ -153,9 +150,11 @@ const Footer = (props: IFooterProps) => {
           <CaptionIcon disabled={!hasSttStarted} active={captionShow}></CaptionIcon>
           <span className={styles.text}>{captionText}</span>
         </span>
-        <span className={styles.arrowWrapper} onClick={onClickCaptionArrowUp}>
-          <ArrowUpIcon width={16} height={16}></ArrowUpIcon>
-        </span>
+        <CaptionPopover>
+          <span className={styles.arrowWrapper}>
+            <ArrowUpIcon width={16} height={16}></ArrowUpIcon>
+          </span>
+        </CaptionPopover>
         {/* dialog */}
         <span className={`${styles.item}`} onClick={onClickDialogRecord}>
           <TranscriptionIcon active={dialogRecordShow}></TranscriptionIcon>
@@ -179,11 +178,6 @@ const Footer = (props: IFooterProps) => {
       <span className={styles.end} onClick={onClickEnd}>
         {t("closeConversation")}
       </span>
-      <LanguageCaptionDialog
-        open={showLanguageCaption}
-        onOk={() => setShowLanguageCaption(false)}
-        onCancel={() => setShowLanguageCaption(false)}
-      ></LanguageCaptionDialog>
       <LanguageSettingDialog
         open={showLanguageSetting}
         onOk={() => setShowLanguageSetting(false)}

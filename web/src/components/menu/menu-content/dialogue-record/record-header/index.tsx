@@ -76,7 +76,7 @@ const RecordHeader = (props: IRecordHeaderProps) => {
             </div>
             {/* setting */}
             <div className={styles.setting} onClick={onClickSetting}>
-              <span className={styles.btn}>{t("conversation.setLanguage")}</span>
+              <SettingIcon></SettingIcon>
             </div>
           </div>
           <div className={styles.conversation}>{t("conversation.sttStarted")}</div>

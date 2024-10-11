@@ -3,7 +3,7 @@ import { RootState } from "@/store"
 import { addMessage } from "@/store/reducers/global"
 import { useSelector, useDispatch } from "react-redux"
 import { downloadText, showAIModule, genContentText } from "@/common"
-import LanguageRecordDialog from "@/components/dialog/language-record"
+import LanguageShowDialog from "@/components/dialog/language-show"
 import LanguageStorageDialog from "@/components/dialog/language-storage"
 import RecordHeader from "./record-header"
 
@@ -53,7 +53,7 @@ const DialogueRecord = (props: DialogueRecordProps) => {
           </div>
         </div>
       ) : null}
-      <LanguageRecordDialog
+      <LanguageShowDialog
         open={openLanguageShowDialog}
         onCancel={() => {
           setOpenLanguageShowDialog(false)
@@ -61,7 +61,7 @@ const DialogueRecord = (props: DialogueRecordProps) => {
         onOk={() => {
           setOpenLanguageShowDialog(false)
         }}
-      ></LanguageRecordDialog>
+      ></LanguageShowDialog>
       <LanguageStorageDialog
         open={openLanguageStorageDialog}
         onCancel={() => {

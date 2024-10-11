@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from "react"
 import { getElementScrollY, getCaptionScrollPX } from "@/common"
 import CaptionItem from "./caption-item"
-import { IChatItem } from "@/types"
+import { IUICaptionData } from "@/types"
 import { useSelector } from "react-redux"
 import { RootState } from "@/store"
 
@@ -18,42 +18,26 @@ const Caption = (props: ICaptionProps) => {
   const captionRef = useRef<HTMLDivElement>(null)
   const subtitles = useSelector((state: RootState) => state.global.sttSubtitles)
 
-  const captionList: IChatItem[] = useMemo(() => {
-    const reslist: IChatItem[] = []
-
+  const captionList: IUICaptionData[] = useMemo(() => {
+    const list: IUICaptionData[] = []
     subtitles.forEach((el) => {
-      if (el.lang == captionLanguages.transcribe1) {
-        const chatItem: IChatItem = {
-          userName: el.username,
-          content: el.text,
-          translations: [],
-          startTime: el.startTime,
-        }
-        el.translations?.forEach((tran) => {
-          if (captionLanguages?.translate1List?.includes(tran.lang)) {
-            const tranItem = { lang: tran.lang, text: tran.text }
-            chatItem.translations?.push(tranItem)
-          }
-        })
-        reslist.push(chatItem)
-      } else if (el.lang == captionLanguages.transcribe2) {
-        const chatItem: IChatItem = {
-          userName: el.username,
-          content: el.text,
-          translations: [],
-          startTime: el.startTime,
-        }
-        el.translations?.forEach((tran) => {
-          if (captionLanguages?.translate2List?.includes(tran.lang)) {
-            const tranItem = { lang: tran.lang, text: tran.text }
-            chatItem.translations?.push(tranItem)
-          }
-        })
-        reslist.push(chatItem)
+      const captionData: IUICaptionData = {
+        userName: el.username,
+        translations: [],
+        content: "",
       }
+      if (captionLanguages.includes("live")) {
+        captionData.content = el.text
+      }
+      el.translations?.forEach((tran) => {
+        const tranItem = { lang: tran.lang, text: tran.text }
+        if (captionLanguages.includes(tran.lang)) {
+          captionData.translations?.push(tranItem)
+        }
+      })
+      list.push(captionData)
     })
-
-    return reslist
+    return list
   }, [captionLanguages, subtitles])
 
   const animate = () => {

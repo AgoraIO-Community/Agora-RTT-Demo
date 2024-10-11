@@ -3,11 +3,10 @@ import { RootState } from "@/store"
 import { useEffect, useMemo, useState } from "react"
 import { Modal, Alert, Select, Space } from "antd"
 import { LANGUAGE_OPTIONS } from "@/common"
-import { setCaptionLanguages, addMessage } from "@/store/reducers/global"
+import { setRecordLanguageSelect, addMessage } from "@/store/reducers/global"
 import { useTranslation } from "react-i18next"
 
 import styles from "./index.module.scss"
-import { ILanguageSelect } from "@/types"
 
 interface ILanguageSettingDialogProps {
   open?: boolean
@@ -18,47 +17,33 @@ interface ILanguageSettingDialogProps {
 const SELECT_TRANS_LANGUAGE_PLACEHOLDER = "Please select a language to translate into"
 const MAX_COUNT = 2
 
-const LanguageCaptionDialog = (props: ILanguageSettingDialogProps) => {
+const LanguageShowDialog = (props: ILanguageSettingDialogProps) => {
   const { open, onOk, onCancel } = props
   const dispatch = useDispatch()
   const { t } = useTranslation()
   const languageSelect = useSelector((state: RootState) => state.global.languageSelect)
-  const captionLanguages = useSelector((state: RootState) => state.global.captionLanguages)
-  const [tempLanguages, setTempLanguages] = useState<ILanguageSelect>(captionLanguages)
+  const recordLanguageSelect = useSelector((state: RootState) => state.global.recordLanguageSelect)
+  const {
+    transcribe1,
+    translate1List: captionTranslate1List = [],
+    transcribe2,
+    translate2List: captionTranslate2List = [],
+  } = languageSelect
+  const { translate1List: recordTranslate1List = [], translate2List: recordTranslate2List = [] } =
+    recordLanguageSelect
+  const [translateLanguage1List, setTranslateLanguage1List] =
+    useState<string[]>(recordTranslate1List)
+  const [translateLanguage2List, setTranslateLanguage2List] =
+    useState<string[]>(recordTranslate2List)
 
   useEffect(() => {
-    setTempLanguages(captionLanguages)
-  }, [captionLanguages])
+    setTranslateLanguage1List(recordTranslate1List)
+    setTranslateLanguage2List(recordTranslate2List)
+  }, [recordLanguageSelect])
 
-  const transcribe1Options = useMemo(() => {
+  const translateLanguage1Options = useMemo(() => {
     const options: any[] = []
-
-    if (languageSelect.transcribe1) {
-      options.push({
-        value: languageSelect.transcribe1,
-        label: LANGUAGE_OPTIONS.find((el) => el.value === languageSelect.transcribe1)?.label,
-      })
-    }
-
-    return options
-  }, [languageSelect])
-
-  const transcribe2Options = useMemo(() => {
-    const options: any[] = []
-
-    if (languageSelect.transcribe2) {
-      options.push({
-        value: languageSelect.transcribe2,
-        label: LANGUAGE_OPTIONS.find((el) => el.value === languageSelect.transcribe2)?.label,
-      })
-    }
-
-    return options
-  }, [languageSelect])
-
-  const translate1Options = useMemo(() => {
-    const options: any[] = []
-    languageSelect.translate1List?.forEach((item) => {
+    captionTranslate1List.forEach((item) => {
       const target = LANGUAGE_OPTIONS.find((el) => el.value === item)
       if (target) {
         options.push({
@@ -68,24 +53,30 @@ const LanguageCaptionDialog = (props: ILanguageSettingDialogProps) => {
       }
     })
     return options
-  }, [languageSelect])
+  }, [captionTranslate1List])
 
-  const translate2Options = useMemo(() => {
+  const translateLanguage2Options = useMemo(() => {
     const options: any[] = []
-    languageSelect.translate2List?.forEach((item) => {
+    captionTranslate2List.forEach((item) => {
       const target = LANGUAGE_OPTIONS.find((el) => el.value === item)
       if (target) {
         options.push({
-          value: target?.value,
-          label: target?.label,
+          value: target.value,
+          label: target.label,
         })
       }
     })
+
     return options
-  }, [languageSelect])
+  }, [captionTranslate2List])
 
   const onClickBtn = async () => {
-    dispatch(setCaptionLanguages(tempLanguages))
+    dispatch(
+      setRecordLanguageSelect({
+        translate1List: translateLanguage1List,
+        translate2List: translateLanguage2List,
+      }),
+    )
     dispatch(
       addMessage({
         content: t("setting.saveSuccess"),
@@ -98,7 +89,7 @@ const LanguageCaptionDialog = (props: ILanguageSettingDialogProps) => {
   return (
     <Modal
       width={600}
-      title={t("dialog.languageCaption")}
+      title={t("dialog.languageShow")}
       open={open}
       footer={null}
       onOk={onOk}
@@ -117,35 +108,25 @@ const LanguageCaptionDialog = (props: ILanguageSettingDialogProps) => {
           <div className={styles.selectWrapper}>
             <Space>
               <Select
-                value={tempLanguages.transcribe1}
+                value={transcribe1}
+                disabled={true}
                 style={{ width: 160 }}
-                allowClear
-                options={transcribe1Options}
-                onChange={(value) => {
-                  setTempLanguages((pre) => ({
-                    ...pre,
-                    transcribe1: value,
-                    translate1List: value ? pre.translate1List : [],
-                  }))
-                }}
+                options={LANGUAGE_OPTIONS}
               />
               <Select
-                value={tempLanguages.translate1List}
-                onChange={(value: string[]) => {
-                  setTempLanguages((pre) => ({
-                    ...pre,
-                    translate1List: value,
-                  }))
+                value={translateLanguage1List}
+                onChange={(value) => {
+                  setTranslateLanguage1List(value)
                 }}
                 allowClear
-                disabled={!tempLanguages.transcribe1}
+                disabled={!transcribe1}
                 showSearch={false}
                 mode="multiple"
                 placeholder={SELECT_TRANS_LANGUAGE_PLACEHOLDER}
                 maxCount={MAX_COUNT}
                 style={{ width: 380 }}
                 maxTagTextLength={10}
-                options={translate1Options}
+                options={translateLanguage1Options}
               />
             </Space>
           </div>
@@ -162,27 +143,18 @@ const LanguageCaptionDialog = (props: ILanguageSettingDialogProps) => {
           <div className={styles.selectWrapper}>
             <Space>
               <Select
-                value={tempLanguages.transcribe2}
+                value={transcribe2}
+                disabled={true}
                 allowClear
                 style={{ width: 160 }}
-                options={transcribe2Options}
-                onChange={(value) => {
-                  setTempLanguages((pre) => ({
-                    ...pre,
-                    transcribe2: value,
-                    translate2List: value ? pre.translate2List : [],
-                  }))
-                }}
+                options={LANGUAGE_OPTIONS}
               />
               <Select
-                value={tempLanguages.translate2List}
-                onChange={(value: string[]) => {
-                  setTempLanguages((pre) => ({
-                    ...pre,
-                    translate2List: value,
-                  }))
+                value={translateLanguage2List}
+                onChange={(value) => {
+                  setTranslateLanguage2List(value)
                 }}
-                disabled={!tempLanguages.transcribe2}
+                disabled={!transcribe2}
                 allowClear
                 showSearch={false}
                 mode="multiple"
@@ -190,7 +162,7 @@ const LanguageCaptionDialog = (props: ILanguageSettingDialogProps) => {
                 maxCount={MAX_COUNT}
                 style={{ width: 380 }}
                 maxTagTextLength={10}
-                options={translate2Options}
+                options={translateLanguage2Options}
               />
             </Space>
           </div>
@@ -205,4 +177,4 @@ const LanguageCaptionDialog = (props: ILanguageSettingDialogProps) => {
   )
 }
 
-export default LanguageCaptionDialog
+export default LanguageShowDialog

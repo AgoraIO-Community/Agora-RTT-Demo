@@ -42,9 +42,9 @@ const LanguageStorageDialog = (props: ILanguageSettingDialogProps) => {
   const options = useSelector((state: RootState) => state.global.options)
   const languageSelect = useSelector((state: RootState) => state.global.languageSelect)
   const sttSubtitles = useSelector((state: RootState) => state.global.sttSubtitles)
-  const recordLanguages = useSelector((state: RootState) => state.global.recordLanguages)
+  const recordLanguageSelect = useSelector((state: RootState) => state.global.recordLanguageSelect)
   const { transcribe1, transcribe2 } = languageSelect
-  const { translate1List = [], translate2List = [] } = recordLanguages
+  const { translate1List = [], translate2List = [] } = recordLanguageSelect
   const { channel } = options
   const [language, setLanguage] = useState<string>()
 

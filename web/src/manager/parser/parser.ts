@@ -1,6 +1,6 @@
 import { ITextstream, ParserEvents, ITranslationItem } from "./types"
 import { AGEventEmitter } from "../events"
-import protoRoot from "@/protobuf/SttMessage.js"
+import protoRoot from "@/protobuf/SttMessage_es6.js"
 
 export class Parser extends AGEventEmitter<ParserEvents> {
   constructor() {
@@ -13,7 +13,7 @@ export class Parser extends AGEventEmitter<ParserEvents> {
     if (!textstream) {
       return console.warn("Prase data failed.")
     }
-    console.log("[test] textstream praseData", JSON.stringify(textstream))
+    console.log("[test] textstream praseData", textstream)
     this.emit("textstreamReceived", textstream)
   }
 }
