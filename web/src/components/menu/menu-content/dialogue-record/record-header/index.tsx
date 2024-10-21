@@ -39,7 +39,9 @@ const RecordHeader = (props: IRecordHeaderProps) => {
         if (sttData.startTime && sttData.duration) {
           const now = new Date().getTime()
           const duration = Math.floor((sttData.startTime + sttData.duration - now) / 1000)
-          setExperienceDuration(duration)
+          if (duration >= 0) {
+            setExperienceDuration(duration)
+          }
         }
       }, 1000)
     }
@@ -68,11 +70,11 @@ const RecordHeader = (props: IRecordHeaderProps) => {
               <span className={styles.text}>
                 {t("conversation.onTrial")} &nbsp;
                 <span className={styles.time}>{formatTime(experienceDuration)}</span> &nbsp;
-                <span>{t("conversation.extendExperienceText")}</span>
+                {/* <span>{t("conversation.extendExperienceText")}</span> */}
               </span>
-              <span className={styles.btn} onClick={onClickExtend}>
+              {/* <span className={styles.btn} onClick={onClickExtend}>
                 {t("conversation.extendExperience")}
-              </span>
+              </span> */}
             </div>
             {/* setting */}
             <div className={styles.setting} onClick={onClickSetting}>
