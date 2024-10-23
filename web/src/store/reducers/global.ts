@@ -22,10 +22,6 @@ import { getDefaultLanguageSelect } from "@/common/utils"
 export interface InitialState {
   // ------- stt --------------
   sttData: ISttData
-  // ------- url --------------
-  queryData: {
-    [key: string]: string
-  }
   // ------- user state -------
   userInfo: IUserInfo
   options: IOptions
@@ -57,7 +53,6 @@ const getInitialState = (): InitialState => {
     sttData: {
       status: "end",
     },
-    queryData: {},
     userInfo: getUserInfoFromLocal(),
     options: getOptionsFromLocal(),
     localVideoMute: true,
@@ -87,9 +82,6 @@ export const globalSlice = createSlice({
     setOptions: (state, action: PayloadAction<Partial<IOptions>>) => {
       Object.assign(state.options, action.payload)
       setOptionsToLocal(action.payload)
-    },
-    setQueryData: (state, action: PayloadAction<{ [key: string]: string }>) => {
-      state.queryData = action.payload
     },
     setUserInfo: (state, action: PayloadAction<Partial<IUserInfo>>) => {
       Object.assign(state.userInfo, action.payload)
@@ -259,7 +251,6 @@ export const {
   removeMessage,
   addMessage,
   setTipSTTEnable,
-  setQueryData,
   reset,
 } = globalSlice.actions
 

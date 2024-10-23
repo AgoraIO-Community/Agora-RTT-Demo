@@ -5,7 +5,7 @@ import { InputStatuses } from "@/types"
 import { useTranslation } from "react-i18next"
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { genRandomUserId, REGEX_SPECIAL_CHAR, GITHUB_URL, parseQuery } from "@/common"
-import { setOptions, setUserInfo, setQueryData } from "@/store/reducers/global"
+import { setOptions, setUserInfo } from "@/store/reducers/global"
 import { version } from "../../../package.json"
 import { useNavigate, useLocation } from "react-router-dom"
 
@@ -15,6 +15,7 @@ import githubSrc from "@/assets/github.jpg"
 
 const LoginPage = () => {
   const nav = useNavigate()
+  const location = useLocation()
   const { t, i18n } = useTranslation()
   const dispatch = useDispatch()
   const [messageApi, contextHolder] = message.useMessage()
@@ -65,9 +66,11 @@ const LoginPage = () => {
         userId: genRandomUserId(),
       }),
     )
-    const queryData = parseQuery(window.location.href)
-    dispatch(setQueryData(queryData))
-    nav(`/home`)
+    if (location.search) {
+      nav(`/home?${location.search.slice(1)}`)
+    } else {
+      nav("/home")
+    }
   }
 
   const onClickGithub = () => {

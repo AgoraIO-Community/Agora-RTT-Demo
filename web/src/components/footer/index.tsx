@@ -29,7 +29,7 @@ import { Popover } from "antd"
 import { RootState } from "@/store"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 
 import styles from "./index.module.scss"
 
@@ -42,6 +42,7 @@ const Footer = (props: IFooterProps) => {
   const nav = useNavigate()
   const dispatch = useDispatch()
   const { t } = useTranslation()
+  const location = useLocation()
   const localAudioMute = useSelector((state: RootState) => state.global.localAudioMute)
   const localVideoMute = useSelector((state: RootState) => state.global.localVideoMute)
   const memberListShow = useSelector((state: RootState) => state.global.memberListShow)
@@ -117,10 +118,12 @@ const Footer = (props: IFooterProps) => {
     setShowLanguageSetting(!showLanguageSetting)
   }
 
-  const toggleDialogSelect = () => {}
-
   const onClickEnd = () => {
-    nav("/")
+    if (location.search) {
+      nav(`/?${location.search.slice(1)}`)
+    } else {
+      nav("/")
+    }
     dispatch(addMessage({ content: "end meeting success!", type: "success" }))
   }
 

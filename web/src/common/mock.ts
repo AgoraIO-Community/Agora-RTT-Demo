@@ -37,11 +37,11 @@ export const genRandomUserList = (num: number = 0): IUserInfo[] => {
   return userList
 }
 
-export const MOCK_CHAT_LIST: IChatItem[] = Array.from({ length: 30 }, (_, i) => ({
-  userName: "asdasd",
-  content: `违反破解复赛劳务费和沙发和覅打发阿SVAVAV的飞书飞书时间的覅暗示法is哎烦as疯狂加暗示法内容${i}`,
-  time: `16:04`,
-}))
+// export const MOCK_CHAT_LIST: IChatItem[] = Array.from({ length: 30 }, (_, i) => ({
+//   userName: "asdasd",
+//   content: `违反破解复赛劳务费和沙发和覅打发阿SVAVAV的飞书飞书时间的覅暗示法is哎烦as疯狂加暗示法内容${i}`,
+//   time: `16:04`,
+// }))
 
 export const MOCK_CAPTION_LIST: IUICaptionData[] = Array.from({ length: 10 }).map((_, index) => ({
   content: genRandomParagraph(2),

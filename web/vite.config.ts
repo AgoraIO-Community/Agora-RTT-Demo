@@ -40,6 +40,11 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     css: {
+      preprocessorOptions: {
+        scss: {
+          api: "modern",
+        },
+      },
       modules: {
         // hashPrefix: 'hash',
         // generateScopedName: "[name]__[local]__[hash:base64:2]",

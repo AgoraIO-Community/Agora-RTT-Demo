@@ -30,7 +30,7 @@ import {
 } from "@/store/reducers/global"
 import { useSelector, useDispatch } from "react-redux"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 import styles from "./index.module.scss"

@@ -1,6 +1,6 @@
 import { ITextstream, ParserEvents, ITranslationItem } from "./types"
 import { AGEventEmitter } from "../events"
-import protoRoot from "@/protobuf/SttMessage_es6.js"
+import protoRoot from "@/protobuf/SttMessage.js"
 
 export class Parser extends AGEventEmitter<ParserEvents> {
   constructor() {
