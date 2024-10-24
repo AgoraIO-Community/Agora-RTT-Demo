@@ -22,6 +22,8 @@ message Text {
   string data_type = 13; // transcribe ,translate
   repeated Translation trans = 14;
   string culture = 15;
+  int64 text_ts = 16;
+  int32 sentence_end_index = 17;
 }
 message Word {
   string text = 1;

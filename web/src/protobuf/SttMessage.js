@@ -80,6 +80,14 @@ const $root = ($protobuf.roots.default || ($protobuf.roots.default = new $protob
                   type: "string",
                   id: 15,
                 },
+                textTs: {
+                  type: "int64",
+                  id: 16,
+                },
+                sentenceEndIndex: {
+                  type: "int32",
+                  id: 17,
+                },
               },
             },
             Word: {
