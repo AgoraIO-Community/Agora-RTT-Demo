@@ -34,7 +34,6 @@ Find `.env`  file  and fill in the following parameters correctly
 ```bash
 VITE_AGORA_APP_ID=<YOUR_APP_ID>
 VITE_AGORA_APP_CERTIFICATE=<YOUR_APP_CERTIFICATE>
-VITE_AGORA_GPT_URL=<YOUR_GPT_REQUEST_URL>
 ```
 
 
