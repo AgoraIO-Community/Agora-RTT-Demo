@@ -131,42 +131,6 @@ const LanguageShowDialog = (props: ILanguageSettingDialogProps) => {
             </Space>
           </div>
         </div>
-        <div className={styles.section}>
-          <Space>
-            <div className={styles.text} style={{ width: 160 }}>
-              {t("setting.liveLanguage")} 2
-            </div>
-            <div className={styles.text}>
-              {t("setting.liveLanguage")} 2 - {t("translationLanguage")}
-            </div>
-          </Space>
-          <div className={styles.selectWrapper}>
-            <Space>
-              <Select
-                value={transcribe2}
-                disabled={true}
-                allowClear
-                style={{ width: 160 }}
-                options={LANGUAGE_OPTIONS}
-              />
-              <Select
-                value={translateLanguage2List}
-                onChange={(value) => {
-                  setTranslateLanguage2List(value)
-                }}
-                disabled={!transcribe2}
-                allowClear
-                showSearch={false}
-                mode="multiple"
-                placeholder={SELECT_TRANS_LANGUAGE_PLACEHOLDER}
-                maxCount={MAX_COUNT}
-                style={{ width: 380 }}
-                maxTagTextLength={10}
-                options={translateLanguage2Options}
-              />
-            </Space>
-          </div>
-        </div>
       </div>
       <div className={styles.btnWrapper}>
         <span className={styles.btn} onClick={onClickBtn}>

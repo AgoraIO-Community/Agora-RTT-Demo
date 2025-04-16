@@ -13,8 +13,10 @@ export interface ITextstream {
   durationMs: number
   words: any[]
   trans?: any[]
+  endOfSegment?: boolean
+  sentenceEndIndex: number
 }
 
 export interface ParserEvents {
-  textstreamReceived: (textstream: ITextstream) => void
+  streamtextstreamReceived: (textstream: ITextstream) => void
 }

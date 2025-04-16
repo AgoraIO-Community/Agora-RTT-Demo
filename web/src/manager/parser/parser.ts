@@ -5,6 +5,8 @@ import protoRoot from "@/protobuf/SttMessage.js"
 export class Parser extends AGEventEmitter<ParserEvents> {
   constructor() {
     super()
+    // @ts-ignore
+    window.praseData = this.praseData.bind(this)
   }
 
   praseData(data: any) {
@@ -13,8 +15,8 @@ export class Parser extends AGEventEmitter<ParserEvents> {
     if (!textstream) {
       return console.warn("Prase data failed.")
     }
-    console.log("[test] textstream praseData", textstream)
-    this.emit("textstreamReceived", textstream)
+    console.log("[test] textstream praseData source data", JSON.stringify(textstream))
+    this.emit("streamtextstreamReceived", textstream)
   }
 }
 

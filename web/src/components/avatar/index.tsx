@@ -7,10 +7,11 @@ interface IAvatarProps {
   size?: "default" | "large"
   isHost?: boolean
   userName: string
+  isSpeaker?: boolean
 }
 
 const Avatar = (props: IAvatarProps) => {
-  const { size = "default", userName = "", isHost = false } = props
+  const { size = "default", userName = "", isHost = false, isSpeaker } = props
 
   const finUserName = useMemo(() => {
     if (userName.length < 2) {
@@ -20,7 +21,7 @@ const Avatar = (props: IAvatarProps) => {
   }, [userName])
 
   return (
-    <span className={`${styles.avatar} ${size}`}>
+    <span className={`${styles.avatar} ${size} ${isSpeaker ? styles.speaker : ""}`}>
       <span className={styles.text}>{finUserName}</span>
       {isHost && (
         <span className={styles.host}>

@@ -14,7 +14,7 @@ if (MODE == "test") {
     { label: "Telugu", code: "te-IN" },
     { label: "Tamil", code: "ta-IN" },
     { label: "Bengali(IN)", code: "bn-IN" },
-    { label: "Hebrew", code: "he-IL	" },
+    { label: "Hebrew", code: "he-IL" },
     { label: "Dutch", code: "nl-NL" },
     { label: "Filipino", code: "fil-PH" },
     { label: "Thai", code: "th-TH" },
@@ -50,7 +50,7 @@ if (MODE == "test") {
     { label: "Telugu", code: "te-IN" },
     { label: "Tamil", code: "ta-IN" },
     { label: "Bengali(IN)", code: "bn-IN" },
-    { label: "Hebrew", code: "he-IL	" },
+    { label: "Hebrew", code: "he-IL" },
     { label: "Dutch", code: "nl-NL" },
     { label: "Filipino", code: "fil-PH" },
     { label: "Thai", code: "th-TH" },
@@ -88,7 +88,7 @@ export const LANGUAGE_OPTIONS = LANGUAGE_LIST.map((item) => {
   }
 })
 export const TOAST_DURATION = 5
-export const EXPERIENCE_DURATION = 10 * 60 * 1000 // ms
+export const EXPERIENCE_DURATION = 30 * 60 * 1000 // ms
 
 export const AI_PROMPT_OPTIONS = [
   {

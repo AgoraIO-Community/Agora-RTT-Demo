@@ -24,6 +24,7 @@ const CenterArea = (props: ICenterAreaProps) => {
   const userInfo = useSelector((state: RootState) => state.global.userInfo)
   const localAudioMute = useSelector((state: RootState) => state.global.localAudioMute)
   const localVideoMute = useSelector((state: RootState) => state.global.localVideoMute)
+  const currentSpeaker = useSelector((state: RootState) => state.global.currentSpeaker)
   const centerAreaRef = useRef<HTMLDivElement>(null)
   const [centerArea, setCenterArea] = useState<IArea>({ width: 0, height: 0 })
 
@@ -42,7 +43,11 @@ const CenterArea = (props: ICenterAreaProps) => {
   }, [localAudioMute, data])
 
   const userNameText = useMemo(() => {
-    return data.isLocal ? userInfo.userName + " (Me)" : data.userName
+    let name = data.isLocal ? userInfo.userName + " (Me)" : data.userName
+    if (data.sourceLanguage) {
+      name += `: ${data.sourceLanguage}`
+    }
+    return name
   }, [data])
 
   const resizeObserver = new ResizeObserver((entries) => {
@@ -88,7 +93,12 @@ const CenterArea = (props: ICenterAreaProps) => {
       {videoMute ? (
         // only audio
         <div className={styles.videoMute}>
-          <Avatar size="large" userName={data.userName} isHost={data.isHost}></Avatar>
+          <Avatar
+            size="large"
+            userName={data.userName}
+            isHost={data.isHost}
+            isSpeaker={currentSpeaker === Number(data.userId)}
+          ></Avatar>
           <div className={styles.textWrapper}>
             <span className={styles.text}>{userNameText}</span>
             <span className={styles.iconWrapper}>
@@ -109,7 +119,9 @@ const CenterArea = (props: ICenterAreaProps) => {
       ) : (
         // has video
         <div
-          className={styles.videoUnMute}
+          data-user-id={data.userId}
+          data-current-speaker={currentSpeaker}
+          className={`${styles.videoUnMute} ${currentSpeaker === Number(data.userId) ? styles.speaker : ""}`}
           style={{
             width: videoWrapper.width + "px",
             height: videoWrapper.height + "px",

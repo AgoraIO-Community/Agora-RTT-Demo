@@ -1,3 +1,13 @@
+.spin{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  :global(.ant-spin-container) {
+    width: 100%;
+    height: 100%;
+  }
+}
 .homePage {
   display: flex;
   flex-direction: column;
@@ -5,7 +15,6 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-
   .content {
     flex: 1 1 auto;
     display: flex;
@@ -17,6 +26,7 @@
 
     .center {
       flex: 1 1 auto;
+      position: relative;
     }
 
     .right {

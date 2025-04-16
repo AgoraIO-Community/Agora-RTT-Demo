@@ -3,10 +3,10 @@
   width: 100%;
   padding-left: 12px;
   padding-right: 12px;
-  padding-bottom: 12px;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
   overflow-y: auto;
   box-sizing: border-box;
-
 
   .item+.item {
     margin-top: 12px;
@@ -14,76 +14,107 @@
 
   .item {
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
     width: 100%;
     box-sizing: border-box;
+  }
 
-    .left {
-      flex:  0 0 auto;
+  .itemSelf {
+    justify-content: flex-end; 
+  }
+
+  .itemOther {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  .left {
+    flex: 0 0 auto;
+  }
+
+  .right {
+    display: flex;
+    flex-direction: column;
+    max-width: 70%; // Limit the maximum width of message bubbles
+    .avatar{
+      background-color: #0284fdd4;
+    }
+  }
+
+  .rightSelf {
+    align-items: flex-end;
+    margin-right: 8px;
+  }
+
+  .rightOther {
+    align-items: flex-start;
+    margin-left: 8px;
+  }
+
+  .up {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+
+    .userName {
+      color: var(--Grey-800, #344054);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 18px;
     }
 
-    .right {
-      flex:  1 1 auto;
-      margin-left: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+    .time {
+      margin-left: 4px;
+      color: var(--Grey-400, #d0d5dd);
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 18px;
+    }
+  }
 
-      .up {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+  .bottom {
+    padding: 10px 15px;
+    word-break: break-word;
+    width: 100%;
+    box-sizing: border-box;
+  }
 
-        .userName {
-          color: var(--Grey-800, #344054);
-          font-size: 12px;
-          font-weight: 400;
-          line-height: 18px;
-        }
+  .bubbleSelf {
+    background-color: #0084ff;
+    color: white;
+    border-radius: 18px 18px 0 18px;
+    
+    .content, .translate {
+      color: white;
+    }
+  }
 
-        .time {
-          margin-left: 4px;
-          color: var(--Grey-400, #d0d5dd);
-          font-size: 12px;
-          font-weight: 400;
-          line-height: 18px;
-        }
-      }
+  .bubbleOther {
+    background-color: #f0f0f0;
+    color: #333;
+    border-radius: 18px 18px 18px 0;
+  }
 
-      .bottom {
-        width: 100%;
-        margin-top: 8px;
-        box-sizing: border-box;
+  .content {
+    width: 100%;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 150%;
+  }
 
-        .content {
-          width: 100%;
-          color: var(--Grey-800, #344054);
-          font-size: 14px;
-          font-weight: 400;
-          line-height: 150%;
-        }
+  .translate {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 150%;
+    width: 100%;
 
-        .translate {
-          margin-top: 8px;
-          color: var(--Grey-800, #344054);
-          font-size: 14px;
-          font-weight: 400;
-          line-height: 150%;
-          width: 100%;
-          box-sizing: border-box;
+    .bold {
+      font-weight: 600;
+    }
 
-          .bold {
-            font-weight: 600;
-          }
-
-          .arabic{
-            direction: rtl;
-          }
-
-        }
-
-      }
+    .arabic {
+      direction: rtl;
     }
   }
 }

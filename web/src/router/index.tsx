@@ -1,3 +1,4 @@
+import { App } from "antd"
 import { Suspense, lazy } from "react"
 import { Route, createHashRouter, RouterProvider, createRoutesFromElements } from "react-router-dom"
 

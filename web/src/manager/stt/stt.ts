@@ -3,13 +3,11 @@ import {
   apiSTTStartTranscription,
   apiSTTQueryTranscription,
   apiSTTUpdateTranscription,
-  apiSTTAcquireToken,
   EXPERIENCE_DURATION,
 } from "@/common"
 import { AGEventEmitter } from "../events"
 import { STTEvents, STTManagerStartOptions, STTManagerOptions, STTManagerInitData } from "./types"
 import { RtmManager } from "../rtm"
-import { IRequestLanguages } from "@/types"
 
 export class SttManager extends AGEventEmitter<STTEvents> {
   option?: STTManagerOptions
@@ -66,31 +64,25 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     // aquire lock
     await this.rtmManager.acquireLock()
     try {
-      // aquire token
-      const data = await apiSTTAcquireToken({
-        channel: this.channel,
-        uid: this.userId,
-      })
-      const token = data.tokenName
-      // api start
+      // TODO: api start
       const res = await apiSTTStartTranscription({
         uid: this.userId,
         channel: this.channel,
         languages: startOptions.languages,
-        token,
+        extensionParams: startOptions.extensionParams,
       })
-      const { taskId } = res
+      const { agent_id: taskId } = res
+      console.log("[test] startTranscription taskId", taskId)
+      // const taskId = new Date().getTime().toString()
       this.setOption({
-        token,
         taskId,
       })
       // set rtm metadata
       await Promise.all([
-        this.rtmManager.updateLanguages(languages),
+        this.rtmManager.updateLocalLanguage(languages),
         this.rtmManager.updateSttData({
           status: "start",
           taskId,
-          token,
           startTime: Date.now(),
           duration: EXPERIENCE_DURATION,
         }),
@@ -106,24 +98,25 @@ export class SttManager extends AGEventEmitter<STTEvents> {
     if (!this.hasInit) {
       throw new Error("please init first")
     }
-    const { taskId, token } = this.option || {}
+    const { taskId } = this.option || {}
+
     if (!taskId) {
       throw new Error("taskId is not found")
     }
-    if (!token) {
-      throw new Error("token is not found")
-    }
+    console.log("[test] stopTranscription taskId:", taskId)
+    this.rtmManager.updateLocalLanguage([])
     // aquire lock
     await this.rtmManager.acquireLock()
     try {
       // api stop
       await apiSTTStopTranscription({
         taskId,
-        token,
         uid: this.userId,
         channel: this.channel,
       })
       // set rtm metadata
+      // this.rtmManager.updateLocalLanguage()
+      console.log("[test] stopTranscription updateSttData:", taskId)
       await this.rtmManager.updateSttData({
         status: "end",
       })
@@ -135,39 +128,31 @@ export class SttManager extends AGEventEmitter<STTEvents> {
   }
 
   async queryTranscription() {
-    const { taskId, token } = this.option || {}
+    const { taskId } = this.option || {}
     if (!taskId) {
       throw new Error("taskId is not found")
-    }
-    if (!token) {
-      throw new Error("token is not found")
     }
     // api query
     return await apiSTTQueryTranscription({
       taskId,
-      token,
       uid: this.userId,
       channel: this.channel,
     })
   }
 
-  async updateTranscription(options: { data: any; updateMaskList: string[] }) {
-    const { data, updateMaskList } = options
-    const { taskId, token } = this.option || {}
+  async updateTranscription(startOptions: STTManagerStartOptions) {
+    const { taskId } = this.option || {}
     if (!taskId) {
       throw new Error("taskId is not found")
     }
-    if (!token) {
-      throw new Error("token is not found")
-    }
+    this.rtmManager.updateLocalLanguage(startOptions.languages)
     // api update
     return await apiSTTUpdateTranscription({
       taskId,
-      token,
       uid: this.userId,
       channel: this.channel,
-      data,
-      updateMaskList,
+      languages: startOptions.languages,
+      extensionParams: startOptions.extensionParams,
     })
   }
 

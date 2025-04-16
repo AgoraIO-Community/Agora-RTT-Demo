@@ -22,6 +22,7 @@ import {
   setLocalVideoMute,
   addMessage,
   setTipSTTEnable,
+  setLanguageSettingShow,
 } from "@/store/reducers/global"
 import LanguageSettingDialog from "../dialog/language-setting"
 import CaptionPopover from "./caption-popover"
@@ -51,7 +52,7 @@ const Footer = (props: IFooterProps) => {
   const tipSTTEnable = useSelector((state: RootState) => state.global.tipSTTEnable)
   const aiShow = useSelector((state: RootState) => state.global.aiShow)
   const sttData = useSelector((state: RootState) => state.global.sttData)
-  const [showLanguageSetting, setShowLanguageSetting] = useState(false)
+  const showLanguageSetting = useSelector((state: RootState) => state.global.languageSettingShow)
 
   useEffect(() => {
     if (tipSTTEnable) {
@@ -115,16 +116,21 @@ const Footer = (props: IFooterProps) => {
   }
 
   const toggleLanguageSettingDialog = () => {
-    setShowLanguageSetting(!showLanguageSetting)
+    dispatch(setLanguageSettingShow(!showLanguageSetting))
   }
 
-  const onClickEnd = () => {
+  const closeLanguageSetting = () => {
+    dispatch(setLanguageSettingShow(false))
+  }
+
+  const onClickEnd = async () => {
     if (location.search) {
       nav(`/?${location.search.slice(1)}`)
     } else {
       nav("/")
     }
     dispatch(addMessage({ content: "end meeting success!", type: "success" }))
+    window.location.reload()
   }
 
   return (
@@ -153,11 +159,11 @@ const Footer = (props: IFooterProps) => {
           <CaptionIcon disabled={!hasSttStarted} active={captionShow}></CaptionIcon>
           <span className={styles.text}>{captionText}</span>
         </span>
-        <CaptionPopover>
+        {/* <CaptionPopover>
           <span className={styles.arrowWrapper}>
             <ArrowUpIcon width={16} height={16}></ArrowUpIcon>
           </span>
-        </CaptionPopover>
+        </CaptionPopover> */}
         {/* dialog */}
         <span className={`${styles.item}`} onClick={onClickDialogRecord}>
           <TranscriptionIcon active={dialogRecordShow}></TranscriptionIcon>
@@ -183,8 +189,8 @@ const Footer = (props: IFooterProps) => {
       </span>
       <LanguageSettingDialog
         open={showLanguageSetting}
-        onOk={() => setShowLanguageSetting(false)}
-        onCancel={() => setShowLanguageSetting(false)}
+        onOk={closeLanguageSetting}
+        onCancel={closeLanguageSetting}
       ></LanguageSettingDialog>
     </footer>
   )

@@ -8,6 +8,7 @@
   background: var(--Grey-500, #98a2b3);
   box-sizing: border-box;
   border-radius: 50%;
+  border:2px solid transparent;
 
   .text {
     color: var(---white, #fff);
@@ -52,4 +53,7 @@
       font-size: 48px;
     }
   }
+}
+.speaker{
+  border-color: #3d53f5;
 }

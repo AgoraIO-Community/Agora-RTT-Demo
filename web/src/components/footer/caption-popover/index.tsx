@@ -71,7 +71,7 @@ const CaptionPopover = (props: ICaptionPopoverProps) => {
 
   return (
     <Popover
-      overlayInnerStyle={{ padding: 0 }}
+      styles={{ body: { padding: 0 } }}
       content={
         <div className={styles.content}>
           {captionItems.map((item, index) => {

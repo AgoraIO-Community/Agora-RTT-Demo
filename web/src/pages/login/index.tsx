@@ -1,7 +1,7 @@
-import { Switch, Input, message } from "antd"
+import { Switch, Input, message, Radio, App } from "antd"
 import { useSelector, useDispatch } from "react-redux"
 import { RootState } from "@/store"
-import { InputStatuses } from "@/types"
+import { InputStatuses, ROOM_TYPE } from "@/types"
 import { useTranslation } from "react-i18next"
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { genRandomUserId, REGEX_SPECIAL_CHAR, GITHUB_URL, parseQuery } from "@/common"
@@ -18,11 +18,13 @@ const LoginPage = () => {
   const location = useLocation()
   const { t, i18n } = useTranslation()
   const dispatch = useDispatch()
-  const [messageApi, contextHolder] = message.useMessage()
+  const { message } = App.useApp()
   const options = useSelector((state: RootState) => state.global.options)
+  // const roomType = useSelector((state: RootState) => state.global.roomType)
   const [channel, setChannel] = useState("")
   const [userName, setUserName] = useState("")
   const [channelInputStatuses, setChannelInputStatuses] = useState<InputStatuses>("")
+  const [showLanguageSetting, setShowLanguageSetting] = useState(false)
 
   const onChangeChannel = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value
@@ -54,12 +56,14 @@ const LoginPage = () => {
 
   const onClickJoin = () => {
     if (!channel) {
-      return messageApi.error("please enter channel name!")
+      return message.error("please enter channel name!")
     }
     if (!userName) {
-      return messageApi.error("please enter user name!")
+      return message.error("please enter user name!")
     }
-    dispatch(setOptions({ channel }))
+    // const prefix = roomType === ROOM_TYPE.SINGLE ? `${uuidv4().slice(0, 4)}-` : ""
+
+    dispatch(setOptions({ channel: `${channel}` }))
     dispatch(
       setUserInfo({
         userName,
@@ -79,7 +83,6 @@ const LoginPage = () => {
 
   return (
     <div className={styles.loginPage}>
-      {contextHolder}
       <section className={styles.content}>
         <section className={styles.top}>
           <span className={styles.github} onClick={onClickGithub}>

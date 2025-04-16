@@ -49,16 +49,19 @@ export const formatTime = (seconds: number) => {
 }
 
 // ms
-// return hh:mm:ss
+// return hh:mm:ss.ms
 export const formatTime2 = (ms: number | string) => {
   const date = new Date(Number(ms))
   const hours = date.getHours()
   const minutes = date.getMinutes()
   const seconds = date.getSeconds()
+  const milliseconds = date.getMilliseconds()
 
-  return `${_pad(hours)}:${_pad(minutes)}:${_pad(seconds)}`
+  // 将毫秒格式化为3位数字，不足3位前面补0
+  const formattedMs = milliseconds.toString().padStart(3, "0")
+
+  return `${_pad(hours)}:${_pad(minutes)}:${_pad(seconds)}.${formattedMs}`
 }
-
 export const isString = (str: any): str is string => {
   return typeof str === "string"
 }
@@ -144,4 +147,35 @@ export const parseQuery = (url: string) => {
   }
 
   return result
+}
+
+export function areArraysEqual<T>(array1: T[], array2: T[]): boolean {
+  if (array1.length !== array2.length) return false
+
+  const set1 = new Set(array1)
+  const set2 = new Set(array2)
+
+  if (set1.size !== set2.size) return false
+
+  for (const item of set1) {
+    if (!set2.has(item)) return false
+  }
+
+  return true
+}
+
+export function processTranscribeWords(words: any[]): { text: string; isFinal: boolean } {
+  let text = ""
+  let isFinal = false
+
+  for (const word of words) {
+    if (word.text) {
+      text += word.text
+      if (word.isFinal) {
+        isFinal = true
+      }
+    }
+  }
+
+  return { text, isFinal }
 }

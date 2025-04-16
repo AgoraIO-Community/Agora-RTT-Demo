@@ -4,7 +4,6 @@ import {
   MenuType,
   ISttData,
   ILanguageSelect,
-  DialogLanguageType,
   IMessage,
   ITextItem,
 } from "@/types"
@@ -16,7 +15,6 @@ import {
   setOptionsToLocal,
 } from "@/common/storage"
 import { ITextstream } from "@/manager"
-// common/hook will use store, so we don't import @/common
 import { getDefaultLanguageSelect } from "@/common/utils"
 
 export interface InitialState {
@@ -34,7 +32,11 @@ export interface InitialState {
     translate2List?: string[]
   }
   sttSubtitles: ITextItem[]
+  // ------- remote user state -------
+  currentSpeaker: number
+  remoteUserList: Map<number, IUserInfo>
   // ------- UI state -------
+  languageSettingShow: boolean
   memberListShow: boolean
   dialogRecordShow: boolean
   captionShow: boolean
@@ -45,28 +47,35 @@ export interface InitialState {
     width: number
     height: number
   }
+  isUpdating: boolean
   messageList: IMessage[]
 }
 
 const getInitialState = (): InitialState => {
   return {
     sttData: {
-      status: "end",
+      status: "default",
     },
+    currentSpeaker: 0,
+    remoteUserList: new Map(),
     userInfo: getUserInfoFromLocal(),
     options: getOptionsFromLocal(),
     localVideoMute: true,
     localAudioMute: true,
     memberListShow: false,
+    languageSettingShow: false,
     dialogRecordShow: false,
     captionShow: false,
     aiShow: false,
     captionLanguages: ["live"],
+    // local debugger
+    // sttSubtitles: data,
     sttSubtitles: [],
     languageSelect: getDefaultLanguageSelect(),
     recordLanguageSelect: {},
     menuList: [],
     tipSTTEnable: false,
+    isUpdating: false,
     page: {
       width: 0,
       height: 0,
@@ -75,10 +84,25 @@ const getInitialState = (): InitialState => {
   }
 }
 
+function insertSortedSubtitle(subtitles: ITextItem[], subtitle: ITextItem) {
+  const index = subtitles.findIndex(
+    (item) => item.textTs > subtitle.textTs || item.textTs === subtitle.textTs,
+  )
+
+  if (index === -1) {
+    subtitles.push(subtitle)
+  } else {
+    subtitles.splice(index, 0, subtitle)
+  }
+}
+
 export const globalSlice = createSlice({
   name: "global",
   initialState: getInitialState(),
   reducers: {
+    setIsUpdating: (state, action: PayloadAction<boolean>) => {
+      state.isUpdating = action.payload
+    },
     setOptions: (state, action: PayloadAction<Partial<IOptions>>) => {
       Object.assign(state.options, action.payload)
       setOptionsToLocal(action.payload)
@@ -87,8 +111,27 @@ export const globalSlice = createSlice({
       Object.assign(state.userInfo, action.payload)
       setUserInfoToLocal(action.payload)
     },
+    setCurrentSpeaker: (state, action: PayloadAction<number>) => {
+      state.currentSpeaker = action.payload
+      console.log("currentSpeaker Current", action.payload)
+    },
+    addRemoteUser: (state, action: PayloadAction<IUserInfo>) => {
+      state.remoteUserList.set(Number(action.payload.userId), action.payload)
+    },
+    removeRemoteUser: (state, action: PayloadAction<number>) => {
+      state.remoteUserList.delete(action.payload)
+    },
+    setRemoteUserList: (state, action: PayloadAction<IUserInfo[]>) => {
+      state.remoteUserList.clear()
+      action.payload.forEach((user) => {
+        state.remoteUserList.set(Number(user.userId), user)
+      })
+    },
     setMemberListShow: (state, action: PayloadAction<boolean>) => {
       state.memberListShow = action.payload
+    },
+    setLanguageSettingShow: (state, action: PayloadAction<boolean>) => {
+      state.languageSettingShow = action.payload
     },
     setDialogRecordShow: (state, action: PayloadAction<boolean>) => {
       state.dialogRecordShow = action.payload
@@ -130,9 +173,16 @@ export const globalSlice = createSlice({
     },
     setRecordLanguageSelect: (state, action: PayloadAction<ILanguageSelect>) => {
       state.recordLanguageSelect = action.payload
+      const translateList = action.payload.translate1List || []
+      state.captionLanguages =
+        state.captionLanguages[0] === "live" ? ["live", ...translateList] : [...translateList]
     },
     setCaptionLanguages: (state, action: PayloadAction<string[]>) => {
       state.captionLanguages = action.payload
+      state.recordLanguageSelect = {
+        ...state.recordLanguageSelect,
+        translate1List: action.payload.filter((item) => item !== "live"),
+      }
     },
     setSubtitles: (state, action: PayloadAction<ITextItem[]>) => {
       state.sttSubtitles = action.payload
@@ -140,17 +190,32 @@ export const globalSlice = createSlice({
     setTipSTTEnable: (state, action: PayloadAction<boolean>) => {
       state.tipSTTEnable = action.payload
     },
+    pushSubtitles: (state, action: PayloadAction<ITextItem>) => {
+      const data = action.payload.translations
+      delete action.payload.translations
+      state.sttSubtitles.push(action.payload as unknown as ITextItem)
+    },
+    setLastSubtitleTrans: (state, action: PayloadAction<ITextItem>) => {
+      const data = action.payload.translations
+      state.sttSubtitles[state.sttSubtitles.length - 1].translations = data
+    },
     updateSubtitles: (
       state,
       action: PayloadAction<{ textstream: ITextstream; username: string }>,
     ) => {
       const { payload } = action
       const { textstream, username } = payload
-      const { dataType, words } = textstream
+      const { dataType, uid, time: timestamp, words, textTs, trans, sentenceEndIndex } = textstream
+
       switch (dataType) {
         case "transcribe": {
-          console.log("[test] textstream transcribe textStr", textstream)
-          let textStr: string = ""
+          console.log("[text] textstream transcribe:", textstream)
+
+          // Basic validation
+          if (!words?.length) return
+
+          // Extract text and confirm if it's the final result
+          let textStr = ""
           let isFinal = false
           words.forEach((word: any) => {
             textStr += word.text
@@ -158,40 +223,85 @@ export const globalSlice = createSlice({
               isFinal = true
             }
           })
-          const st = state.sttSubtitles.findLast((el) => {
-            return el.uid == textstream.uid && !el.isFinal
-          })
-          if (!st) {
-            const subtitle: ITextItem = {
+
+          // Find the previous subtitle of the same sentence (non-final)
+          const existingSubtitleIndex = state.sttSubtitles.findIndex(
+            (el) => el.uid === uid && !el.isFinal,
+          )
+
+          if (existingSubtitleIndex !== -1) {
+            // Update the existing subtitle, keeping startTextTs unchanged
+            const subtitle = state.sttSubtitles[existingSubtitleIndex]
+
+            // Check textTs, if the received message textTs is less than the existing one, it represents an outdated message, ignore
+            if (textTs <= subtitle.textTs && !isFinal) {
+              console.log("[test-warning] Ignoring outdated message:", textTs, "<", subtitle.textTs)
+              return
+            }
+
+            // Update the existing subtitle
+            state.sttSubtitles[existingSubtitleIndex] = {
+              ...subtitle,
+              text: textStr,
+              isFinal,
+              time: timestamp + (textstream.durationMs || 0),
+              textTs,
+              timestamp,
+              sentenceEndIndex: textstream.sentenceEndIndex,
+              lang: subtitle.lang || textstream.culture,
+            }
+
+            console.log("[text] Updated subtitle:", state.sttSubtitles[existingSubtitleIndex])
+            // Ensure sttSubtitles are sorted by textTs in ascending order
+            state.sttSubtitles.sort((a, b) => a.textTs - b.textTs)
+          } else {
+            if (!textStr) {
+              console.log(
+                "[test-warning] Empty text, ignoring message:",
+                JSON.stringify(textstream),
+              )
+              return
+            }
+            // No previous subtitle was found, or the previous subtitle is already in the final state, check if it's a new sentence
+            if (textTs <= state.sttSubtitles[state.sttSubtitles.length - 1]?.textTs && !isFinal) {
+              console.log(
+                "[test-warning] Ignoring outdated message:",
+                textTs,
+                "<",
+                state.sttSubtitles[state.sttSubtitles.length - 1].textTs,
+              )
+              return
+            }
+            const newSubtitle: ITextItem = {
               dataType: "transcribe",
-              uid: textstream.uid,
+              uid,
               username,
               text: textStr,
               lang: textstream.culture,
               isFinal,
-              time: textstream.time + textstream.durationMs,
-              startTextTs: textstream.textTs,
-              textTs: textstream.textTs,
+              time: timestamp + (textstream.durationMs || 0),
+              startTextTs: textTs,
+              textTs,
+              timestamp,
+              sentenceEndIndex: textstream.sentenceEndIndex,
             }
-            const tempList = state.sttSubtitles
-            const nextIndex = tempList.length
-            tempList[nextIndex] = subtitle
-          } else {
-            st.text = textStr
-            st.isFinal = isFinal
-            st.time = textstream.time + textstream.durationMs
-            st.textTs = textstream.textTs
+
+            console.log("[text] Created new subtitle:", newSubtitle)
+
+            // Insert sort, ensure timestamp order
+            insertSortedSubtitle(state.sttSubtitles, newSubtitle)
           }
           break
         }
+
         case "translate": {
           const st = state.sttSubtitles.findLast((el) => {
-            return (
-              el.uid == textstream.uid &&
-              (textstream.textTs >= el.startTextTs || textstream.textTs <= el.textTs)
-            )
+            return el.uid == textstream.uid && el.timestamp === textstream.time
           })
+
           if (!st) {
+            // No subtitles were found that matched the time interval
+            console.log("[test-warning] not found ", textstream.textTs)
             return
           }
           textstream.trans?.forEach(
@@ -209,6 +319,7 @@ export const globalSlice = createSlice({
               }
             },
           )
+          break
         }
       }
     },
@@ -225,6 +336,7 @@ export const globalSlice = createSlice({
       }
     },
     reset: (state) => {
+      // Reset redux status
       Object.assign(state, getInitialState())
     },
   },
@@ -245,6 +357,7 @@ export const {
   setSttData,
   setCaptionLanguages,
   setLanguageSelect,
+  setLanguageSettingShow,
   setRecordLanguageSelect,
   updateSubtitles,
   setSubtitles,
@@ -252,6 +365,11 @@ export const {
   addMessage,
   setTipSTTEnable,
   reset,
+  setIsUpdating,
+  setCurrentSpeaker,
+  pushSubtitles,
+  setRemoteUserList,
+  setLastSubtitleTrans,
 } = globalSlice.actions
 
 export default globalSlice.reducer

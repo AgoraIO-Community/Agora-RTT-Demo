@@ -8,6 +8,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    background-color: transparent;
+    border:2px solid transparent;
     display: inline-flex;
     flex-direction: column;
     align-items: center;
@@ -49,12 +51,16 @@
     }
   }
 
+
   .videoUnMute {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #000;
+    background-color: transparent;
+    border:2px solid transparent;
+    padding: 2px;
+    box-sizing: border-box;
 
     .userInfo {
       position: absolute;
@@ -80,5 +86,8 @@
         color: white;
       }
     }
+  }
+  .speaker{
+    border:2px solid #3d53f5;
   }
 }

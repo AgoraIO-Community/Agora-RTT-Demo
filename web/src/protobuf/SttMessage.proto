@@ -34,6 +34,6 @@ message Word {
 }
 message Translation {
   bool is_final = 1;
-  string lang = 2; // 翻译语言
+  string lang = 2; 
   repeated string texts = 3;
 }

@@ -15,13 +15,17 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
   private _joined
   client: IAgoraRTCClient
   localTracks: IUserTracks
+  currentSpeaker: UID | undefined
 
   constructor() {
     super()
     this._joined = false
     this.localTracks = {}
     this.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" })
+    parser.removeAllEventListeners()
+    console.log("[test] RtcManager constructor")
     this._listenRtcEvents()
+
     this._listenParserStreamEvent()
   }
 
@@ -30,6 +34,7 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
       const token = await apiGetAgoraToken({ channel, uid: userId })
       await this.client?.join(appId, channel, token, userId)
       this._joined = true
+      this.client.enableAudioVolumeIndicator()
     }
   }
 
@@ -87,7 +92,27 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
       })
     })
     this.client.on("stream-message", (uid: UID, stream: any) => {
+      console.log("stream-message", uid, stream)
       parser.praseData(stream)
+    })
+
+    this.client.on("volume-indicator", (volumes) => {
+      if (volumes && volumes.length > 0) {
+        // Find users with the highest volume level
+        let maxVolumeUser = volumes[0]
+        for (let i = 1; i < volumes.length; i++) {
+          if (volumes[i].level > maxVolumeUser.level) {
+            maxVolumeUser = volumes[i]
+          }
+        }
+        if (this.currentSpeaker === maxVolumeUser.uid) {
+          return
+        }
+        // Update the current speaker
+        this.currentSpeaker = maxVolumeUser.uid
+        // Send event notification
+        this.emit("speakerChanged", maxVolumeUser.uid)
+      }
     })
   }
 
@@ -98,7 +123,8 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
   }
 
   _listenParserStreamEvent() {
-    parser.on("textstreamReceived", (textstream) => {
+    parser.on("streamtextstreamReceived", (textstream) => {
+      console.log("[test] textstream event", textstream)
       this.emit("textstreamReceived", textstream)
     })
   }

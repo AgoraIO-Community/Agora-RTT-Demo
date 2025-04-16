@@ -28,7 +28,9 @@
   "login": {
     "github": "访问 GitHub",
     "join": "加入频道",
-    "title": "实时语音转文字"
+    "title": "实时语音转文字",
+    "singleMode":"单人模式",
+    "multiMode":"多人模式"
   },
   "footer": {
     "aIAssistant": "AI助手",
@@ -48,23 +50,26 @@
     "sttStarted": "语音转文字已开始",
     "sttStopped": "语音转文字已停止",
     "sttStart": "开始语音转文字",
+    "sttUpdate": "更新语音转文字",
     "sttStop": "停止语音转文字",
-    "limitDuration": "语音转文字默认限制时长10分钟",
+    "limitDuration": "语音转文字默认限制时长30分钟",
     "languagesSelect": "请选择现场语言和翻译语言",
     "tip": "您最多可以选择两种语言，每个现场语言可最多对应五种翻译语言",
+    "tipMulti": "当其他主持人加入房间后，翻译语言会自动填充为其他主持人的首选语言",
     "liveLanguage": "现场语言",
-    "translationLanguageMax": "翻译语言最多可以选择5种",
+    "translationLanguageMax": "翻译语言最多可以选择10种",
     "saveSuccess": "设置成功",
-    "sameLanguage": "现场语言不能相同"
+    "sameLanguage": "现场语言不能相同",
+    "setSourceLanguage": "请设置现场语言"
   },
   "conversation": {
     "sttStarted": "主持人已开启实时转写",
     "sttStopped": "语言转文字服务未开启",
     "onTrial": "试用中",
     "extendExperience": "延长体验",
-    "extendExperienceText": "延长体验可延长使用10分钟",
+    "extendExperienceText": "延长体验可延长使用30分钟",
     "setLanguage": "展示语言选择",
-    "extendExperienceFreeText": "免费版语音转文字体验时长 10 分钟，当前已用完"
+    "extendExperienceFreeText": "免费版语音转文字体验时长 30 分钟，当前已用完"
   },
   "ai": {
     "selectPromptSample": "选择提示模板",

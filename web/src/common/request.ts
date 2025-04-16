@@ -1,24 +1,25 @@
-import store from "@/store"
-import { parseQuery } from "./utils"
 import { IRequestLanguages } from "@/types"
 
 const MODE = import.meta.env.MODE
-let gatewayAddress = "https://api.agora.io"
-const BASE_URL = "https://service.agora.io/toolbox-overseas"
+const AGORA_SERVER_DEMO_URL = import.meta.env.VITE_AGORA_DEMO_SERVER_URL
+const gatewayAddress = `${AGORA_SERVER_DEMO_URL}/v1/speech-to-text`
+// const gatewayAddress = "https://api-test.agora.io/api/voice-ai-agent/v1/projects"
+
+const BASE_URL = "https://service.agora.io/toolbox-global"
 
 // ---------------------------------------
 const appId = import.meta.env.VITE_AGORA_APP_ID
 const appCertificate = import.meta.env.VITE_AGORA_APP_CERTIFICATE
+const authUsername = import.meta.env.VITE_AGORA_AUTH_USERNAME
+const authPassword = import.meta.env.VITE_AGORA_AUTH_PASSWORD
 const SUB_BOT_UID = "1000"
 const PUB_BOT_UID = "2000"
-
-let agoraToken = ""
-let genTokenTime = 0
-
+let sequenceId = new Date().getTime()
+let updateTimer: number = 0
 export async function apiGetAgoraToken(config: { uid: string | number; channel: string }) {
-  if (!appCertificate) {
-    return null
-  }
+  // if (!appCertificate) {
+  //   return null
+  // }
   const { uid, channel } = config
   const url = `${BASE_URL}/v2/token/generate`
   const data = {
@@ -42,91 +43,61 @@ export async function apiGetAgoraToken(config: { uid: string | number; channel: 
   return resp?.data?.token || ""
 }
 
-const genAuthorization = async (config: { uid: string | number; channel: string }) => {
-  if (agoraToken) {
-    const curTime = new Date().getTime()
-    if (curTime - genTokenTime < 1000 * 60 * 60) {
-      return `agora token="${agoraToken}"`
-    }
-  }
-  agoraToken = await apiGetAgoraToken(config)
-  genTokenTime = new Date().getTime()
-  return `agora token="${agoraToken}"`
-}
-
 // --------------- stt ----------------
-export const apiSTTAcquireToken = async (options: {
-  channel: string
-  uid: string | number
-}): Promise<any> => {
-  const { channel, uid } = options
-  const data: any = {
-    instanceId: channel,
-  }
-  if (MODE == "test") {
-    data.testIp = "218.205.37.49"
-    data.testPort = 4447
-    const queryParams = parseQuery(window.location.href)
-    const denoise = queryParams?.denoise
-    if (denoise == "true") {
-      gatewayAddress = "https://service-staging.agora.io/speech-to-text-filter"
-      data.testIp = "183.131.160.168"
-    } else if (denoise == "false") {
-      gatewayAddress = "https://service-staging.agora.io/speech-to-text"
-      data.testIp = "114.236.138.39"
-    }
-  }
-  const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/builderTokens`
-  let res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: await genAuthorization(options),
-    },
-    body: JSON.stringify(data),
-  })
-  if (res.status == 200) {
-    res = await res.json()
-    return res
-  } else {
-    // status: 504
-    // please enable the realtime transcription service for this appid
-    console.error(res.status, res)
-    throw new Error(res.toString())
-  }
-}
 
 export const apiSTTStartTranscription = async (options: {
   uid: string | number
   channel: string
   languages: IRequestLanguages[]
-  token: string
-}): Promise<{ taskId: string }> => {
-  const { channel, languages, token, uid } = options
-  const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/tasks?builderToken=${token}`
+  extensionParams?: string
+}): Promise<{ agent_id: string }> => {
+  const { channel, uid, extensionParams } = options
+  const languages = options.languages.map((item) => ({
+    ...item,
+    target: item.target.filter((lang) => lang !== item.source),
+  }))
+  const url = `${gatewayAddress}/projects/${appId}/join`
   let subBotToken = null
   let pubBotToken = null
-  if (appCertificate) {
-    const data = await Promise.all([
-      apiGetAgoraToken({
-        uid: SUB_BOT_UID,
-        channel,
-      }),
-      apiGetAgoraToken({
-        uid: PUB_BOT_UID,
-        channel,
-      }),
-    ])
-    subBotToken = data[0]
-    pubBotToken = data[1]
-  }
+  // if (appCertificate) {
+  const agentBotData = await Promise.all([
+    apiGetAgoraToken({
+      uid: `${uid}${SUB_BOT_UID}`,
+      channel,
+    }),
+    apiGetAgoraToken({
+      uid: `${uid}${PUB_BOT_UID}`,
+      channel,
+    }),
+  ])
+  subBotToken = agentBotData[0]
+  pubBotToken = agentBotData[1]
+  // }
   const body: any = {
+    authUsername,
+    authPassword,
+    appCert: appCertificate,
+    name: `${channel}-${new Date().getTime()}-${uid}`,
     languages: languages.map((item) => item.source),
-    maxIdleTime: 60,
+    maxIdleTime: 30,
     rtcConfig: {
       channelName: channel,
-      subBotUid: SUB_BOT_UID,
-      pubBotUid: PUB_BOT_UID,
+      subBotUid: `${uid}${SUB_BOT_UID}`,
+      pubBotUid: `${uid}${PUB_BOT_UID}`,
+      subscribeAudioUids: [`${uid}`],
+    },
+    uidLanguagesConfig: [
+      {
+        uid,
+        languages: languages.map((item) => item.source),
+      },
+    ],
+    extensionParams: {
+      sessCtrlVadVolumeThr: "60",
+      sessCtrlVadThr: "0.3",
+      sessCtrlPrePaddingLenOfSessCtrlSOS: "500",
+      sessCtrlPostPaddingLenOfSessCtrlEOS: "500",
+      sessCtrlUnVoiceLenOfTriggerSessCtrlEOS: "1000",
     },
   }
   if (subBotToken && pubBotToken) {
@@ -135,95 +106,146 @@ export const apiSTTStartTranscription = async (options: {
   }
   if (languages.find((item) => item.target.length)) {
     body.translateConfig = {
-      forceTranslateInterval: 2,
       languages: languages.filter((item) => item.target.length),
     }
   }
+
+  if (extensionParams && typeof extensionParams === "string") {
+    try {
+      body.extensionParams = { ...body.extensionParams, ...JSON.parse(extensionParams) }
+    } catch (error) {
+      body.extensionParams = null
+    }
+  }
+  console.log("[test] join agent body", JSON.stringify(body))
   const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: await genAuthorization({
-        uid,
-        channel,
-      }),
     },
     body: JSON.stringify(body),
   })
   const data = await res.json()
+  console.log("[test] join agent response", JSON.stringify(data))
+
   if (res.status !== 200) {
-    throw new Error(data?.message || "start transcription failed")
+    throw new Error(data?.detail || "start transcription failed")
   }
   return data
 }
 
 export const apiSTTStopTranscription = async (options: {
   taskId: string
-  token: string
   uid: number | string
   channel: string
 }) => {
-  const { taskId, token, uid, channel } = options
-  const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/tasks/${taskId}?builderToken=${token}`
+  const { taskId, uid, channel } = options
+  const url = `${gatewayAddress}/projects/${appId}/agents/${taskId}/leave`
+  if (updateTimer) {
+    clearTimeout(updateTimer)
+    updateTimer = 0
+  }
   await fetch(url, {
-    method: "DELETE",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: await genAuthorization({
-        uid,
-        channel,
-      }),
     },
+    body: JSON.stringify({
+      authUsername,
+      authPassword,
+    }),
   })
 }
 
 export const apiSTTQueryTranscription = async (options: {
   taskId: string
-  token: string
   uid: number | string
   channel: string
 }) => {
-  const { taskId, token, uid, channel } = options
-  const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/tasks/${taskId}?builderToken=${token}`
+  const { taskId, uid, channel } = options
+  const url = `${gatewayAddress}/projects/${appId}/agents/${taskId}`
   const res = await fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: await genAuthorization({
-        uid,
-        channel,
-      }),
     },
   })
   return await res.json()
 }
 
 export const apiSTTUpdateTranscription = async (options: {
-  taskId: string
-  token: string
-  uid: number | string
+  uid: string | number
   channel: string
-  updateMaskList: string[]
-  data: any
+  languages: IRequestLanguages[]
+  taskId: string
+  extensionParams?: string
 }) => {
-  const { taskId, token, uid, channel, data, updateMaskList } = options
-  const updateMask = updateMaskList.join(",")
-  const url = `${gatewayAddress}/v1/projects/${appId}/rtsc/speech-to-text/tasks/${taskId}?builderToken=${token}&sequenceId=1&updateMask=${updateMask}`
-  const body: any = {
-    ...data,
+  if (updateTimer) {
+    clearTimeout(updateTimer)
+    updateTimer = 0
   }
-  const res = await fetch(url, {
-    method: "PATCH",
+  const { taskId, uid, extensionParams } = options
+  const updateMaskList = []
+  const languages = options.languages.map((item) => ({
+    ...item,
+    target: item.target.filter((lang) => lang !== item.source),
+  }))
+
+  const body: any = {
+    languages: languages.map((item) => item.source),
+    uidLanguagesConfig: [
+      {
+        uid,
+        languages: languages.map((item) => item.source),
+      },
+    ],
+  }
+  updateMaskList.push("languages")
+  updateMaskList.push("uidLanguagesConfig")
+  if (languages.find((item) => item.target.length)) {
+    body.translateConfig = {
+      enable: true,
+      languages: languages.filter((item) => item.target.length),
+    }
+    updateMaskList.push("translateConfig.languages")
+    updateMaskList.push("translateConfig.enable")
+  }
+
+  if (extensionParams && typeof extensionParams === "string") {
+    try {
+      const params = JSON.parse(extensionParams)
+      Object.keys(params).forEach((key) => {
+        updateMaskList.push(`extensionParams.${key}`)
+      })
+      body.extensionParams = params
+    } catch (error) {
+      body.extensionParams = null
+    }
+  }
+
+  const updateMask = updateMaskList.join(",")
+  const url = `${gatewayAddress}/projects/${appId}/agents/${taskId}/update?sequenceId=${sequenceId++}&updateMask=${updateMask}`
+  console.log("[test] update agent body", JSON.stringify(body))
+  const resp = await fetch(url, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: await genAuthorization({
-        uid,
-        channel,
-      }),
     },
     body: JSON.stringify(body),
   })
-  return await res.json()
+  const responseData = await resp.json().catch((e) => ({
+    parseError: true,
+    message: "Failed to parse response as JSON",
+  }))
+  if (!resp.ok) {
+    console.info("[API Error]", JSON.stringify(responseData))
+    if (responseData.detail.includes("least 5 seconds")) {
+      updateTimer = window.setTimeout(() => apiSTTUpdateTranscription(options), 5000)
+      throw new Error("update the target language ...")
+    }
+  }
+
+  return responseData
 }
 
 // --------------- gpt ----------------

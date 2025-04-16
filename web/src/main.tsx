@@ -1,9 +1,9 @@
 import React, { Suspense } from "react"
 import ReactDOM from "react-dom/client"
-import App from "./App.tsx"
+import Pages from "./App.tsx"
 import store from "./store"
 import { Provider } from "react-redux"
-import { ConfigProvider } from "antd"
+import { App, ConfigProvider } from "antd"
 import { I18nextProvider } from "react-i18next"
 
 import i18n from "./i18n"
@@ -29,7 +29,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <ConfigProvider theme={theme}>
       <I18nextProvider i18n={i18n}>
         <Suspense fallback={"loading..."}>
-          <App />
+          <App style={{ width: "100%", height: "100%" }}>
+            <Pages />
+          </App>
         </Suspense>
       </I18nextProvider>
     </ConfigProvider>

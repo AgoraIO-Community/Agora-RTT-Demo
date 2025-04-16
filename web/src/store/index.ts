@@ -1,8 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit"
 import globalReducer from "./reducers/global"
+import { enableMapSet } from "immer"
+enableMapSet()
 
 const store = configureStore({
-  middleware: (getDefaultMiddleware) =>
+  middleware: (getDefaultMiddleware: (arg0: { serializableCheck: boolean }) => any) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),

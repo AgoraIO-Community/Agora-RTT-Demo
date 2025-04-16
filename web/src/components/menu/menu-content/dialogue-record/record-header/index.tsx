@@ -18,18 +18,6 @@ const RecordHeader = (props: IRecordHeaderProps) => {
   const [experienceDuration, setExperienceDuration] = useState(0)
   const headerRef = useRef<HTMLDivElement>(null)
   const tryRef = useRef<HTMLDivElement>(null)
-  const headerDimensions = useResizeObserver(headerRef)
-
-  useEffect(() => {
-    if (!tryRef?.current) {
-      return
-    }
-    if (headerDimensions.width >= 600) {
-      tryRef.current.style.width = "500px"
-    } else if (headerDimensions.width >= 500) {
-      tryRef.current.style.width = "420px"
-    }
-  }, [headerDimensions])
 
   useEffect(() => {
     let timer: any
@@ -77,9 +65,9 @@ const RecordHeader = (props: IRecordHeaderProps) => {
               </span> */}
             </div>
             {/* setting */}
-            <div className={styles.setting} onClick={onClickSetting}>
+            {/* <div className={styles.setting} onClick={onClickSetting}>
               <SettingIcon></SettingIcon>
-            </div>
+            </div> */}
           </div>
           <div className={styles.conversation}>{t("conversation.sttStarted")}</div>
         </>

@@ -17,21 +17,18 @@ interface ILanguageSettingDialogProps {
 
 export const genTranslateContentText = (lang: string, type: LangDataType, list: ITextItem[]) => {
   let res = ""
-  if (type == "transcribe") {
-    list.forEach((item) => {
-      if (item.lang === lang) {
-        res += `${item.username}: ${item.text}\n`
-      }
-    })
-  } else {
-    list.forEach((item) => {
-      item.translations?.forEach((v) => {
+  list.forEach((item) => {
+    if (item.lang === lang) {
+      res += `${item.username}: ${item.text}\n`
+    } else if (item.translations) {
+      item.translations.forEach((v) => {
         if (v.lang === lang) {
           res += `${item.username}: ${v.text}\n`
         }
       })
-    })
-  }
+    }
+  })
+
   return res
 }
 
@@ -55,7 +52,7 @@ const LanguageStorageDialog = (props: ILanguageSettingDialogProps) => {
       const target = LANGUAGE_OPTIONS.find((item) => item.value === transcribe1)
       res.push({
         value: target?.value,
-        label: "live: " + target?.label,
+        label: "source " + target?.label,
       })
     }
 
@@ -63,7 +60,7 @@ const LanguageStorageDialog = (props: ILanguageSettingDialogProps) => {
       const target = LANGUAGE_OPTIONS.find((item) => item.value === transcribe2)
       res.push({
         value: target?.value,
-        label: "live: " + target?.label,
+        label: "source " + target?.label,
       })
     }
 
@@ -71,7 +68,7 @@ const LanguageStorageDialog = (props: ILanguageSettingDialogProps) => {
       const target = LANGUAGE_OPTIONS.find((item) => item.value === lang)
       res.push({
         value: lang,
-        label: "translate: " + target?.label,
+        label: "target: " + target?.label,
       })
     })
 
@@ -101,6 +98,7 @@ const LanguageStorageDialog = (props: ILanguageSettingDialogProps) => {
   const onClickBtn = async () => {
     onOk?.()
     if (language) {
+      console.log("language", language)
       const name = `${channel}_${language}`
       const content = genTranslateContentText(language, curType, sttSubtitles)
       downloadText(`${name}.txt`, content)

@@ -4,6 +4,7 @@ import { RTMEvents } from "agora-rtm"
 export interface ISimpleUserInfo {
   userName: string
   userId: string
+  languages: ILanguageItem[]
 }
 
 export interface ILanguageChangedItem {
@@ -20,6 +21,7 @@ export interface RtmEvents {
   userListChanged: (userList: ISimpleUserInfo[]) => void
   languagesChanged: (languages: ILanguageSelect) => void
   sttDataChanged: (status: ISttData) => void
+  joinRTMSuccess: () => void
 }
 
 export enum RtmMessageType {
@@ -35,6 +37,7 @@ export interface RtmPresenceMessageData {
     userName: string
     userId: string
     type: RtmMessageType.UserInfo
+    languages: ILanguageItem[]
   }
 }
 

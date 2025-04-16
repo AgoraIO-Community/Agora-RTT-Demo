@@ -4,11 +4,12 @@ import { IRequestLanguages } from "@/types"
 export interface STTEvents {}
 
 export interface STTManagerStartOptions {
-  languages: IRequestLanguages[]
+  languages: IRequestLanguages[],
+  extensionParams?: string
 }
 
 export interface STTManagerOptions {
-  token: string
+  // token: string
   taskId: string
 }
 

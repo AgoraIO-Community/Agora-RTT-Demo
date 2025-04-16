@@ -1,15 +1,17 @@
 import { RefObject, useEffect, useRef, useState, useMemo } from "react"
-import { Button, message } from "antd"
+import { App } from "antd"
 import { RootState, AppDispatch } from "@/store"
 import { removeMessage, setPageInfo } from "@/store/reducers/global"
 import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux"
 import { TOAST_DURATION } from "@/common"
+import { UPDATE_ERROR_TIP_KEY } from "@/types"
 
 export const useAppDispatch = () => useDispatch<AppDispatch>()
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
 export const useCatchError = () => {
+  const { message } = App.useApp()
   const _showError = (error: Error) => {
     if (error?.message) {
       message.error(error.message, TOAST_DURATION)
@@ -82,13 +84,13 @@ export const usePrevious = (value: any) => {
 export const useMessage = () => {
   const dispatch = useDispatch()
   const messageList = useSelector((state: RootState) => state.global.messageList)
-  const [messageApi, contextHolder] = message.useMessage()
+  const { message } = App.useApp()
 
   useEffect(() => {
     if (messageList.length) {
       const first = messageList[0]
       if (first) {
-        messageApi.open({
+        message.open({
           content: first.content,
           type: first.type,
           duration: first.duration || 3,
@@ -100,7 +102,7 @@ export const useMessage = () => {
     }
   }, [messageList])
 
-  return { contextHolder }
+  return null
 }
 
 export const useResizeObserver = (ref: RefObject<React.ReactNode | HTMLElement>) => {

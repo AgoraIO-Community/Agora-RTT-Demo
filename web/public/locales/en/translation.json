@@ -1,7 +1,7 @@
 {
   "confirm": "Confirm",
-  "liveLanguage": "Live Language",
-  "translationLanguage": "Translation Language",
+  "liveLanguage": "Source language",
+  "translationLanguage": "target language",
   "clearAll": "Clear All",
   "analyze": "Analyze",
   "denoise": "Denoise",
@@ -10,9 +10,9 @@
   "conversationText": "Conversation Text",
   "loadText": "Load Text",
   "transcribing": "Transcribing",
-  "closeConversation": "Close Conversation",
+  "closeConversation": "End",
   "storage": {
-    "text": "Storage",
+    "text": "Export",
     "success": "Storage success"
   },
   "export": {
@@ -28,17 +28,19 @@
   "login": {
     "github": "Visit GitHub",
     "join": "join channel",
-    "title": "Real-Time Transcription"
+    "title": "Real-Time Transcription",
+    "singleMode":"Single host mode",
+    "multiMode":"Multi-host mode"
   },
   "footer": {
     "aIAssistant": "AI Assistant",
-    "langaugesSetting": "Set & Start",
+    "langaugesSetting": "Setting",
     "conversationHistory": "Conversation History",
-    "participantsList": "Participants List",
-    "muteAudio": "Mute Audio",
-    "unMuteAudio": "UnMute Audio",
-    "muteVideo": "Mute Video",
-    "unMuteVideo": "UnMute Video",
+    "participantsList": "Participants",
+    "muteAudio": "Audio",
+    "unMuteAudio": "Audio",
+    "muteVideo": "Video",
+    "unMuteVideo": "Video",
     "startCC": "Start CC",
     "stopCC": "Stop CC",
     "tipEnableSTTFirst": "Please set language and start STT or Translation service",
@@ -48,14 +50,17 @@
     "sttStarted": "Speech to text has started",
     "sttStopped": "Speech to text has stopped",
     "sttStart": "Start speech-to-text",
+    "sttUpdate": "Update speech-to-text",
     "sttStop": "Stop speech-to-text",
-    "limitDuration": "The default speech-to-text time limit is 10 minutes",
-    "languagesSelect": "Please select on-site language and translation language",
-    "tip": "You can select up to two languages, and each live language can correspond to up to five translation languages",
-    "liveLanguage": "Live language",
-    "translationLanguageMax": "Translation language should less than or equal to 5",
+    "limitDuration": "The default speech-to-text time limit is 30 minutes",
+    "languagesSelect": "Please select your preferred language as the source language.",
+    "tip": "Please also select the target languages you want to translate into.",
+    "tipMulti":" The target language will auto-populate with the preferred language of other hosts after they join the room.",
+    "liveLanguage": "Source language",
+    "translationLanguageMax": "Target language should less than or equal to 10",
     "saveSuccess": "Setup success",
-    "sameLanguage": "The live language cannot be the same"
+    "sameLanguage": "The Source language cannot be the same",
+    "setSourceLanguage": "Please set the source language"
   },
   "conversation": {
     "sttStarted": "The host has turned on real-time transcription",
@@ -63,8 +68,8 @@
     "onTrial": "On trial",
     "extendExperience": "Extend",
     "setLanguage": "Render Langauges selection",
-    "extendExperienceText": "Extended experience can be extended by 10 minutes",
-    "extendExperienceFreeText": "The free version of the language to text service trial lasts for 10 minutes and has been used up."
+    "extendExperienceText": "Extended experience can be extended by 30 minutes",
+    "extendExperienceFreeText": "The free version of the language to text service trial lasts for 30 minutes and has been used up."
   },
   "ai": {
     "selectPromptSample": "Select Prompt Sample",

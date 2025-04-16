@@ -1,5 +1,11 @@
-import AgoraRTM, { RTMEvents, ChannelType, RTMClient, RTMConfig, MetadataItem } from "agora-rtm"
-import { mapToArray, isString, apiGetAgoraToken, getDefaultLanguageSelect } from "@/common"
+import AgoraRTM, { ChannelType, RTMClient, RTMConfig, MetadataItem } from "agora-rtm"
+import {
+  mapToArray,
+  isString,
+  apiGetAgoraToken,
+  getDefaultLanguageSelect,
+  areArraysEqual,
+} from "@/common"
 import { AGEventEmitter } from "../events"
 import {
   RtmEvents,
@@ -18,6 +24,12 @@ const appId = import.meta.env.VITE_AGORA_APP_ID
 const CHANNEL_TYPE: ChannelType = "MESSAGE"
 const LOCK_STT = "lock_stt"
 
+interface LanguageChangeEvent {
+  transcribe1: string
+  translate1List?: string[]
+  transcribe2?: string
+  translate2List?: string[]
+}
 export class RtmManager extends AGEventEmitter<RtmEvents> {
   client?: RTMClient
   private rtmConfig: RTMConfig = DEFAULT_RTM_CONFIG
@@ -26,6 +38,20 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
   userName: string = ""
   private userMap: Map<string, ISimpleUserInfo> = new Map()
   private joined: boolean = false
+  private localLanguage: ILanguageItem[] = []
+  private localSttData: ISttData = {
+    status: "end",
+    duration: 0,
+    startTime: 0,
+    taskId: "",
+  }
+
+  private currentLanguageEvent: LanguageChangeEvent = {
+    transcribe1: "",
+    translate1List: [],
+    transcribe2: "",
+    translate2List: [],
+  }
 
   constructor() {
     super()
@@ -48,6 +74,8 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     this._listenRtmEvents()
     await this.client.login()
     this.joined = true
+    // update user info
+    await this._updateUserInfo()
     // subscribe message channel
     await this.client.subscribe(channel, {
       withPresence: true,
@@ -55,45 +83,26 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     })
     // check host
     await this._checkHost()
-    // update user info
-    await this._updateUserInfo()
     // set lock
     this._setLock()
   }
 
   async updateSttData(data: ISttData) {
-    return await this._setChannelMetadata(data)
+    this.localSttData = {
+      ...this.localSttData,
+      ...data,
+    }
+    this.emit("sttDataChanged", this.localSttData)
   }
 
-  async updateLanguages(languages: ILanguageItem[]) {
-    const message: {
-      transcribe1: string
-      translate1List: string[]
-      transcribe2: string
-      translate2List: string[]
-    } = {
-      transcribe1: "",
-      translate1List: [],
-      transcribe2: "",
-      translate2List: [],
+  async updateLocalLanguage(languages: ILanguageItem[]) {
+    this.localLanguage = languages
+    const localLanguages = this.localLanguage.map((v) => v.source)
+    this.currentLanguageEvent = {
+      transcribe1: localLanguages[0],
+      translate1List: languages[0]?.target || [],
     }
-    const language1 = languages[0]
-    if (language1.source) {
-      message.transcribe1 = language1.source
-    }
-    if (language1.target) {
-      message.translate1List.push(...language1.target)
-    }
-    const language2 = languages[1]
-    if (language2) {
-      if (language2.source) {
-        message.transcribe2 = language2.source
-      }
-      if (language2.target) {
-        message.translate2List.push(...language2.target)
-      }
-    }
-    return await this._setChannelMetadata(message)
+    await this._updateUserInfo()
   }
 
   async destroy() {
@@ -103,21 +112,29 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
 
   async acquireLock() {
     // if not accquire lock, will throw error
-    return await this.client?.lock.acquireLock(this.channel, CHANNEL_TYPE, LOCK_STT)
+    // return await this.client?.lock.acquireLock(this.channel, CHANNEL_TYPE, LOCK_STT)
   }
 
   async releaseLock() {
-    return await this.client?.lock.releaseLock(this.channel, CHANNEL_TYPE, LOCK_STT)
+    // return await this.client?.lock.releaseLock(this.channel, CHANNEL_TYPE, LOCK_STT)
   }
 
   // --------------------- private methods ---------------------
 
   private async _updateUserInfo() {
+    const userInfo = {
+      userId: this.userId,
+      userName: this.userName,
+      languages: this.localLanguage,
+    }
+    this.userMap.set(userInfo.userId, userInfo)
     await this._setPresenceState({
       type: RtmMessageType.UserInfo,
       userId: this.userId,
       userName: this.userName,
+      languages: this.localLanguage,
     })
+    this._emitUserListChanged()
   }
 
   private async _removeChannelMetadata(metadata?: Record<string, any>) {
@@ -163,7 +180,7 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
       this.emit("status", res)
     })
     this.client?.addEventListener("presence", (res) => {
-      console.log("[test] presence", res)
+      console.log("[test] presence", JSON.stringify(res))
       const { channelName, channelType, eventType, snapshot = [], stateChanged, publisher } = res
       if (channelName == this.channel) {
         switch (eventType) {
@@ -179,6 +196,7 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
             if (this.userMap.has(publisher)) {
               this.userMap.delete(publisher)
               this._emitUserListChanged()
+              this._dealLanguageChanged()
             }
             break
           case "REMOTE_TIMEOUT":
@@ -190,41 +208,42 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
         }
       }
     })
-    this.client?.addEventListener("storage", (res) => {
-      console.log("[test] storage", res)
-      const { eventType, data, channelName } = res
-      const { metadata } = data
-      if (channelName == this.channel) {
-        switch (eventType) {
-          case "SNAPSHOT":
-            this._dealStorageDataChanged(metadata)
-            break
-          case "UPDATE":
-            this._dealStorageDataChanged(metadata)
-            break
-          case "REMOVE":
-            break
-        }
-      }
-    })
+  }
+
+  private _formatUserInfo(user: any) {
+    if (!user.userId) {
+      return
+    }
+    let remoteUserLanguages = user.languages ?? {}
+    try {
+      remoteUserLanguages = JSON.parse(remoteUserLanguages)
+    } catch (e) {
+      console.log(e)
+    }
+    const userInfo = {
+      userName: user.userName,
+      userId: user.userId,
+      languages: remoteUserLanguages,
+    }
+    if (userInfo.userId && userInfo.userId != this.userId) {
+      this.userMap.set(userInfo.userId, userInfo)
+    }
   }
 
   private _dealPresenceRemoteState(stateChanged: any) {
     switch (stateChanged.type) {
       case RtmMessageType.UserInfo:
-        const userInfo = {
-          userName: stateChanged.userName,
-          userId: stateChanged.userId,
-        }
-        if (userInfo.userId) {
-          this.userMap.set(userInfo.userId, userInfo)
+        this._formatUserInfo(stateChanged)
+        if (stateChanged.userId) {
           this._emitUserListChanged()
+          this._dealLanguageChanged()
         }
         break
     }
   }
 
   private _dealPresenceSnapshot(snapshot?: any[]) {
+    console.log("[test] snapshot", snapshot)
     if (!snapshot?.length) {
       return
     }
@@ -233,12 +252,8 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
       const { states } = v
       switch (states.type) {
         case RtmMessageType.UserInfo:
-          const userInfo = {
-            userName: states.userName,
-            userId: states.userId,
-          }
-          if (userInfo.userId && userInfo.userId != this.userId) {
-            this.userMap.set(userInfo.userId, userInfo)
+          this._formatUserInfo(states)
+          if (states.userId) {
             changed = true
           }
           break
@@ -246,48 +261,73 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
     }
     if (changed) {
       this._emitUserListChanged()
+      this._dealLanguageChanged()
+    }
+    this._emitJoinSuccess()
+  }
+
+  private _filterLanguages(localLanguages: string[], remoteLanguages: string[]): string[] {
+    const uniqueRemoteLanguages = [...new Set(remoteLanguages)]
+    return uniqueRemoteLanguages
+    // const filteredLanguages = remoteLanguages.filter(
+    //   (remoteLang) => !localLanguages.includes(remoteLang),
+    // )
+    // console.log("[test] filteredLanguages", filteredLanguages)
+    // return [...new Set(filteredLanguages)]
+    // const localPrefixes = new Set(localLanguages.map((lang) => lang.split("-")[0]))
+
+    // return remoteLanguages.filter((remoteLang) => {
+    //   if (localLanguages.includes(remoteLang)) return false
+    //   const remotePrefix = remoteLang.split("-")[0]
+    //   return !localPrefixes.has(remotePrefix)
+    // })
+  }
+
+  private _createTranslateList(languages: string[], startIndex: number, count: number): string[] {
+    return languages
+      .slice(startIndex, startIndex + count)
+      .filter((lang): lang is string => lang !== undefined)
+  }
+
+  private _dealLanguageChanged(): void {
+    const localLanguages = this.localLanguage.map((v) => v.source)
+    const remoteLanguages = Array.from(this.userMap.entries())
+      .filter(([userId]) => userId !== this.userId)
+      .flatMap(([_, userInfo]) => userInfo.languages.map((lang) => lang.source))
+
+    const translateList = this._filterLanguages(localLanguages, remoteLanguages)
+
+    const TRANSLATE_LIST_SIZE = 10
+
+    const event: LanguageChangeEvent = {
+      transcribe1: localLanguages[0],
+      translate1List: translateList.length
+        ? this._createTranslateList(translateList, 0, TRANSLATE_LIST_SIZE)
+        : [],
+      transcribe2: "",
+      translate2List: [],
+    }
+    console.log(
+      "[test] dealLanguageChanged",
+      remoteLanguages,
+      "event",
+      event,
+      "currentLanguageEvent",
+      this.currentLanguageEvent,
+    )
+    if (
+      this.currentLanguageEvent.transcribe1 !== event.transcribe1 ||
+      !areArraysEqual(this.currentLanguageEvent.translate1List || [], event.translate1List || [])
+    ) {
+      this.currentLanguageEvent = event
+      this.emit("languagesChanged", event)
+    } else {
+      console.log("No changes detected between remote and local languages, no action taken")
     }
   }
 
-  private _dealStorageDataChanged(metadata: any) {
-    const {
-      transcribe1,
-      translate1List,
-      transcribe2,
-      translate2List,
-      status,
-      taskId,
-      token,
-      startTime,
-      duration,
-    } = metadata
-    if (transcribe1?.value) {
-      const parseTranscribe1 = JSON.parse(transcribe1.value)
-      const parseTranslate1 = JSON.parse(translate1List.value)
-      const parseTranscribe2 = JSON.parse(transcribe2.value)
-      const parseTranslate2 = JSON.parse(translate2List.value)
-      this.emit("languagesChanged", {
-        transcribe1: parseTranscribe1,
-        translate1List: parseTranslate1,
-        transcribe2: parseTranscribe2,
-        translate2List: parseTranslate2,
-      })
-    } else {
-      this.emit("languagesChanged", getDefaultLanguageSelect())
-    }
-    if (status?.value) {
-      this.emit("sttDataChanged", {
-        status: JSON.parse(status?.value),
-        taskId: JSON.parse(taskId?.value),
-        token: JSON.parse(token?.value),
-        startTime: JSON.parse(startTime?.value),
-        duration: JSON.parse(duration?.value),
-      })
-    } else {
-      this.emit("sttDataChanged", {
-        status: "end",
-      })
-    }
+  private _emitJoinSuccess() {
+    this.emit("joinRTMSuccess")
   }
 
   private _emitUserListChanged() {
@@ -296,6 +336,12 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
 
   private _resetData() {
     this.client = undefined
+    this.currentLanguageEvent = {
+      transcribe1: "",
+      translate1List: [],
+      transcribe2: "",
+      translate2List: [],
+    }
     this.channel = ""
     this.rtmConfig = {}
     this.userId = ""
@@ -313,9 +359,9 @@ export class RtmManager extends AGEventEmitter<RtmEvents> {
   }
 
   private async _setLock() {
-    const { lockDetails = [] } = (await this.client?.lock.getLock(this.channel, CHANNEL_TYPE)) || {}
-    if (!lockDetails.find((v) => v.lockName === LOCK_STT)) {
-      await this.client?.lock.setLock(this.channel, CHANNEL_TYPE, LOCK_STT)
-    }
+    // const { lockDetails = [] } = (await this.client?.lock.getLock(this.channel, CHANNEL_TYPE)) || {}
+    // if (!lockDetails.find((v) => v.lockName === LOCK_STT)) {
+    //   await this.client?.lock.setLock(this.channel, CHANNEL_TYPE, LOCK_STT)
+    // }
   }
 }
