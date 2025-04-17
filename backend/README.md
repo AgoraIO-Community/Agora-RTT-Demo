@@ -72,7 +72,7 @@ sequenceDiagram
 Copy the example configuration file and modify it according to your needs:
 
 ```bash
-cp backend/configs/config.example.toml backend/configs/config.toml
+cp configs/config.example.toml configs/config.toml
 ```
 
 Configuration parameters:
