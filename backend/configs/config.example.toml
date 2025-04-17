@@ -1,0 +1,17 @@
+[log]
+fileName = "/data/logs/server.log" 
+level = "INFO" # DEBUG, INFO, WARN, ERROR
+maxSize = 10 
+mode = 0 # 0: console, 1: file, 2: both
+
+[httpServer]
+port = 8084
+
+[transAIServiceConfig]
+baseURL = "https://api.agora.io"
+
+[transAIAppIdConfigs.your_app_id]
+appCert = ""
+appId = ""
+authPassword = ""
+authUsername = ""
